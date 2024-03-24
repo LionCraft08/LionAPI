@@ -1,0 +1,4 @@
+name: lionAPI
+version: '${project.version}'
+main: de.lioncraft.lionapi.mainClass
+api-version: '1.20'

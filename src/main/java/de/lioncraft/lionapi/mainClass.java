@@ -5,6 +5,7 @@ import de.lioncraft.lionapi.guimanagement.Function;
 import de.lioncraft.lionapi.guimanagement.Setting;
 import de.lioncraft.lionapi.guimanagement.buttons;
 import de.lioncraft.lionapi.listeners.invClickListener;
+import de.lioncraft.lionapi.listeners.listeners;
 import de.lioncraft.lionapi.messageHandling.defaultMessages;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -19,11 +20,11 @@ public final class mainClass extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
         defaultMessages.setValues();
         buttons.setItems();
         plugin = this;
         Bukkit.getPluginManager().registerEvents(new invClickListener(), this);
+        Bukkit.getPluginManager().registerEvents(new listeners(), this);
         randomizer.InitializeEntityList();
         randomizer.disabledItemList = new ArrayList<>();
         Setting.SettingList = new HashMap<>();

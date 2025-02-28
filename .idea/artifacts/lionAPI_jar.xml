@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="lionAPI:jar">
-    <output-path>$USER_HOME$/Documents/MC/Serverdaten/plugins/eigene plugins/apis/artifacts/lionAPI_jar</output-path>
+    <output-path>$PROJECT_DIR$/out/artifacts/lionAPI_jar</output-path>
     <root id="archive" name="lionAPI.jar">
       <element id="module-output" name="lionAPI" />
     </root>

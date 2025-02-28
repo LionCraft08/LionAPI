@@ -1,4 +1,4 @@
-package de.lioncraft.lionapi.guimanagement;
+package de.lioncraft.lionapi.guimanagement.functions;
 
 @FunctionalInterface
 public interface Function {

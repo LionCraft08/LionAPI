@@ -2,7 +2,9 @@ package de.lioncraft.lionapi.messageHandling;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import org.checkerframework.common.returnsreceiver.qual.This;
 
+@Deprecated(since = "1.1")
 public final class defaultMessages {
     public static Component messagePrefix;
     public static Component wrongArgs;
@@ -16,7 +18,8 @@ public final class defaultMessages {
      *Do not use!
      **/
     public static void setValues(){
-        messagePrefix = Component.text("<").append(Component.text("Lion", TextColor.color(255, 0, 255))).append(Component.text("Systems", TextColor.color(0, 255, 255))).append(Component.text("> "));
+        messagePrefix = Component.text("<").append(Component.text("Lion", TextColor.color(255, 0, 255)))
+                .append(Component.text("Systems", TextColor.color(0, 255, 255))).append(Component.text("> "));
         wrongArgs = messagePrefix.append(Component.text("Wrong usage of args.", TextColor.color(255, 0, 0)));
         noPlayer = messagePrefix.append(Component.text("Could not find the given Player.", TextColor.color(255, 0, 0)));
         noPermission = messagePrefix.append(Component.text("You do not have the permission to do this.", TextColor.color(255, 0, 0)));

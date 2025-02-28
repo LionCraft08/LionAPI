@@ -6,11 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class saveDataEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
-
     public @NotNull HandlerList getHandlers() {
         return handlers;
     }
-
     public static HandlerList getHandlerList() {
         return handlers;
     }

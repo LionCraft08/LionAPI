@@ -16,6 +16,7 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Objects;
 
+@Deprecated(since = "1.1")
 public class buttons {
     public static ItemStack closeButton;
     public static ItemStack blockButton;
@@ -24,16 +25,21 @@ public class buttons {
     public static ItemStack[] blockButtons;
     public static ItemStack plusButton;
     public static ItemStack MinusButton;
+    public static ItemStack scrollUpButton;
+    public static ItemStack scrollDownButton;
 
+    @Deprecated(forRemoval = false)
     public static void setItems(){
-        closeButton = createItem.get(Component.text("CLOSE", TextColor.color(255, 0, 0)), Material.BARRIER, TextColor.color(255, 0, 0),"Click to close the GUI");
-        blockButton = createItem.get(Component.text(""), Material.BLACK_STAINED_GLASS_PANE, "");
-        backButton =  createItem.get(Component.text("Back", TextColor.color(255, 255, 0)), Material.ARROW, TextColor.color(255, 255, 0), "Click to get back");
-        forwardButton =  createItem.get(Component.text("Next", TextColor.color(255, 255, 0)), Material.SPECTRAL_ARROW, TextColor.color(255, 255, 0), "Click to get to ", "the next page.");
+        closeButton = Items.get(Component.text("CLOSE", TextColor.color(255, 0, 0)), Material.BARRIER, TextColor.color(255, 0, 0),"Click to close the GUI");
+        blockButton = Items.get(Component.text(""), Material.BLACK_STAINED_GLASS_PANE, "");
+        backButton =  Items.get(Component.text("Back", TextColor.color(255, 255, 0)), Material.ARROW, TextColor.color(255, 255, 0), "Click to get back");
+        forwardButton =  Items.get(Component.text("Next", TextColor.color(255, 255, 0)), Material.SPECTRAL_ARROW, TextColor.color(255, 255, 0), "Click to get to ", "the next page.");
         blockButtons = new ItemStack[53];
         Arrays.fill(blockButtons, blockButton);
         plusButton = PlusButton();
         MinusButton = MinusButton();
+        scrollUpButton = Items.get(Component.text("UP", TextColor.color(255, 0,255 )), Material.RED_BANNER, TextColor.color(255, 128, 0), "Click to scroll up / back", "Shift + Click to scroll to the beginning");
+        scrollDownButton = Items.get(Component.text("DOWN", TextColor.color(0, 255, 255)), Material.GREEN_BANNER, TextColor.color(255, 128, 0),"Click to scroll down / forward", "Shift + Click to scroll to the end");
     }
     public static ItemStack getPlayerHead(OfflinePlayer player){
         ItemStack is = new ItemStack(Material.PLAYER_HEAD);

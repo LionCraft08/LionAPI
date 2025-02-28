@@ -1,13 +1,13 @@
 package de.lioncraft.lionapi.guimanagement;
 
-import net.kyori.adventure.text.Component;
+import de.lioncraft.lionapi.guimanagement.functions.Function;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
 
 
+@Deprecated(since = "1.1")
 public class Setting {
     public static HashMap<ItemStack, Setting> SettingList;
     boolean isEnabled;
@@ -26,10 +26,10 @@ public class Setting {
     }
     private void changeBottomItem(){
         if(isEnabled){
-            bottomItem = createItem.get(topItem.displayName(), Material.LIME_DYE, "Currently enabled", "Click to disable");
+            bottomItem = Items.get(topItem.displayName(), Material.LIME_DYE, "Currently enabled", "Click to disable");
 
         }else{
-            bottomItem = createItem.get(topItem.displayName(), Material.GRAY_DYE, "Currently disabled", "Click to enable");
+            bottomItem = Items.get(topItem.displayName(), Material.GRAY_DYE, "Currently disabled", "Click to enable");
         }
         bottomItem.getItemMeta().setUnbreakable(true);
         SettingList.put(bottomItem, this);

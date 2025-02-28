@@ -6,7 +6,7 @@
 
   <groupId>de.lioncraft</groupId>
   <artifactId>lionAPI</artifactId>
-  <version>1.0</version>
+  <version>1.2</version>
   <packaging>jar</packaging>
 
   <name>lionAPI</name>
@@ -23,8 +23,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
+          <source>16</source>
+          <target>16</target>
         </configuration>
       </plugin>
       <plugin>
@@ -64,7 +64,7 @@
       <dependency>
           <groupId>io.papermc.paper</groupId>
           <artifactId>paper-api</artifactId>
-          <version>1.20.1-R0.1-SNAPSHOT</version>
+          <version>1.21.1-R0.1-SNAPSHOT</version>
           <scope>provided</scope>
       </dependency>
   </dependencies>

@@ -1,4 +1,38 @@
 name: lionAPI
 version: '${project.version}'
-main: de.lioncraft.lionapi.mainClass
+main: de.lioncraft.lionapi.LionAPI
 api-version: '1.20'
+commands:
+  timer:
+    description: A command to manage the Main-Timer
+    permission: OP
+  hiddenclickapi:
+    usage: API Internal Usage, Not intended to be used manually.
+    description: API Internal Usage, Not intended to be used manually.
+  teams:
+    usage: /team [get|register|delete] <teamname> <args>
+    description: Manage the Teams for the Challenge, does not affect the vanilla Teams.
+    permission: OP
+  backpack:
+    aliases:
+      - bp
+      - rucksack
+    usage: /bp
+    description: Opens the Backpack of your Team if available
+  teammsg:
+    aliases:
+      - tsg
+    usage: /teammsg Hey, let's go and build a House!!!
+    description: Send messages to your Team only.
+  debug:
+    usage: Internal
+    permission: OP
+permissions:
+  lionapi.timer.main.configure:
+    default: op
+    description: Sets if a Player can configure the Main Timer.
+    children:
+      - lionapi.timer.main.see
+  lionapi.timer.main.see:
+    default: true
+    description: Sets if a Player can see the Main Timer.

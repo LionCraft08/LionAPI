@@ -1,6 +1,7 @@
 package de.lioncraft.lionapi.commands;
 
 import de.lioncraft.lionapi.LionAPI;
+import de.lioncraft.lionapi.challenge.ChallengeController;
 import de.lioncraft.lionapi.data.ChallengeSettings;
 import de.lioncraft.lionapi.messageHandling.DM;
 import de.lioncraft.lionapi.messageHandling.defaultMessages;
@@ -98,18 +99,20 @@ public class timerCommand implements TabExecutor {
                     if(args[0].equals("settings")){
                         switch (args[1]){
                             case "stopbydragon" -> {
-                                boolean b = Boolean.getBoolean(args[2]);
+                                boolean b = Boolean.parseBoolean(args[2]);
                                 if(b){
-                                    LionAPI.isChallenge = true;
+                                    ChallengeController.getInstance().getSettings().setChallenge(true);
                                 }
-                                ChallengeSettings.challengeEndsOnDragonDeath = b;
+                                ChallengeController.getInstance().getSettings().setChallengeEndsOnDragonDeath(b);
+                                sender.sendMessage(DM.info(Component.text("Challenge-Einstellung geändert: "+b)));
                             }
                             case "stopbyplayerdeath" ->{
-                                boolean b = Boolean.getBoolean(args[2]);
+                                boolean b = Boolean.parseBoolean(args[2]);
                                 if(b){
-                                    LionAPI.isChallenge = true;
+                                    ChallengeController.getInstance().getSettings().setChallenge(true);
                                 }
-                                ChallengeSettings.challengeEndsOnPlayerDeath = b;
+                                ChallengeController.getInstance().getSettings().setChallengeEndsOnPlayerDeath(b);
+                                sender.sendMessage(DM.info(Component.text("Challenge-Einstellung geändert: "+b)));
                             }
                             default -> sender.sendMessage(DM.wrongArgs);
                         }

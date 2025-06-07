@@ -1,6 +1,8 @@
 package de.lioncraft.lionapi.listeners;
 
 import de.lioncraft.lionapi.LionAPI;
+import de.lioncraft.lionapi.challenge.ChallengeController;
+import de.lioncraft.lionapi.data.ChallengeSettings;
 import de.lioncraft.lionapi.events.saveDataEvent;
 import de.lioncraft.lionapi.messageHandling.DM;
 import de.lioncraft.lionapi.messageHandling.defaultMessages;
@@ -24,6 +26,7 @@ public class listeners implements Listener {
     @EventHandler
     public void onSaveEvent(saveDataEvent e){
         LionAPI.getPlugin().getConfig().set("persistent-data.timer", MainTimer.getTimer().getNewSnapshot());
+        LionAPI.getPlugin().getConfig().set("persistent-data.challenge", ChallengeController.getInstance());
         LionAPI.getPlugin().saveConfig();
         Team.saveAll();
     }

@@ -33,7 +33,8 @@ import java.util.*;
  * <ul>
  * <li>extending this class</li>
  * <li>adding a Constructor that accepts {@link Map}<{@link String},{@link Object}></li>
- * <li></li>
+ * <li>Override {@link Team#getSerializationValues()} for serialization.</li>
+ * <li>Annotate the class with {@link org.bukkit.configuration.serialization.DelegateDeserialization(Team)}</li>
  * </ul>
  */
 @SerializableAs("LionTeam")
@@ -55,6 +56,13 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer> 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    public static void resetAll(){
+        File f = new File(LionAPI.getPlugin().getDataPath().toFile(), "teams.yml");
+        f.delete();
+        for(Team t : teams) t.clear();
+        teams.clear();
+        playerTeamHashMap.clear();
     }
     public static void loadAll(){
         File f = new File(LionAPI.getPlugin().getDataPath().toFile(), "teams.yml");

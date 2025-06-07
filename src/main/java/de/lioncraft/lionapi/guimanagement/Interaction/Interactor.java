@@ -78,9 +78,6 @@ public class Interactor {
     }
     public void countUp(){
         stage++;
-        if(stage >= max){
-            stage = max;
-        }
         sendMessage();
     }
     public void onFinish(){
@@ -93,7 +90,7 @@ public class Interactor {
     public void countDown(){
         stage-=2;
         if(stage <= 0){
-            sendMessage();
+            if (p.isOnline()) sendMessage();
             map.remove(p);
             reset.cancel();
             reset = null;
@@ -119,7 +116,7 @@ public class Interactor {
 
         }
         c = c.append(Component.text("]", TextColor.color(128, 128, 128)));
-        p.getPlayer().sendActionBar(c);
+        if (p.isOnline()) p.getPlayer().sendActionBar(c);
     }
     public void playSound(){
         p.getPlayer().playSound(p.getPlayer(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 0.5f + ((float) stage / (float)max));

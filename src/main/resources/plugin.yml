@@ -36,3 +36,5 @@ permissions:
   lionapi.timer.main.see:
     default: true
     description: Sets if a Player can see the Main Timer.
+softdepend:
+  - LionUtils

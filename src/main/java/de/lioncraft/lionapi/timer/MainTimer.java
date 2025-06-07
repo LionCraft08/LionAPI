@@ -33,7 +33,7 @@ public abstract class MainTimer{
                 timer = ts.createTimer();
             }
             if(timer == null){
-                timer = new Timer(0, 1, 0, 0);
+                timer = new Stopwatch();
             }
             for(Player p : Bukkit.getOnlinePlayers()){
                 timer.addViewers(p);
@@ -43,15 +43,23 @@ public abstract class MainTimer{
     }
     public static void changeDirection(){
         boolean b = !(timer instanceof Stopwatch);
-        int days = timer.getDays();
-        int hours = timer.getHours();
-        int minutes = timer.getMinutes();
-        int seconds = timer.getSeconds();
-        timer.pause();
-        if(b){
-            timer = new Stopwatch(days, hours, minutes, seconds);
-        }else {
-            timer = new Timer(days, hours, minutes, seconds);
+        if (timer.isHasEverBeenActive()) {
+            int days = timer.getDays();
+            int hours = timer.getHours();
+            int minutes = timer.getMinutes();
+            int seconds = timer.getSeconds();
+            timer.pause();
+            if (b) {
+                timer = new Stopwatch(days, hours, minutes, seconds);
+            } else {
+                timer = new Timer(days, hours, minutes, seconds);
+            }
+        }else{
+            if (b) {
+                timer = new Stopwatch();
+            } else {
+                timer = new Timer(0, 1, 0, 0);
+            }
         }
         timer.addViewers(Bukkit.getOnlinePlayers());
     }
@@ -72,6 +80,14 @@ public abstract class MainTimer{
     public static void update(TimerLike timer){
         if(!opInv.getViewers().isEmpty()){
 
+        }
+    }
+    public static void reset(){
+        getTimer().pause();
+        if(isCountUpwards()){
+            timer = new Timer(0,0,0,0);
+        }else {
+            timer = new Stopwatch();
         }
     }
     public static void Initialize(){

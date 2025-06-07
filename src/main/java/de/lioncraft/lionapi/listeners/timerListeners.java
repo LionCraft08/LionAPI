@@ -1,67 +1,32 @@
 package de.lioncraft.lionapi.listeners;
 
-import com.destroystokyo.paper.event.player.IllegalPacketEvent;
 import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.data.ChallengeSettings;
 import de.lioncraft.lionapi.events.challenge.challengeEndEvent;
 import de.lioncraft.lionapi.events.challenge.challengeEndType;
-import de.lioncraft.lionapi.events.timerEvents.MainTimerEvents.MainTimerTickEvent;
-import de.lioncraft.lionapi.events.timerEvents.TimerTickEvent;
 import de.lioncraft.lionapi.events.timerFinishEvent;
-import de.lioncraft.lionapi.events.timerTickEvent;
 import de.lioncraft.lionapi.timer.MainTimer;
 import io.papermc.paper.event.player.PlayerBedFailEnterEvent;
-import io.papermc.paper.event.player.PlayerDeepSleepEvent;
+import io.papermc.paper.registry.data.GameEventRegistryEntry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslationArgument;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.translation.Translatable;
-import net.kyori.adventure.translation.Translator;
-import org.bukkit.Bukkit;
-import org.bukkit.GameRule;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.EntityType;
+import org.bukkit.*;
+import org.bukkit.block.Jukebox;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.block.BlockCanBuildEvent;
+import org.bukkit.event.block.TNTPrimeEvent;
+import org.bukkit.event.entity.EntityMountEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.event.server.BroadcastMessageEvent;
+import org.bukkit.event.world.GenericGameEvent;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public class timerListeners implements Listener {
-    private static OfflinePlayer lastDeath;
-    @EventHandler
-    public void onTimerEnd(timerFinishEvent e){
-        if(Objects.equals(e.getTimer(), MainTimer.getTimer())){
-            if(ChallengeSettings.challengeEndsOnTimerExpire){
-                if(LionAPI.isChallenge) {
-                    Bukkit.getServer().getPluginManager().callEvent(new challengeEndEvent(challengeEndType.timerExpired));
-                }
-            }
-        }
-    }
-    @EventHandler
-    public void onEntityDeath(EntityDeathEvent e){
-        if(e.getEntityType().equals(EntityType.ENDER_DRAGON)){
-            if(ChallengeSettings.challengeEndsOnDragonDeath){
-                if(LionAPI.isChallenge) {
-                    Bukkit.getServer().getPluginManager().callEvent(new challengeEndEvent(challengeEndType.dragonDeath));
-                }
-            }
-        } else if (e.getEntityType().equals(EntityType.PLAYER)) {
-            lastDeath = (OfflinePlayer) e.getEntity();
-            if(ChallengeSettings.challengeEndsOnPlayerDeath){
-                if(LionAPI.isChallenge) {
-                    Bukkit.getServer().getPluginManager().callEvent(new challengeEndEvent(challengeEndType.playerDeath));
-                }
-            }
-        }else{
 
-        }
-    }
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e){
         MainTimer.getTimer().addViewers(e.getPlayer());
@@ -70,27 +35,7 @@ public class timerListeners implements Listener {
     public void onPlayerLeave(PlayerQuitEvent e){
         MainTimer.getTimer().getViewer().remove(e.getPlayer());
     }
-    @EventHandler
-    public void onChallengeEnd(challengeEndEvent e){
-        switch (e.getChallengeEndType()){
-            case dragonDeath -> {
-                for(Player p : Bukkit.getOnlinePlayers()){
-                    p.sendMessage(Component.text("_______________", TextColor.color(0, 255, 255)));
-                    p.sendMessage(Component.text("Der Ender Dragon ist gestorben!", TextColor.color(0, 255, 25)));
-                    p.sendMessage(Component.text("Zeit: ", TextColor.color(20, 200, 20)).append(MainTimer.getTimer().getMessage()));
-                    p.sendMessage(Component.text("_______________", TextColor.color(0, 255, 255)));
-                }
-            }
-            case playerDeath -> {
-                for(Player p : Bukkit.getOnlinePlayers()){
-                    p.sendMessage(Component.text("_______________", TextColor.color(0, 255, 255)));
-                    p.sendMessage(Component.text(lastDeath.getName() + " died!", TextColor.color(0, 255, 25)));
-                    p.sendMessage(Component.text("Zeit: ", TextColor.color(20, 200, 20)).append(MainTimer.getTimer().getMessage()));
-                    p.sendMessage(Component.text("_______________", TextColor.color(0, 255, 255)));
-                }
-            }
-        }
-    }
+
     @EventHandler
     public void onHotbarRecieveEvent(PlayerBedFailEnterEvent e){
         if(e.getMessage() != null){
@@ -101,25 +46,70 @@ public class timerListeners implements Listener {
         }
     }
     @EventHandler
+    public void onLeaveWhileSleeping(PlayerQuitEvent e){
+        World w = e.getPlayer().getWorld();
+        LionAPI.getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(LionAPI.getPlugin(), () -> {
+           calculatePlayers(null, w);
+        }, 1);
+    }
+
+    @EventHandler
     public void onBedEnter(PlayerBedEnterEvent e){
-        int percentage = e.getPlayer().getWorld().getGameRuleValue(GameRule.PLAYERS_SLEEPING_PERCENTAGE);
+        if (!e.getBedEnterResult().equals(PlayerBedEnterEvent.BedEnterResult.OK)) return;
+        calculatePlayers(e.getPlayer(), e.getPlayer().getWorld());
+    }
+
+    private static void calculatePlayers(Player p, World w){
+        int percentage = w.getGameRuleValue(GameRule.PLAYERS_SLEEPING_PERCENTAGE);
         int amount_of_players = 0;
         int amount_of_sleeping = 0;
-        if (!e.getBedEnterResult().equals(PlayerBedEnterEvent.BedEnterResult.OK))return;
-        for(Player p : e.getPlayer().getWorld().getPlayers()){
-            amount_of_players++;
-            if(p==e.getPlayer()) {
+        for(Player player : w.getPlayers()){
+            if (!player.isSleepingIgnored()) amount_of_players++;
+            if(player == p) {
                 amount_of_sleeping++;
                 continue;
             }
-            if(p.isSleeping()&&!p.isSleepingIgnored()) amount_of_sleeping++;
+            if(player.isSleeping()&&!player.isSleepingIgnored()) amount_of_sleeping++;
         }
+        if (amount_of_sleeping <= 0) return;
+        if (amount_of_players <= 0) return;
         Component c;
         if((amount_of_sleeping/amount_of_players)*100>=percentage){
             c = Component.translatable("sleep.skipping_night");
         }else c = Component.translatable("sleep.players_sleeping").arguments(TranslationArgument.numeric(amount_of_sleeping), TranslationArgument.numeric(amount_of_players));
-        for(Player p : e.getPlayer().getWorld().getPlayers()){
-            MainTimer.setPlayerSuffix(p, Component.text(" (").append(c).append(Component.text(")")), 50);
+        for(Player player : w.getPlayers()){
+            MainTimer.setPlayerSuffix(player, Component.text(" (").append(c).append(Component.text(")")), 50);
         }
+    }
+
+    @EventHandler
+    public void onLimit(BlockCanBuildEvent e){
+        if (e.isBuildable()) return;
+        if (e.getBlock().getLocation().getBlockY() == e.getBlock().getLocation().getWorld().getMaxHeight()-1){
+            setHotbarMessage(Component.translatable("build.tooHigh", TextColor.color(170, 0, 0)).arguments(Component.text(e.getBlock().getWorld().getMaxHeight())), e.getPlayer());
+        }
+    }
+    @EventHandler
+    public void onChestFail(GenericGameEvent e){
+        if (e.getEvent() == GameEvent.JUKEBOX_PLAY){
+            if (e.getLocation().getBlock() instanceof Jukebox jb){
+                for (Player p : e.getLocation().getNearbyPlayers(e.getRadius())){
+                    MainTimer.setPlayerSuffix(p, Component.text(" (").append(Component.translatable("record.nowPlaying").arguments(jb.getRecord().lore().get(0))).append(Component.text(")")), 50);
+                }
+            }
+
+        }
+    }
+    public static void setHotbarMessage(Component message, Player p){
+        MainTimer.setPlayerSuffix(p, Component.text(" (", TextColor.color(255, 255, 255)).append(message).append(Component.text(")", TextColor.color(255, 255, 255))), 60);
+    }
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onDisk(EntityMountEvent e){
+        if (!e.isCancelled()){
+            if (e.getEntity() instanceof Player p){
+                setHotbarMessage(Component.translatable("mount.onboard").arguments(Component.keybind("key.sneak")), p);
+            }
+        }
+
     }
 }

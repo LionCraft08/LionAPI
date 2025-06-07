@@ -11,11 +11,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class LionInv {
+public abstract class LionInv {
     private List<Inventory> inventory = new ArrayList<>();
     private List<ItemStack> items = new ArrayList<>();
     private boolean autoSort, allowScrolling;
 
+    public LionInv(List<ItemStack> items, Component text) {
+        this.items = items;
+
+    }
 
     public boolean isAutoSort() {
         return autoSort;
@@ -23,7 +27,7 @@ public class LionInv {
 
     /**If true, the Inventory will automatically sort its content in a nice way to look better.
      * This may change the order of the Items.
-     * @param autoSort WEther to apply auto sorting.
+     * @param autoSort Whether to apply auto sorting.
      */
     public void setAutoSort(boolean autoSort) {
         this.autoSort = autoSort;
@@ -32,9 +36,10 @@ public class LionInv {
     public boolean isAllowScrolling() {
         return allowScrolling;
     }
-    public void Update(){
+    public void update(){
 
     }
+
     /**WARNING!!! Changing this setting to false may delete Buttons from the Inventory!
      * @param allowScrolling Whether to allow multiple Pages, wich can be switched
      */

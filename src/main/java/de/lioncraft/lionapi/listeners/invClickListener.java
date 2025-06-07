@@ -86,6 +86,7 @@ public class invClickListener implements Listener {
                         if(Interactor.sendInteraction(e.getPlayer(), e.getItem().asQuantity(1))){
                             e.getItem().setAmount(e.getItem().getAmount() - 1);
                         }
+                        e.setCancelled(true);
                     }
                 }
             }

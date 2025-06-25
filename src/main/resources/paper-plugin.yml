@@ -2,6 +2,7 @@ name: lionAPI
 version: '${project.version}'
 main: de.lioncraft.lionapi.LionAPI
 api-version: '1.21'
+bootstrapper: de.lioncraft.lionapi.LionBootstrapper
 commands:
   timer:
     description: A command to manage the Main-Timer
@@ -13,17 +14,6 @@ commands:
     usage: /team [get|register|delete] <teamname> <args>
     description: Manage the Teams for the Challenge, does not affect the vanilla Teams.
     permission: OP
-  backpack:
-    aliases:
-      - bp
-      - rucksack
-    usage: /bp
-    description: Opens the Backpack of your Team if available
-  teammsg:
-    aliases:
-      - tsg
-    usage: /teammsg Hey, let's go and build a House!!!
-    description: Send messages to your Team only.
   debug:
     usage: Internal
     permission: OP

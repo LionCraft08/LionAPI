@@ -25,7 +25,7 @@ public class createItem {
                 switch (et){
                     case PLAYER -> is.setType(Material.PLAYER_HEAD);
                     case SNOW_GOLEM -> is.setType(Material.SNOW_GOLEM_SPAWN_EGG);
-                    case BOAT -> is.setType(Material.BIRCH_BOAT);
+                    case BIRCH_BOAT -> is.setType(Material.BIRCH_BOAT);
                     case FIREBALL, DRAGON_FIREBALL, SMALL_FIREBALL -> is.setType(Material.FIRE_CHARGE);
                     case FIREWORK_ROCKET -> is.setType(Material.FIREWORK_ROCKET);
                     case END_CRYSTAL -> is.setType(Material.END_CRYSTAL);
@@ -56,7 +56,7 @@ public class createItem {
                         is.setType(Material.POWDER_SNOW_BUCKET);
                         im.displayName(Component.text("AREA EFFECT CLOUD"));
                     }
-                    case CHEST_BOAT -> is.setType(Material.OAK_CHEST_BOAT);
+                    case OAK_CHEST_BOAT -> is.setType(Material.OAK_CHEST_BOAT);
                     case LEASH_KNOT -> is.setType(Material.LEAD);
                     default -> im.displayName(Component.text(et.translationKey()));
 

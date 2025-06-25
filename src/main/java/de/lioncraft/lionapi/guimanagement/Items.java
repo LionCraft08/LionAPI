@@ -2,6 +2,7 @@ package de.lioncraft.lionapi.guimanagement;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import de.lioncraft.lionapi.LionAPI;
+import de.lioncraft.lionapi.guimanagement.Interaction.Button;
 import de.lioncraft.lionapi.listeners.invClickListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -10,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -109,11 +111,11 @@ public final class Items {
                 switch (et){
                     case PLAYER -> m = Material.PLAYER_HEAD;
                     case SNOW_GOLEM -> m = Material.SNOW_GOLEM_SPAWN_EGG;
-                    case BOAT -> m = Material.BIRCH_BOAT;
                     case FIREBALL, DRAGON_FIREBALL, SMALL_FIREBALL -> m = Material.FIRE_CHARGE;
                     case FIREWORK_ROCKET -> m = Material.FIREWORK_ROCKET;
                     case END_CRYSTAL -> m = Material.END_CRYSTAL;
                     case FALLING_BLOCK -> m = Material.SAND;
+                    case BREEZE_WIND_CHARGE, WIND_CHARGE -> m = Material.WIND_CHARGE;
                     case FISHING_BOBBER -> m = Material.FISHING_ROD;
                     case GIANT -> m = Material.ZOMBIE_SPAWN_EGG;
                     case ILLUSIONER -> {
@@ -140,7 +142,6 @@ public final class Items {
                         m = Material.POWDER_SNOW_BUCKET;
                         c = Component.text("AREA EFFECT CLOUD");
                     }
-                    case CHEST_BOAT -> m = Material.OAK_CHEST_BOAT;
                     case LEASH_KNOT -> m = Material.LEAD;
                     default -> c = Component.text(et.translationKey());
 
@@ -192,6 +193,12 @@ public final class Items {
     }
     public static ItemStack getBackButton(String InvTitle){
         return getBackButton(Component.text(InvTitle, TextColor.color(0, 255, 255)));
+    }
+    public static ItemStack getBackButton(Inventory inv, String name){
+        return new Button(getBackButton(name), event -> {
+            event.getWhoClicked().openInventory(inv);
+            return false;
+        }).getButton();
     }
     public static ItemStack getBackButton(Component InvTitle){
         ItemStack is = backButton.clone();

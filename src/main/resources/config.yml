@@ -3,6 +3,7 @@ settings:
     has-backpack: true
     backpack-size: 54
     display-teamname: false
+    allow-teammsg: true
 
 
 #The Items below won't occur in the Random Item giver Methods

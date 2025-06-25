@@ -2,7 +2,6 @@ package de.lioncraft.lionapi;
 
 import de.lioncraft.lionapi.challenge.ChallengeController;
 import de.lioncraft.lionapi.challenge.SimpleSpeedrunChallenge;
-import de.lioncraft.lionapi.commands.DebugCommand;
 import de.lioncraft.lionapi.commands.Teammsg;
 import de.lioncraft.lionapi.commands.Teams;
 import de.lioncraft.lionapi.commands.timerCommand;
@@ -18,15 +17,20 @@ import de.lioncraft.lionapi.listeners.SimpleChallengeRelatedListeners;
 import de.lioncraft.lionapi.listeners.invClickListener;
 import de.lioncraft.lionapi.listeners.listeners;
 import de.lioncraft.lionapi.listeners.timerListeners;
+import de.lioncraft.lionapi.messageHandling.ColorGradient;
 import de.lioncraft.lionapi.messageHandling.DM;
 import de.lioncraft.lionapi.messageHandling.defaultMessages;
+import de.lioncraft.lionapi.messageHandling.lionchat.ChannelConfiguration;
+import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
 import de.lioncraft.lionapi.teams.Backpack;
 import de.lioncraft.lionapi.teams.DeserializeTeams;
 import de.lioncraft.lionapi.teams.Team;
 import de.lioncraft.lionapi.timer.*;
-import de.lioncraft.lionutils.data.ChallengesData;
 import io.papermc.paper.plugin.PermissionManager;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.event.world.WorldSaveEvent;
@@ -64,6 +68,24 @@ public final class LionAPI extends JavaPlugin {
         de.lioncraft.lionapi.guimanagement.Interaction.Setting.SettingList = new HashMap<>();
         MultipleSelection.multipleSelectionMap = new HashMap<>();
 
+        LionChat.registerChannel("debug", new ChannelConfiguration(true,
+                TextColor.color(100, 100, 100),
+                Component.text("DEBUG", NamedTextColor.DARK_BLUE),
+                false));
+        LionChat.registerChannel("system", new ChannelConfiguration(false,
+                TextColor.color(200, 100, 100),
+                ColorGradient.getNewGradiant("LionSystems", TextColor.color(250, 0, 250), TextColor.color(50, 0, 255)),
+                true));
+        LionChat.registerChannel("msg", new ChannelConfiguration(false, TextColor.color(150, 150, 255),
+                Component.text("MSG", TextColor.color(60, 60, 255)),
+                true));
+        LionChat.registerChannel("teammsg", new ChannelConfiguration(false, TextColor.color(180, 255, 180),
+                Component.text("TeamMSG", TextColor.color(60, 255, 60)),
+                true));
+        LionChat.registerChannel("log", new ChannelConfiguration(true, TextColor.color(180, 180, 180),
+                Component.text("LOG", TextColor.color(100, 100, 100)),
+                false));
+
         Settings.init();
         defaultMessages.setValues();
         buttons.setItems();
@@ -76,12 +98,12 @@ public final class LionAPI extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new timerListeners(), this);
         Bukkit.getPluginManager().registerEvents(new SimpleChallengeRelatedListeners(), this);
 
-        getCommand("timer").setExecutor(new timerCommand());
-        getCommand("hiddenclickapi").setExecutor(new ClickCommand());
-        getCommand("teams").setExecutor(new Teams());
-        getCommand("teammsg").setExecutor(new Teammsg());
-        getCommand("backpack").setExecutor(new de.lioncraft.lionapi.commands.Backpack());
-        getCommand("debug").setExecutor(new DebugCommand());
+//        getCommand("timer").setExecutor(new timerCommand());
+//        getCommand("hiddenclickapi").setExecutor(new ClickCommand());
+//        getCommand("teams").setExecutor(new Teams());
+//        getCommand("teammsg").setExecutor(new Teammsg());
+//        getCommand("backpack").setExecutor(new de.lioncraft.lionapi.commands.Backpack());
+        //getCommand("debug").setExecutor(new DebugCommand());
 
         MainTimer.getTimer();
         new DeserializeTeams().runTaskLater(this, 10);

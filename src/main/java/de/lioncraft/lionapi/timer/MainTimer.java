@@ -92,14 +92,7 @@ public abstract class MainTimer{
     }
     public static void Initialize(){
         opInv = Bukkit.createInventory(null, 54, Component.text("Timer"));
-        Button b = new Button(Items.get(Component.text("Timer", TextColor.color(255, 128, 0)), Material.CLOCK, TextColor.color(255, 255, 255), "Configure the Timer"), event -> {
-            if(event.getWhoClicked().hasPermission("lionapi.timer.main.configure")){
-                event.getWhoClicked().openInventory(opInv);
-            }else if(event.getWhoClicked() instanceof Player p){
-                p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
-            }
-            return false;});
-        MainMenu.registerNewButton(b);
+
         for(int i = 19; i <= 22; i++){
             opInv.setItem(i-9, Items.plusButton);
             opInv.setItem(i+9, Items.MinusButton);

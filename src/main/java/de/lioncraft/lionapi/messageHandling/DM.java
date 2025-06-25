@@ -94,7 +94,7 @@ public abstract class DM {
     }
 
     private static Component getMessagePrefix(){
-        return Component.text("<", TextColor.color(255, 255, 255))
+        return Component.text("[", TextColor.color(255, 255, 255))
                 .append(Component.text("L", TextColor.color(255, 0, 255)))
                 .append(Component.text("i", TextColor.color(220, 0, 255)))
                 .append(Component.text("o", TextColor.color(190, 0, 255)))
@@ -106,6 +106,7 @@ public abstract class DM {
                 .append(Component.text("e", TextColor.color(10, 0, 255)))
                 .append(Component.text("m", TextColor.color(0, 20, 255)))
                 .append(Component.text("s", TextColor.color(0, 50, 255)))
-                .append(Component.text("> ", TextColor.color(255, 255, 255)));
+                .append(Component.text("] ", TextColor.color(255, 255, 255)));
     }
+
 }

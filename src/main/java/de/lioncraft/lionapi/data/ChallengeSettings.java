@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public final class ChallengeSettings implements ConfigurationSerializable {
     private boolean challengeEndsOnDragonDeath;
@@ -62,11 +63,11 @@ public final class ChallengeSettings implements ConfigurationSerializable {
 
     public @NotNull Map<String, Object> serialize(){
         Map<String, Object> map = new HashMap<>();
-        map.put("challenge-ends-on-dragon-death", challengeEndsOnDragonDeath);
-        map.put("challenge-ends-on-player-death", challengeEndsOnPlayerDeath);
-        map.put("challenge-ends-on-timer-expire", challengeEndsOnTimerExpire);
-        map.put("is-challenge", isChallenge);
-        map.put("use-timer", useTimer);
+        map.put("challenge-ends-on-dragon-death", Optional.of(challengeEndsOnDragonDeath));
+        map.put("challenge-ends-on-player-death", Optional.of(challengeEndsOnPlayerDeath));
+        map.put("challenge-ends-on-timer-expire", Optional.of(challengeEndsOnTimerExpire));
+        map.put("is-challenge", Optional.of(isChallenge));
+        map.put("use-timer", Optional.of(useTimer));
         return map;
     }
     public ChallengeSettings(Map<String, Object> map){

@@ -1,6 +1,7 @@
 package de.lioncraft.lionapi.messageHandling.lionchat;
 
 import de.lioncraft.lionapi.guimanagement.Interaction.Button;
+import de.lioncraft.lionapi.guimanagement.Interaction.LionButtonFactory;
 import de.lioncraft.lionapi.guimanagement.Interaction.Setting;
 import de.lioncraft.lionapi.guimanagement.Items;
 import de.lioncraft.lionapi.guimanagement.lioninventories.ChannelSelectionMenu;
@@ -28,15 +29,21 @@ public class ChannelConfiguration {
     private TextColor defaultColor = NamedTextColor.WHITE;
     private Component prefix = DM.messagePrefix;
     private boolean configurableByNonOPs;
-    private Material icon;
+    private Material icon = Material.GOAT_HORN;
+    private String key;
 
     public ChannelConfiguration(boolean opOnly, TextColor defaultColor, Component prefix, boolean configurableByNonOPs) {
         this.opOnly = opOnly;
         this.defaultColor = defaultColor;
-        this.prefix = Component.text("[", NamedTextColor.WHITE)
-                .append(prefix)
-                .append(Component.text("]", NamedTextColor.WHITE));
+        this.prefix =
+                prefix
+                .append(Component.text("", NamedTextColor.WHITE));
         this.configurableByNonOPs = configurableByNonOPs;
+    }
+
+    public ChannelConfiguration addKey(String key){
+        this.key = key;
+        return this;
     }
 
     public ChannelConfiguration() {
@@ -101,54 +108,42 @@ public class ChannelConfiguration {
     }
     public void openInventoryFor(Player p){
         Inventory inv = Bukkit.createInventory(null, 54, Component.text("ChannelConfig ").append(getPrefix()));
+        inv.setContents(Items.blockButtons);
         inv.setItem(49, Items.closeButton);
-        inv.setItem(45, new Button(Items.getBackButton("LionChat Channels"), event -> {
-            ChannelSelectionMenu.open((Player) event.getWhoClicked());
-            return true;
-        }).getButton());
-        if ((!p.isOp() && (!isConfigurableByNonOPs()||isOpOnly()))){
+        inv.setItem(45, LionButtonFactory.createButton(Items.getBackButton("Channel Configuration"), "lionapi_open_channel_menu"));
+        if((!p.isOp()&&!isConfigurableByNonOPs())||(!p.isOp()&&isOpOnly()))
+        {
             inv.setItem(22, Items.asGUIButton(Items.get(Component.text("You cannot do that!", TextColor.color(255, 0, 0)), Material.RED_STAINED_GLASS_PANE,
                     TextColor.color(255, 100, 100), "This Channel cannot be disabled.")));
         } else {
-            Setting s = new Setting(ignoredBy.contains(p.getUniqueId()),
+            Setting s = new Setting(!ignoredBy.contains(p.getUniqueId()),
                     Items.get("See Messages in chat", Material.SPYGLASS, "Toggles the visibility of ", "this channel."), isEnabled -> {
                 if (isEnabled){
-                    ignoredBy.add(p.getUniqueId());
-                    LionChat.sendMessageOnChannel(this, Component.text("You can Messages in this Channel now."), p);
-                }else{
-                    LionChat.sendMessageOnChannel(this, Component.text("You can Messages in this Channel now."), p);
+                    LionChat.sendMessageOnChannel(this, Component.text("You can see Messages in this Channel now."), p);
                     ignoredBy.remove(p.getUniqueId());
+                }else{
+                    ignoredBy.add(p.getUniqueId());
+                    LionChat.sendMessageOnChannel(this, Component.text("You cannot see Messages in this Channel now."), p);
                 }
             });
             inv.setItem(10, s.getTopItem());
             inv.setItem(19, s.getBottomItem());
             if (p.isOp()) {
-                inv.setItem(12, getChangeIconButton(inv));
+                inv.setItem(12, getChangeIconButton());
             }
         }
 
         p.openInventory(inv);
     }
-    private ItemStack getChangeIconButton(Inventory inv){
-        return new Button(Items.get("Click to change Icon", icon, "Click to change the icon of this channel."), event -> {
-            ItemStack is = event.getView().getCursor();
-            if (is.getType().isAir()){
-                LionChat.sendMessageOnChannel("system", Component.text("You need an Item on your Cursor to change the Icon."), event.getWhoClicked());
-                event.getWhoClicked().playSound(Sound.sound(Key.key("entity.villager.no"), Sound.Source.PLAYER, 1.0f, 1.0f));
-            }else{
-                icon = is.getType();
-                event.getWhoClicked().playSound(Sound.sound(Key.key("block.amethyst.hit"), Sound.Source.PLAYER, 1.0f, 1.0f));
-                inv.setItem(12, getChangeIconButton(inv));
-                return true;
-            }
-            return false;
-        }).getButton();
+    public ItemStack getChangeIconButton(){
+        return LionButtonFactory.createButton(Items.get("Click to change Icon", icon, "Click to change the icon of this channel."),
+                "lionapi_channel_change_icon."+key);
     }
 
     public ItemStack getButton(){
-        return new Button(Items.get(getPrefix(), icon, TextColor.color(255, 0, 255), "Click to open Settings for", "this channel"), event -> {
-            openInventoryFor((Player) event.getWhoClicked());
-            return true;
-        }).getButton();
+        return LionButtonFactory.createButton(Items.get(
+                getPrefix(), icon, TextColor.color(255, 0, 255),
+                        "Click to open Settings for", "this channel"),
+                "lionapi_open_channel_menu."+key);
     }
 }

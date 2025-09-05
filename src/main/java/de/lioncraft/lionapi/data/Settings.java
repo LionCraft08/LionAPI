@@ -28,6 +28,8 @@ public final class Settings {
     public static boolean isAllowTeammsg() {
         return settings.getBoolValue("teams.allow-teammsg");
     }
+
+
     public static void init(){
         FileConfiguration c = getPlugin().getConfig();
         List<Setting> list = new ArrayList<>();
@@ -59,7 +61,7 @@ public final class Settings {
                 Component.text("Sets the Backpack-Size."),
                 Component.text("Can destroy Items if used mid-game")))
                 .setName("Allow Teamchats")
-                .setValue(true)
+                .setValue(54)
                 .setOnChange((oldValue, newValue) -> {
                     int old = (int) oldValue;
                     int newV = (int) newValue;

@@ -9,6 +9,7 @@ import de.lioncraft.lionapi.timer.MainTimer;
 import io.papermc.paper.event.player.PlayerBedFailEnterEvent;
 import io.papermc.paper.registry.data.GameEventRegistryEntry;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.TranslationArgument;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
@@ -40,6 +41,9 @@ public class timerListeners implements Listener {
     public void onHotbarRecieveEvent(PlayerBedFailEnterEvent e){
         if(e.getMessage() != null){
             if(MainTimer.getTimer().isActive()){
+                if (e.getMessage() instanceof TextComponent c){
+                    if (c.content().isBlank()) return;
+                }
                 MainTimer.setPlayerSuffix(e.getPlayer(),Component.text(" (").append(e.getMessage()).append(Component.text(")")), 50);
                 e.setMessage(null);
             }

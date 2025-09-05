@@ -1,12 +1,15 @@
 package de.lioncraft.lionapi.listeners;
 
 import de.lioncraft.lionapi.LionAPI;
+import de.lioncraft.lionapi.events.invs.LionButtonClickEvent;
 import de.lioncraft.lionapi.guimanagement.*;
 import de.lioncraft.lionapi.guimanagement.Interaction.Button;
 import de.lioncraft.lionapi.guimanagement.Interaction.Interactor;
+import de.lioncraft.lionapi.guimanagement.Interaction.LionButtonFactory;
 import de.lioncraft.lionapi.guimanagement.Interaction.MultipleSelection;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,30 +30,21 @@ public class invClickListener implements Listener {
                 if(e.getCurrentItem().getItemMeta().getPersistentDataContainer().has(disabledClick)){
                     e.setCancelled(true);
                 }
+                if (e.getCurrentItem().getItemMeta().getPersistentDataContainer().has(LionButtonFactory.getNamespacedKey())){
+                    e.setCancelled(true);
+                    Bukkit.getPluginManager().callEvent(new LionButtonClickEvent(e));
+                }
             }
-            if (Setting.SettingList.get(e.getCurrentItem()) != null) {
-                e.setCancelled(true);
-                Setting s = Setting.SettingList.get(e.getCurrentItem());
-                s.ClickAction();
-                Objects.requireNonNull(e.getClickedInventory()).setItem(e.getSlot(), s.getBottomItem());
-            }else if (de.lioncraft.lionapi.guimanagement.Interaction.Setting.SettingList.get(e.getCurrentItem()) != null) {
+
+            if (de.lioncraft.lionapi.guimanagement.Interaction.Setting.SettingList.get(e.getCurrentItem()) != null) {
                 e.setCancelled(true);
                 de.lioncraft.lionapi.guimanagement.Interaction.Setting s = de.lioncraft.lionapi.guimanagement.Interaction.Setting.SettingList.get(e.getCurrentItem());
                 s.ClickAction();
                 Objects.requireNonNull(e.getClickedInventory()).setItem(e.getSlot(), s.getBottomItem());
-            } else if (button.activeButtons.containsKey(e.getCurrentItem())) {
-                e.setCancelled(true);
-                button b = button.activeButtons.get(e.getCurrentItem());
-                b.ClickAction(e);
             } else if (Button.activeButtons.containsKey(e.getCurrentItem())) {
                 e.setCancelled(true);
                 Button b = Button.activeButtons.get(e.getCurrentItem());
                 b.ClickAction(e);
-            } else if (multipleSelection.multipleSelectionMap.containsKey(e.getCurrentItem())) {
-                e.setCancelled(true);
-                multipleSelection ms = multipleSelection.multipleSelectionMap.get(e.getCurrentItem());
-                ms.ClickAction(e);
-                Objects.requireNonNull(e.getClickedInventory()).setItem(e.getSlot(), ms.getButton());
             } else if (MultipleSelection.multipleSelectionMap.containsKey(e.getCurrentItem())) {
                 e.setCancelled(true);
                 MultipleSelection ms = MultipleSelection.multipleSelectionMap.get(e.getCurrentItem());

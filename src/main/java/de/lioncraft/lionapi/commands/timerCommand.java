@@ -4,8 +4,12 @@ import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.challenge.ChallengeController;
 import de.lioncraft.lionapi.data.ChallengeSettings;
 import de.lioncraft.lionapi.messageHandling.DM;
+import de.lioncraft.lionapi.messageHandling.MSG;
 import de.lioncraft.lionapi.messageHandling.defaultMessages;
+import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
 import de.lioncraft.lionapi.timer.MainTimer;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,28 +19,28 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-public class timerCommand implements TabExecutor {
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+public class timerCommand implements BasicCommand {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull String[] args) {
         switch (args.length){
                 case 0:
                     if(sender instanceof Player p){
                         MainTimer.openUI(p);
-                    }else sender.sendMessage(DM.notAPlayer);
+                    }else LionChat.sendSystemMessage(MSG.notAPlayer, sender);;
                 break;
                 case 1:
                     switch (args[0]) {
                         case "start", "resume" -> {
-                            sender.sendMessage(MainTimer.getTimer().start());
+                            LionChat.sendSystemMessage(MainTimer.getTimer().start(), sender);
                         }
                         case "pause" -> {
                             if (MainTimer.getTimer().isActive()) {
                                 MainTimer.getTimer().pause();
-                                sender.sendMessage(DM.messagePrefix.append(Component.text("Successfully paused the Timer")));
+                                LionChat.sendSystemMessage(Component.text("Successfully paused the Timer"), sender);
                             } else {
-                                sender.sendMessage(DM.messagePrefix.append(Component.text("The Timer is already paused!")));
+                                LionChat.sendSystemMessage(Component.text("The Timer is already paused!"), sender);
                             }
                         }
                         case "reset" -> {
@@ -55,15 +59,16 @@ public class timerCommand implements TabExecutor {
                                 MainTimer.getTimer().setMinutes(0);
                                 MainTimer.getTimer().setSeconds(0);
                             }
-                            sender.sendMessage(DM.messagePrefix.append(Component.text("Successfully restarted the Timer")));
+
+                            LionChat.sendSystemMessage(Component.text("Successfully restarted the Timer"),sender);
                         }
                         case "toggledirection" -> {
                             MainTimer.changeDirection();
-                            if(MainTimer.isCountUpwards()) sender.sendMessage(DM.messagePrefix.append(Component.text("The timer now counts upwards")));
-                            else sender.sendMessage(DM.messagePrefix.append(Component.text("The timer now counts down")));
+                            if(MainTimer.isCountUpwards()) LionChat.sendSystemMessage(Component.text("The timer now counts upwards"),sender);
+                            else LionChat.sendSystemMessage(Component.text("The timer now counts down"),sender);
 
                         }
-                        default -> sender.sendMessage(DM.wrongArgs);
+                        default -> LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
                     }
                     break;
                 case 5:
@@ -74,9 +79,9 @@ public class timerCommand implements TabExecutor {
                             MainTimer.getTimer().setMinutes(Integer.parseInt(args[3]));
                             MainTimer.getTimer().setSeconds(Integer.parseInt(args[4]));
                             MainTimer.getTimer().updateSecondsAtStart();
-                            sender.sendMessage(MainTimer.getTimer().start());
+                            LionChat.sendSystemMessage(MainTimer.getTimer().start(), sender);
                         }catch (NumberFormatException e){
-                            sender.sendMessage(DM.messagePrefix.append(Component.text("Make sure you use numbers as parameters 2-5")));
+                            LionChat.sendSystemMessage(Component.text("Make sure you use numbers as parameters 2-5"),sender);
                         }
                     } else if (args[0].equals("set")) {
                         try {
@@ -87,12 +92,12 @@ public class timerCommand implements TabExecutor {
                             if(!MainTimer.getTimer().isActive()){
                                 MainTimer.getTimer().updateSecondsAtStart();
                             }
-                            sender.sendMessage(DM.messagePrefix.append(Component.text("Successfully set the Timer to " + MainTimer.getTimer().getCurrentSeconds() + "s")));
+                            LionChat.sendSystemMessage(Component.text("Successfully set the Timer to " + MainTimer.getTimer().getCurrentSeconds() + "s"),sender);
                         }catch (NumberFormatException e){
-                            sender.sendMessage(DM.messagePrefix.append(Component.text("Make sure you use numbers as parameters 2-5")));
+                            LionChat.sendSystemMessage(Component.text("Make sure you use numbers as parameters 2-5"),sender);
                         }
                     }else{
-                        sender.sendMessage(DM.wrongArgs);
+                        LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
                     }
                     break;
                 case 3:
@@ -104,7 +109,7 @@ public class timerCommand implements TabExecutor {
                                     ChallengeController.getInstance().getSettings().setChallenge(true);
                                 }
                                 ChallengeController.getInstance().getSettings().setChallengeEndsOnDragonDeath(b);
-                                sender.sendMessage(DM.info(Component.text("Challenge-Einstellung geändert: "+b)));
+                                LionChat.sendSystemMessage(Component.text("Challenge-Einstellung geändert: "+b), sender);
                             }
                             case "stopbyplayerdeath" ->{
                                 boolean b = Boolean.parseBoolean(args[2]);
@@ -112,14 +117,14 @@ public class timerCommand implements TabExecutor {
                                     ChallengeController.getInstance().getSettings().setChallenge(true);
                                 }
                                 ChallengeController.getInstance().getSettings().setChallengeEndsOnPlayerDeath(b);
-                                sender.sendMessage(DM.info(Component.text("Challenge-Einstellung geändert: "+b)));
+                                LionChat.sendSystemMessage(Component.text("Challenge-Einstellung geändert: "+b), sender);
                             }
-                            default -> sender.sendMessage(DM.wrongArgs);
+                            default -> LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
                         }
-                    }else sender.sendMessage(DM.wrongArgs);
+                    }else LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
                 break;
                 default:
-                    sender.sendMessage(DM.wrongArgs);
+                    LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
             }
 
         return true;
@@ -127,11 +132,10 @@ public class timerCommand implements TabExecutor {
     }
 
 
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull String[] args) {
         List<String> strings = new ArrayList<>();
         switch (args.length){
-            case 1:
+            case 0, 1:
                 strings.add("start");
                 strings.add("set");
                 strings.add("pause");
@@ -171,5 +175,20 @@ public class timerCommand implements TabExecutor {
 
         }
         return strings;
+    }
+
+    @Override
+    public void execute(CommandSourceStack commandSourceStack, String[] strings) {
+        onCommand(commandSourceStack.getSender(), strings );
+    }
+
+    @Override
+    public Collection<String> suggest(CommandSourceStack commandSourceStack, String[] args) {
+        return onTabComplete(commandSourceStack.getSender(), args);
+    }
+
+    @Override
+    public boolean canUse(CommandSender sender) {
+        return sender.isOp();
     }
 }

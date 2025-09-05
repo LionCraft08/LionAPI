@@ -1,6 +1,7 @@
 package de.lioncraft.lionapi.guimanagement.lioninventories;
 
 import de.lioncraft.lionapi.guimanagement.Interaction.Button;
+import de.lioncraft.lionapi.guimanagement.Interaction.LionButtonFactory;
 import de.lioncraft.lionapi.guimanagement.Items;
 import de.lioncraft.lionapi.guimanagement.ScrollableInterface;
 import de.lioncraft.lionapi.messageHandling.lionchat.ChannelConfiguration;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChannelSelectionMenu {
-    private static Button button;
+    private static ItemStack button;
     public static void open(Player p){
         List<ItemStack> items = new ArrayList<>();
         LionChat.getChannels().forEach((s, channelConfiguration) -> {
@@ -27,14 +28,13 @@ public class ChannelSelectionMenu {
         p.openInventory(inv.getInventory());
 
     }
-    public static Button getButton(){
+    public static ItemStack getButton(){
         if (button == null)
-            button = new Button(Items.get("LionChat Settings", Material.GOAT_HORN, "Opens the configuration for the different Channels", "with the option to mute them."), event -> {
-                open((Player) event.getWhoClicked());
-                return false;
-            });
+            button = LionButtonFactory.createButton(Items.get(
+                    "LionChat Settings",
+                    Material.GOAT_HORN,
+                    "Opens the configuration for the different Channels",
+                    "with the option to mute them."), "lionapi_open_channel_menu");
         return button;
     }
-
-
 }

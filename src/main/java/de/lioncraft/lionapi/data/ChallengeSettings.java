@@ -14,10 +14,10 @@ public final class ChallengeSettings implements ConfigurationSerializable {
 
 
     public ChallengeSettings(){
-        challengeEndsOnDragonDeath = false;
+        challengeEndsOnDragonDeath = true;
         challengeEndsOnTimerExpire = false;
-        challengeEndsOnPlayerDeath = false;
-        isChallenge = false;
+        challengeEndsOnPlayerDeath = true;
+        isChallenge = true;
         useTimer = true;
     }
 
@@ -63,11 +63,11 @@ public final class ChallengeSettings implements ConfigurationSerializable {
 
     public @NotNull Map<String, Object> serialize(){
         Map<String, Object> map = new HashMap<>();
-        map.put("challenge-ends-on-dragon-death", Optional.of(challengeEndsOnDragonDeath));
-        map.put("challenge-ends-on-player-death", Optional.of(challengeEndsOnPlayerDeath));
-        map.put("challenge-ends-on-timer-expire", Optional.of(challengeEndsOnTimerExpire));
-        map.put("is-challenge", Optional.of(isChallenge));
-        map.put("use-timer", Optional.of(useTimer));
+        map.put("challenge-ends-on-dragon-death", challengeEndsOnDragonDeath);
+        map.put("challenge-ends-on-player-death", challengeEndsOnPlayerDeath);
+        map.put("challenge-ends-on-timer-expire", challengeEndsOnTimerExpire);
+        map.put("is-challenge", isChallenge);
+        map.put("use-timer", useTimer);
         return map;
     }
     public ChallengeSettings(Map<String, Object> map){

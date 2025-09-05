@@ -1,6 +1,8 @@
 package de.lioncraft.lionapi.guimanagement;
 
 import de.lioncraft.lionapi.guimanagement.Interaction.Button;
+import de.lioncraft.lionapi.guimanagement.Interaction.LionButtonFactory;
+import de.lioncraft.lionapi.guimanagement.lioninventories.AddonManageMenu;
 import de.lioncraft.lionapi.guimanagement.lioninventories.ChannelSelectionMenu;
 import de.lioncraft.lionapi.timer.MainTimer;
 import net.kyori.adventure.text.Component;
@@ -21,33 +23,28 @@ import static de.lioncraft.lionapi.timer.MainTimer.openUI;
 public final class MainMenu {
     private MainMenu(){}
     private static Inventory mainMenu = Initialize();
-    private static Button toMainMenuButton =
-            new Button(Items.get(Component.text("Back", TextColor.color(0, 255, 255)), Material.SPECTRAL_ARROW, TextColor.color(255, 255, 255), "Back to: LionSystems"), event -> {
-            event.getWhoClicked().openInventory(mainMenu);
-            return false;});
+    private static ItemStack toMainMenuButton = LionButtonFactory.createButton(Items.get(
+            Component.text("Back", TextColor.color(0, 255, 255)),
+            Material.SPECTRAL_ARROW,
+            TextColor.color(255, 255, 255),
+            "Back to: LionSystems"),
+            "lionapi_open_main_menu");
 
     public static Inventory Initialize(){
         Inventory mainMenu = Bukkit.createInventory(null, 54, Component.text("LionSystems", TextColor.color(0, 255, 255)));
         mainMenu.setContents(Items.blockButtons);
         mainMenu.setItem(49, Items.closeButton);
-        Button b = new Button(Items.get(Component.text("Timer", TextColor.color(255, 128, 0)), Material.CLOCK, TextColor.color(255, 255, 255), "Configure the Timer"), event -> {
-            if(event.getWhoClicked().hasPermission("lionapi.timer.main.configure")){
-                openUI(event.getWhoClicked());
-            }else if(event.getWhoClicked() instanceof Player p){
-                p.playSound(p, Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
-            }
-            return false;});
-        mainMenu.setItem(10, b.getButton());
-        mainMenu.setItem(12, ChannelSelectionMenu.getButton().getButton());
-
+        mainMenu.setItem(10, LionButtonFactory.createButton(Items.get(Component.text("Timer", TextColor.color(255, 128, 0)), Material.CLOCK, TextColor.color(255, 255, 255), "Configure the Timer"),
+                "lionapi_open_timer_menu"));
+        mainMenu.setItem(12, ChannelSelectionMenu.getButton());
+        mainMenu.setItem(37, AddonManageMenu.getItem());
         return mainMenu;
-
     }
 
     /**Registers a new Inventory accessible directly through the Main Menu of LionAPI.
-     * THis will create a new mutable Inventory and configure it.
-     * @ An Item wich will be used to create the Button in the Main GUI.
-     * @return The new created Inventory
+     * This will create a new mutable Inventory and configure it.
+     * @ An Item which will be used to create the Button in the Main GUI.
+     * @return The newly created Inventory
      */
 //    public static Inventory registerNewInventoryPreset(ItemStack buttonPreset, boolean needsOP){
 //        Inventory inv = Bukkit.createInventory(null, 54, buttonPreset.displayName());
@@ -63,15 +60,15 @@ public final class MainMenu {
 //        buttons.add(b);
 //        return inv;
 //    }
-    public static void setButton(int slot, Button b){
-        mainMenu.setItem(slot, b.getButton());
+    public static void setButton(int slot, ItemStack b){
+        mainMenu.setItem(slot, b);
     }
 
     /** Used to get a Button wich will automatically open the Main Inventory.
      * Can be used as a Back button for new registered Inventories.
      * @return The Back-Button.
      */
-    public static Button getToMainMenuButton() {
+    public static ItemStack getToMainMenuButton() {
         return toMainMenuButton;
     }
 

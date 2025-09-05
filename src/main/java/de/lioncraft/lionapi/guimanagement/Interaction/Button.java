@@ -3,9 +3,11 @@ package de.lioncraft.lionapi.guimanagement.Interaction;
 import de.lioncraft.lionapi.guimanagement.Items;
 import de.lioncraft.lionapi.guimanagement.functions.emptyFunction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.WeakHashMap;
 
 public class Button {
     public static HashMap<ItemStack, Button> activeButtons;
@@ -26,6 +28,11 @@ public class Button {
     }
     public ItemStack getButton(){
         return button;
+    }
+    public void updateButton(ItemStack newButton){
+        activeButtons.remove(button);
+        button = newButton;
+        activeButtons.put(newButton, this);
     }
 
     protected emptyFunction getFunction() {

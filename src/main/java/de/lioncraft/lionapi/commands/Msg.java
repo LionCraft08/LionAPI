@@ -19,7 +19,6 @@ import java.util.List;
 public class Msg {
     public static void register(Commands cmd){
         cmd.register(Commands.literal("msg")
-                        .requires(commandSourceStack -> (commandSourceStack.getSender() instanceof Player))
                         .executes(cc->{
                             LionChat.sendMSG(null, Component.text("Mit diesem Command kannst du eine private Nachricht an einen Spieler senden."), cc.getSource().getExecutor());
                             return 0;
@@ -30,13 +29,20 @@ public class Msg {
                                 })
                         .then(Commands.argument("message", StringArgumentType.greedyString())
                                 .executes(cc->{
-                                    Component source = cc.getSource().getExecutor().name();
+                                    Component source;
+                                    if (cc.getSource().getExecutor() != null){
+                                        source = cc.getSource().getExecutor().name();
+                                    }else{
+                                        source = cc.getSource().getSender().name();
+                                    }
+
                                     List<Player> list = cc.getArgument("player", PlayerSelectorArgumentResolver.class).resolve(cc.getSource());
                                     if (list.isEmpty()) LionChat.sendMSG(null, MSG.noPlayer.getText(), cc.getSource().getSender());
                                     list.forEach(
                                         member ->{
                                             LionChat.sendMSG(member.name(), Component.text(cc.getArgument("message", String.class)), member.getPlayer());
-                                            LionChat.sendLogMessage(Component.text("[MSG] ").append(source).append(Component.text("->"+cc.getInput().replaceFirst(" ", " >> "))));
+                                            LionChat.sendMSG(Component.text("Du -> ").append(member.name()), Component.text(cc.getArgument("message", String.class)), cc.getSource().getExecutor());
+                                            LionChat.sendLogMessage(Component.text("[MSG] ").append(source).append(Component.text(" -> "+cc.getInput().replaceFirst("msg ", "").replaceFirst(" ", " >> "))));
                                         });
                                     return 0;
                                 }))).build() ,

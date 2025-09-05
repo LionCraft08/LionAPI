@@ -1,26 +1,24 @@
 package de.lioncraft.lionapi.commands;
 
 import de.lioncraft.lionapi.messageHandling.DM;
+import de.lioncraft.lionapi.messageHandling.MSG;
+import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
 import de.lioncraft.lionapi.teams.Team;
 import de.lioncraft.lionapi.teams.TeamClassFunction;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
-public class Teams implements TabExecutor {
+public class Teams implements BasicCommand {
     private static HashMap<String, TeamClassFunction> registeredArgs = new HashMap<>();
 
     /**Will register a new part to the /team Command.<br>
@@ -39,10 +37,9 @@ public class Teams implements TabExecutor {
             return true;
         }
     }
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public void onCommand(@NotNull CommandSender sender, @NotNull String[] args) {
         if(args.length < 1){
-            sender.sendMessage(DM.wrongArgs);
+            LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
         }
         if(args.length == 1){
             switch (args[0]){
@@ -52,7 +49,7 @@ public class Teams implements TabExecutor {
                 case "list":
                     listTeams(sender);
                     break;
-                default:sender.sendMessage(DM.wrongArgs);
+                default:LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
             }
         }
         if(args.length >=2){
@@ -60,18 +57,18 @@ public class Teams implements TabExecutor {
             switch (args[0]){
                 case "register":
                     if(t!=null){
-                        sender.sendMessage(DM.messagePrefix.append(Component.text("This Team already exists!", TextColor.color(255, 128, 0))));
+                        LionChat.sendSystemMessage(Component.text("This Team already exists!", TextColor.color(255, 128, 0)), sender);
                     }else{
                         t = Team.registerNewTeam(args[1]);
-                        sender.sendMessage(DM.messagePrefix.append(Component.text("Created new Team called \""+t.getName()+"\"")));
+                        LionChat.sendSystemMessage(Component.text("Created new Team called \""+t.getName()+"\""), sender);
                     }
                     break;
                 case "delete":
                     if(t==null){
-                        sender.sendMessage(DM.messagePrefix.append(Component.text("This Team does not exists!", TextColor.color(255, 128, 0))));
+                        LionChat.sendSystemMessage(Component.text("This Team does not exists!", TextColor.color(255, 128, 0)), sender);
                     }else{
                         Team.unregisterTeam(t);
-                        sender.sendMessage(DM.messagePrefix.append(Component.text("Removed Team " + args[1])));
+                        LionChat.sendSystemMessage(Component.text("Removed Team " + args[1]), sender);
                     }
                     break;
                 case "shuffle":
@@ -82,7 +79,7 @@ public class Teams implements TabExecutor {
                     break;
                 case "get":
                     if(t==null){
-                        sender.sendMessage(DM.messagePrefix.append(Component.text("This Team does not exists!", TextColor.color(255, 128, 0))));
+                        LionChat.sendSystemMessage(Component.text("This Team does not exists!", TextColor.color(255, 128, 0)), sender);
                     }else{
                         if(args.length >= 3){
                             switch (args[2]){
@@ -90,22 +87,22 @@ public class Teams implements TabExecutor {
                                     if(args.length >= 4){
                                         Team ct = Team.getTeam(Bukkit.getOfflinePlayer(args[3]));
                                         if(ct != null){
-                                            sender.sendMessage(DM.error(Component.text("Dieser Spieler ist schon in Team " + ct.getName())));
+                                            LionChat.sendSystemMessage(Component.text("Dieser Spieler ist schon in Team " + ct.getName()), sender);
                                         }else{
-                                            sender.sendMessage(t.addPlayer(Bukkit.getOfflinePlayer(args[3])));
+                                            LionChat.sendSystemMessage(t.addPlayer(Bukkit.getOfflinePlayer(args[3])), sender);
                                         }
-                                    }else sender.sendMessage(DM.wrongArgs);
+                                    }else LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
                                     break;
                                 case "remove":
                                     if(args.length >= 4){
                                         OfflinePlayer p = Bukkit.getOfflinePlayer(args[3]);
                                         if (t.getPlayers().contains(p)) {
-                                            sender.sendMessage(t.removePlayer(p));
-                                        }else sender.sendMessage(DM.messagePrefix.append(Component.text("The given Player is not in this Team.")));
-                                    }else sender.sendMessage(DM.wrongArgs);
+                                            LionChat.sendSystemMessage(t.removePlayer(p), sender);
+                                        }else LionChat.sendSystemMessage(Component.text("The given Player is not in this Team."), sender);
+                                    }else LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
                                     break;
                                 case "clear":
-                                    sender.sendMessage(DM.messagePrefix.append(t.clear()));
+                                    LionChat.sendSystemMessage(t.clear(), sender);
                                     break;
                                 case "fill":
                                     int amount = 0;
@@ -116,18 +113,18 @@ public class Teams implements TabExecutor {
                                         }
                                     }
                                     if (amount>1){
-                                        sender.sendMessage(DM.info("Es wurden "+amount+" Spieler zu Team "+t.getName()+" hinzugefügt." ));
-                                    } else if (amount==1) sender.sendMessage(DM.info("Es wurde "+amount+" Spieler zu Team "+t.getName()+" hinzugefügt." ));
-                                    else sender.sendMessage(DM.info("Alle Spieler sind bereits in Teams"));
+                                        LionChat.sendSystemMessage("Es wurden "+amount+" Spieler zu Team "+t.getName()+" hinzugefügt.", sender);
+                                    } else if (amount==1) LionChat.sendSystemMessage("Es wurde "+amount+" Spieler zu Team "+t.getName()+" hinzugefügt." , sender);
+                                    else LionChat.sendError("Alle Spieler sind bereits in Teams", sender);
                                     break;
                                 case "changename":
                                     if (args.length >= 4){
                                         if (Team.getTeam(args[3])==null){
                                             String s = t.getName();
                                             t.setName(args[3]);
-                                            sender.sendMessage(DM.info("Das Team "+s+" wurde umbenannt in "+t.getName()));
-                                        }else sender.sendMessage(DM.fatalError("Dieses Team existiert bereits!"));
-                                    }else sender.sendMessage(DM.wrongArgs);
+                                            LionChat.sendSystemMessage("Das Team "+s+" wurde umbenannt in "+t.getName(), sender);
+                                        }else LionChat.sendError("Dieses Team existiert bereits!", sender);
+                                    }else LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
                                     break;
                                 default:
                                     List<String> list = new ArrayList<>(List.of(args));
@@ -144,21 +141,21 @@ public class Teams implements TabExecutor {
                                             registeredArgs.get(s).onRun(sender, list.toArray(new String[0]), t);
                                             b = false;
                                         }
-                                    if (b) sender.sendMessage(DM.wrongArgs);
+                                    if (b) LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
+                                    
                                     break;
                             }
-                        }else sender.sendMessage(DM.messagePrefix.append(Component.text("This Team does not exists!", TextColor.color(255, 128, 0))));
+                        }else LionChat.sendSystemMessage(Component.text("This Team does not exists!", TextColor.color(255, 128, 0)), sender);
                     }
                     break;
-                default: sender.sendMessage(DM.wrongArgs);
+                default: LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
             }
         }
-        return true;
     }
 
     private void listTeams(CommandSender sender) {
         if(!Team.getTeams().isEmpty()){
-            sender.sendMessage(DM.info("Teams: " + Team.getTeams().size()));
+            LionChat.sendSystemMessage("Teams: " + Team.getTeams().size(), sender);
             for(Team t2 : Team.getTeams()){
                 Component c = Component.text(" > " + t2.getName());
                 Component h = Component.text("");
@@ -168,7 +165,7 @@ public class Teams implements TabExecutor {
                 c = c.hoverEvent(h.asHoverEvent());
                 sender.sendMessage(c);
             }
-        }else sender.sendMessage(DM.error("No Teams existing"));
+        }else LionChat.sendError("No Teams existing", sender);
     }
 
     private void shuffleTeams(CommandSender sender){
@@ -188,9 +185,9 @@ public class Teams implements TabExecutor {
                     lowest.addPlayer(p);
                     players.remove(p);
                 }
-                sender.sendMessage(DM.info("Alle Spieler wurden zufällig verteilt"));
-            }else sender.sendMessage(DM.error("Es werden hierfür mindestens 2 Teams benötigt"));
-        }else sender.sendMessage(DM.error("Alle Spieler sind bereits in Teams"));
+                LionChat.sendSystemMessage("Alle Spieler wurden zufällig verteilt", sender);
+            }else LionChat.sendError("Es werden hierfür mindestens 2 Teams benötigt", sender);
+        }else LionChat.sendError("Alle Spieler sind bereits in Teams", sender);
     }
 
     /**\team [register|delete|get|shuffle|list] {teamname} [add|remove|clear]
@@ -198,17 +195,14 @@ public class Teams implements TabExecutor {
      * @param sender Source of the command.  For players tab-completing a
      *     command inside a command block, this will be the player, not
      *     the command block.
-     * @param command Command which was executed
-     * @param label Alias of the command which was used
      * @param args The arguments passed to the command, including final
      *     partial argument to be completed
      * @return the List
      */
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull String[] args) {
         List<String> list = new ArrayList<>();
         switch (args.length){
-            case 1: return List.of("register", "delete", "get", "shuffle","list");
+            case 0, 1: return List.of("register", "delete", "get", "shuffle","list");
             case 2:
                 for(Team t : Team.getTeams()){
                     list.add(t.getName());
@@ -269,4 +263,18 @@ public class Teams implements TabExecutor {
         }
         return list;
     }
+    @Override
+    public void execute(CommandSourceStack commandSourceStack, String[] strings) {
+        onCommand(commandSourceStack.getSender(), strings );
+    }
+
+    @Override
+    public Collection<String> suggest(CommandSourceStack commandSourceStack, String[] args) {
+        return onTabComplete(commandSourceStack.getSender(), args);
+    }
+
+    @Override
+    public boolean canUse(CommandSender sender) {
+        return sender.isOp();
+}
 }

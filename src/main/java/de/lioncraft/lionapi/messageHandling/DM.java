@@ -94,19 +94,19 @@ public abstract class DM {
     }
 
     private static Component getMessagePrefix(){
-        return Component.text("[", TextColor.color(255, 255, 255))
+        return Component.text("", TextColor.color(255, 255, 255))
                 .append(Component.text("L", TextColor.color(255, 0, 255)))
                 .append(Component.text("i", TextColor.color(220, 0, 255)))
-                .append(Component.text("o", TextColor.color(190, 0, 255)))
-                .append(Component.text("n", TextColor.color(160, 0, 255)))
-                .append(Component.text("S", TextColor.color(130, 0, 255)))
-                .append(Component.text("y", TextColor.color(100, 0, 255)))
-                .append(Component.text("s", TextColor.color(70, 0, 255)))
-                .append(Component.text("t", TextColor.color(40, 0, 255)))
-                .append(Component.text("e", TextColor.color(10, 0, 255)))
-                .append(Component.text("m", TextColor.color(0, 20, 255)))
-                .append(Component.text("s", TextColor.color(0, 50, 255)))
-                .append(Component.text("] ", TextColor.color(255, 255, 255)));
+                .append(Component.text("o", TextColor.color(200, 0, 255)))
+                .append(Component.text("n", TextColor.color(180, 0, 255)))
+                .append(Component.text("S", TextColor.color(160, 0, 255)))
+                .append(Component.text("y", TextColor.color(140, 0, 255)))
+                .append(Component.text("s", TextColor.color(120, 0, 255)))
+                .append(Component.text("t", TextColor.color(100, 30, 255)))
+                .append(Component.text("e", TextColor.color(90, 50, 255)))
+                .append(Component.text("m", TextColor.color(80, 70, 255)))
+                .append(Component.text("s", TextColor.color(70, 90, 255)))
+                .append(Component.text(" >> ", TextColor.color(255, 255, 255)));
     }
 
 }

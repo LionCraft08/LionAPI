@@ -156,10 +156,10 @@ public abstract class TimerLike {
         isStarting = true;
         TimerLikeResumeEvent e;
         if(MainTimer.getTimer() == this){
-            e = new MainTimerResumeEvent(this, DM.error("The Timer couldn't be started!"));
+            e = new MainTimerResumeEvent(this, Component.text("The Timer couldn't be started!"));
             Bukkit.getPluginManager().callEvent(e);
         }else{
-            e = new TimerLikeResumeEvent(this, DM.error("The Timer couldn't be started!"));
+            e = new TimerLikeResumeEvent(this, Component.text("The Timer couldn't be started!"));
             Bukkit.getPluginManager().callEvent(e);
         }
         isStarting = false;
@@ -174,9 +174,9 @@ public abstract class TimerLike {
                 colorTick.cancel();
             }
             colorTick = new colorTick(this).runTaskTimer(LionAPI.getPlugin(), 0, 2);
-        } else return DM.error("The Timer is already active!");
+        } else return Component.text("The Timer is already active!");
         Bukkit.getPluginManager().callEvent(new challengeResumeEvent());
-        return DM.info("Timer Resumed");
+        return Component.text("Timer Resumed");
     }
     public List<OfflinePlayer> getViewer() {
         return viewers;

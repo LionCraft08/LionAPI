@@ -4,6 +4,36 @@ settings:
     backpack-size: 54
     display-teamname: false
     allow-teammsg: true
+  challenge-server: true
+
+#Manages connection to other servers.
+server-connection:
+
+  #Velocity connection, manages the connection to a proxy server
+  velocity:
+    #Type, the way to connect to a server. Can be:
+    # blocked: Blocks every connection to other servers.
+    # auto: Detects/Configures connections automatically, if possible
+    # player: Connects via minecraft's built-in Plugin Messaging feature, requires no additional port management
+    #         but won't work when no player is connected (client->velocity->backend connection required)
+    # direct: Uses the own data transfer method of LionSystems. Requires a lot of setup (see below)
+    #       but works without any dependency of player connections
+    type: auto
+    # The IP of the Proxy, required for type: direct, recommended for type: auto
+    ip: 127.0.0.1
+    #Never change this for the Velocity connection
+    server: false
+    # The Port of the Proxy, required for type: direct, recommended for type: auto
+    port: 25689
+
+  # If you need a connection to a different server, that does not depend on the velocity connection, add it here
+  example-server:
+    type: blocked
+    ip: 176.123.234.17
+    port: 69696
+    server: true # Whether this machine acts as a tcp server, doesn't affect the connection, just set it different on both machines
+
+
 
 
 #The Items below won't occur in the Random Item giver Methods
@@ -124,9 +154,8 @@ disabled-entities:
   - ARROW
   - BLOCK_DISPLAY
   - DRAGON_FIREBALL
-  - DROPPED_ITEM
   - EGG
-  - ENDER_CRYSTAL
+  - END_CRYSTAL
   - ENDER_PEARL
   - ENDER_SIGNAL
   - EVOKER_FANGS
@@ -139,6 +168,7 @@ disabled-entities:
   - GLOW_ITEM_FRAME
   - ILLUSIONER
   - INTERACTION
+  - ITEM
   - ITEM_DISPLAY
   - ITEM_FRAME
   - LEASH_HITCH

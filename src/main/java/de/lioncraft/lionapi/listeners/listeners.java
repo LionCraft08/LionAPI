@@ -4,6 +4,7 @@ import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.challenge.ChallengeController;
 import de.lioncraft.lionapi.data.ChallengeSettings;
 import de.lioncraft.lionapi.events.saveDataEvent;
+import de.lioncraft.lionapi.guimanagement.lionclient.DisplayManager;
 import de.lioncraft.lionapi.messageHandling.DM;
 import de.lioncraft.lionapi.messageHandling.defaultMessages;
 import de.lioncraft.lionapi.teams.Team;
@@ -43,5 +44,4 @@ public class listeners implements Listener {
         e.getCommands().remove("hiddenclickapi");
         e.getCommands().remove("lionapi:hiddenclickapi");
     }
-
 }

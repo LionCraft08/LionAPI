@@ -18,6 +18,7 @@ public class ScrollableInterface {
     private HashMap<Integer, ItemStack> content;
     boolean scrollPageWise;
     private int currentPage;
+    private ItemStack backButton = null;
 
     public ScrollableInterface(List<ItemStack> content, @Nullable Component title, Player owner, boolean scrollPageWise, @Nullable ItemStack header) {
         int i = 0;
@@ -30,7 +31,7 @@ public class ScrollableInterface {
         this.scrollPageWise = scrollPageWise;
         inventory = Bukkit.createInventory(owner, 54, Objects.requireNonNullElseGet(title, () -> Component.text("List")));
         inventory.setContents(Items.blockButtons);
-        inventory.setItem(36, Items.closeButton);
+        inventory.setItem(27, Items.closeButton);
         inventory.setItem(8, Items.scrollUpButton);
         inventory.setItem(53, Items.scrollDownButton);
         if(header != null){
@@ -39,6 +40,16 @@ public class ScrollableInterface {
         activeInterfaces.put(inventory, this);
         updateGUI(0);
     }
+
+    public ItemStack getBackButton() {
+        return backButton;
+    }
+
+    public void setBackButton(ItemStack backButton) {
+        this.backButton = backButton;
+        inventory.setItem(45, backButton);
+    }
+
     private void updateGUI(int page){
         if(page == 0){
             inventory.setItem(8, Items.blockButton);

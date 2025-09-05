@@ -9,6 +9,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
@@ -48,6 +49,7 @@ public abstract class ChallengeController implements ConfigurationSerializable {
     protected abstract void onResume();
     protected abstract void onLoad();
     protected abstract void onJoin(Player p);
+    protected abstract Inventory getConfigInventory(Player user);
 
     public void sendFinish(ChallengeEndData data){
         isActive = false;

@@ -40,6 +40,7 @@ public final class Items {
         blockButton = Items.get(Component.text(""), Material.BLACK_STAINED_GLASS_PANE, "");
         backButton =  Items.get(Component.text("Back", TextColor.color(255, 255, 0)), Material.ARROW, TextColor.color(255, 255, 0), "Click to get back");
         forwardButton =  Items.get(Component.text("Next", TextColor.color(255, 255, 0)), Material.SPECTRAL_ARROW, TextColor.color(255, 255, 0), "Click to get to ", "the next page.");
+
         blockButtons = new ItemStack[54];
         Arrays.fill(blockButtons, blockButton);
         plusButton = PlusButton();

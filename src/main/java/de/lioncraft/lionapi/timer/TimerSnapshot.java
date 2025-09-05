@@ -62,14 +62,14 @@ public class TimerSnapshot implements ConfigurationSerializable {
     @Override
     public @NotNull Map<String, Object> serialize() {
         Map<String, Object> map = new HashMap<>();
-        map.put("seconds", Optional.of(seconds));
-        map.put("minutes", Optional.of(minutes));
-        map.put("hours", Optional.of(hours));
-        map.put("days", Optional.of(days));
-        map.put("secondsatstart", Optional.of(secondsatstart));
-        map.put("color", Optional.of(color));
-        map.put("up", Optional.of(upwards));
-        map.put("has-ever-been-active", Optional.of(hasEverBeenActive));
+        map.put("seconds", seconds);
+        map.put("minutes", minutes);
+        map.put("hours", hours);
+        map.put("days", days);
+        map.put("secondsatstart", secondsatstart);
+        map.put("color", color);
+        map.put("up", upwards);
+        map.put("has-ever-been-active", hasEverBeenActive);
         return map;
     }
     public TimerSnapshot(Map<String, Object> map){

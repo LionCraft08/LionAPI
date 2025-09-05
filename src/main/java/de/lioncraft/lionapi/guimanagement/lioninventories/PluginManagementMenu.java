@@ -18,16 +18,20 @@ import java.util.List;
 
 public class PluginManagementMenu {
     private static HashMap<String, PluginSettingsMenu> pluginInventories;
+
     public static void openMenu(String plugin, HumanEntity user){
         if (pluginInventories.containsKey(plugin)){
             user.openInventory(pluginInventories.get(plugin).getInv());
         }else LionChat.sendMessageOnChannel("system", Component.text("This Plugin seems to be not loaded correctly. Check the console for more Details"), user);
     }
+
     public static void registerNewPluginSettingsPage(String name, PluginSettingsMenu menu){
         if (pluginInventories.containsKey(name)) LionChat.sendLogMessage("A Plugin Settings Page called "+name+" was registered twice, so the first one is being overwritten.");
         pluginInventories.put(name, menu);
     }
+
     private static final Component title = Component.text("LionPlugin Management");
+
     public static void open(HumanEntity user){
         List<ItemStack> list = new ArrayList<>();
         pluginInventories.forEach((s, inventory) -> {

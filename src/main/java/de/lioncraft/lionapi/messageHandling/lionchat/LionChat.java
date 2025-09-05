@@ -48,6 +48,9 @@ public final class LionChat {
     public static void sendSystemMessage(String message, Audience target){
         sendMessageOnChannel("system", Component.text(message), target);
     }
+    public static void sendSystemMessage(Component message, Audience target){
+        sendMessageOnChannel("system", message, target);
+    }
     public static void sendError(String message, Audience target){
         sendMessageOnChannel("system", Component.text(message, TextColor.color(255, 128, 0)), target);
     }
@@ -76,7 +79,13 @@ public final class LionChat {
         if (target instanceof Player p) {
             if (!c.canReceive(p)) return;
         }
-        target.sendMessage(getFullPrefix(c.getPrefix(), c.getDefaultColor()).append(message.colorIfAbsent(c.getDefaultColor())));
+        //target.sendMessage(getFullPrefix(c.getPrefix(), c.getDefaultColor()).append(message.colorIfAbsent(c.getDefaultColor())));
+        target.sendMessage(
+                c.getPrefix().appendSpace()
+                        .append(Component.text(">>", c.getDefaultColor())).appendSpace()
+                        .append(message.colorIfAbsent(c.getDefaultColor()))
+
+        );
     }
     public static void sendMessageOnChannel(String channel, Component message, Audience target){
         if (Objects.equals(channel, "msg")) sendMSG(null, message, target);
@@ -101,8 +110,7 @@ public final class LionChat {
     }
 
     public static void registerChannel(String channel, ChannelConfiguration config){
-        channels.put(channel, config);
-
+        channels.put(channel, config.addKey(channel));
     }
 
     public static HashMap<String, ChannelConfiguration> getChannels(){

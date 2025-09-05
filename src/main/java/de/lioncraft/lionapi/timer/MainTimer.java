@@ -41,6 +41,7 @@ public abstract class MainTimer{
         }
         return timer;
     }
+
     public static void changeDirection(){
         boolean b = !(timer instanceof Stopwatch);
         if (timer.isHasEverBeenActive()) {
@@ -63,6 +64,7 @@ public abstract class MainTimer{
         }
         timer.addViewers(Bukkit.getOnlinePlayers());
     }
+
     public static boolean isCountUpwards(){
         return timer instanceof Stopwatch;
     }
@@ -82,6 +84,7 @@ public abstract class MainTimer{
 
         }
     }
+
     public static void reset(){
         getTimer().pause();
         if(isCountUpwards()){

@@ -10,6 +10,7 @@ import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import io.papermc.paper.registry.event.RegistryEvents;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -22,19 +23,17 @@ public class LionBootstrapper implements PluginBootstrap {
             Backpack.register(e.registrar());
             Teammsg.register(e.registrar());
             Msg.register(e.registrar());
-
-
-            final LiteralArgumentBuilder<CommandSourceStack> myCommand = Commands.literal("mybootcommand")
-                    .requires(source -> source.getSender().hasPermission("myplugin.mybootcommand"))
-                    .executes(commandContext -> {
-                        CommandSender sender = commandContext.getSource().getSender();
-                        sender.sendMessage("This command was registered during bootstrap!");
-                        return 1;
-                    });
-
-            // Get the registrar from the event and register your command
-            e.registrar().register(myCommand.build(), "The Main Functionality of LionSystems",
-                    List.of());
+            e.registrar().register(Commands.literal("timer")
+                    .requires(s -> s.getSender().isOp())
+                    .build(),
+                    "Timer & Challenge Management");
+            e.registrar().register(Commands.literal("teams")
+                            .requires(s -> s.getSender().isOp())
+                            .build(),
+                    "Manage the Teams for the Challenge, does not affect the vanilla Teams.");
+            e.registrar().register(Commands.literal("hiddenclickapi")
+                            .build(),
+                    "Internal use only, do NOT use");
         });
     }
 }

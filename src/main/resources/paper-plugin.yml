@@ -3,20 +3,8 @@ version: '${project.version}'
 main: de.lioncraft.lionapi.LionAPI
 api-version: '1.21'
 bootstrapper: de.lioncraft.lionapi.LionBootstrapper
-commands:
-  timer:
-    description: A command to manage the Main-Timer
-    permission: OP
-  hiddenclickapi:
-    usage: API Internal Usage, Not intended to be used manually.
-    description: API Internal Usage, Not intended to be used manually.
-  teams:
-    usage: /team [get|register|delete] <teamname> <args>
-    description: Manage the Teams for the Challenge, does not affect the vanilla Teams.
-    permission: OP
-  debug:
-    usage: Internal
-    permission: OP
+has-open-classloader: true
+load: STARTUP
 permissions:
   lionapi.timer.main.configure:
     default: op
@@ -26,5 +14,9 @@ permissions:
   lionapi.timer.main.see:
     default: true
     description: Sets if a Player can see the Main Timer.
-softdepend:
-  - LionUtils
+dependencies:
+  server:
+    LionUtils:
+      required: false
+      join-classpath: true
+      load: AFTER

@@ -2,6 +2,7 @@ package de.lioncraft.lionapi.velocity.connections;
 
 import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.velocity.data.TransferrableObject;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import java.io.*;
@@ -9,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 /**
@@ -66,6 +68,7 @@ public class DirectConnection extends AbstractConnection{
 
                 setupStreams();
                 readMessages(); // Start a new thread for reading incoming messages
+                sendMessage("setupconnection:"+Bukkit.getServer().getIp()+":"+Bukkit.getServer().getPort());
 
             } catch (IOException e) {
                 plugin.getLogger().log(Level.SEVERE, "Server failed to start or accept connection.", e);
@@ -85,9 +88,13 @@ public class DirectConnection extends AbstractConnection{
 
                 setupStreams();
                 readMessages(); // Start a new thread for reading incoming messages
+                Bukkit.getAsyncScheduler().runDelayed(LionAPI.getPlugin(), scheduledTask -> {
+                    sendMessage("setupconnection:"+Bukkit.getServer().getIp()+":"+Bukkit.getServer().getPort());
+                    plugin.getLogger().info("Sent connection setup");
+                }, 1, TimeUnit.SECONDS);
 
             } catch (IOException e) {
-                plugin.getLogger().log(Level.SEVERE, "Client failed to connect to server.", e);
+                plugin.getLogger().log(Level.SEVERE, "Client failed to connect to server.");
             }
         });
     }
@@ -106,14 +113,16 @@ public class DirectConnection extends AbstractConnection{
      */
     private void readMessages() {
         executorService.submit(() -> {
+            plugin.getLogger().info("Started listening for messages");
             String receivedLine;
             try {
                 while (isRunning && (receivedLine = in.readLine()) != null) {
                     // Call the callback method on the main plugin class
+                    plugin.getLogger().info("Received message");
                     onMessageReceive(receivedLine);
                 }
             } catch (IOException e) {
-                if (isRunning) { // Only log if not a planned shutdown
+                if (isRunning && !Bukkit.getServer().isStopping()) { // Only log if not a planned shutdown
                     plugin.getLogger().log(Level.WARNING, "Connection lost with peer.", e);
                 }
             } finally {

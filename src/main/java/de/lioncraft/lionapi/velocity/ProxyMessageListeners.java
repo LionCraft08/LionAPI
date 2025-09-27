@@ -31,7 +31,7 @@ public class ProxyMessageListeners implements PluginMessageListener {
             String message = new String(bytes);
             AbstractConnection a = CommunicationManager.getConnection(message.substring(0, message.indexOf(":")));
             if (a instanceof ViaVelocityConnection){
-                a.sendMessage(message.substring(message.indexOf(":"+1)));
+                //a.sendMessage(message.substring(message.indexOf(":"+1)));
             }
             else if (a != null){
                 LionChat.sendDebugMessage("Received invalid Message for "+a.getName()+": This is not a Velocity Connection");

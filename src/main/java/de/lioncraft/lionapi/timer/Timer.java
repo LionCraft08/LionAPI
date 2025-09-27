@@ -53,7 +53,6 @@ public class Timer extends TimerLike{
         Bukkit.getPluginManager().callEvent(new timerTickEvent(this));
     }
     private void finish(){
-        super.pause();
         timerFinishEvent e = new timerFinishEvent(this);
         Bukkit.getPluginManager().callEvent(e);
         TimerFinishEvent event;
@@ -61,6 +60,8 @@ public class Timer extends TimerLike{
             event = new MainTimerFinishEvent(this, DM.info("The Timer has expired!"));
         }else event = new TimerFinishEvent(this, DM.info("The Timer has expired!"));
         Bukkit.getPluginManager().callEvent(event);
+
+        super.pause();
         if(event.sendFinishMessageToPlayers()){
             for(Player p : Bukkit.getOnlinePlayers()){
                 if(p.isOp()){

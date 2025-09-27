@@ -13,6 +13,7 @@ public abstract class AbstractConnection {
     private String name;
     private boolean isEnabled = false;
     protected HashMap<String, IncomingMessageListener> listeners = new HashMap<>();
+    protected List<IncomingMessageListener> permanentListeners = new ArrayList<>();
 
     public AbstractConnection(String name) {
         this.name = name;
@@ -32,6 +33,10 @@ public abstract class AbstractConnection {
 
     void onMessageReceive(String message){
         TransferrableObject to = TransferrableObject.getFromJson(message);
+        permanentListeners.forEach(incomingMessageListener -> {
+            incomingMessageListener.onReceive(to, this);
+        });
+
         listeners.forEach((s, incomingMessageListener) -> {
             if (s == null || (s.equals(to.getObjectType()))){
                 incomingMessageListener.onReceive(to, this);
@@ -54,7 +59,8 @@ public abstract class AbstractConnection {
      */
     public abstract boolean sendMessage(TransferrableObject message);
     public void registerMessageListener(@Nullable String objectType, IncomingMessageListener c){
-        listeners.put(objectType, c);
+        if (objectType == null) permanentListeners.add(c);
+        else listeners.put(objectType, c);
     }
     protected abstract void onEnable();
     protected abstract void onDisable();

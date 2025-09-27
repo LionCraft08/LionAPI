@@ -13,7 +13,7 @@ public class CommunicationManager {
 
     private static CommunicationSettings settings = new CommunicationSettings(LionAPI.getPlugin().getConfig());
     public static void registerConnection(DirectConnection c){
-        LionChat.sendDebugMessage("Enabling Connection to "+c.getName()+" ("+c.getIp_address()+":"+c.getPort()+")");
+        LionChat.sendDebugMessage("Enabling Connection to "+c.getName()+" ("+c.getHost()+":"+c.getPort()+")");
 
     }
 

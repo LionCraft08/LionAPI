@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
+import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.lang.model.type.PrimitiveType;
@@ -39,7 +40,6 @@ public class BasicSettings implements ConfigurationSerializable {
         for (Setting s : list){
             if (s.getKey().equals(key)) return s.getValue();
         }
-
         return null;
     }
 

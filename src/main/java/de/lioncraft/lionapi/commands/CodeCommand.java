@@ -19,7 +19,9 @@ public class CodeCommand {
                 .then(Commands.argument("ExecutionType", StringArgumentType.word())
                         .suggests((commandContext, suggestionsBuilder) -> {
                             suggestionsBuilder.suggest("execute");
-                            suggestionsBuilder.suggest("load", MessageComponentSerializer.message().serialize(Component.text("Loads Code from txt files")))
+                            suggestionsBuilder.suggest("load", MessageComponentSerializer.message().serialize(Component.text("Loads Code from txt files")));
+                            suggestionsBuilder.suggest("unload");
+                            return suggestionsBuilder.buildFuture();
                         }))
 
                 .build());

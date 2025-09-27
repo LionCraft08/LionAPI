@@ -2,6 +2,7 @@ package de.lioncraft.lionapi.listeners;
 
 import de.lioncraft.lionapi.challenge.ChallengeController;
 import de.lioncraft.lionapi.challenge.ChallengeEndData;
+import de.lioncraft.lionapi.events.timerEvents.MainTimerEvents.MainTimerFinishEvent;
 import de.lioncraft.lionapi.events.timerEvents.MainTimerEvents.MainTimerPauseEvent;
 import de.lioncraft.lionapi.events.timerEvents.MainTimerEvents.MainTimerResumeEvent;
 import de.lioncraft.lionapi.timer.MainTimer;
@@ -52,6 +53,16 @@ public class SimpleChallengeRelatedListeners implements Listener {
             ChallengeController.getInstance().sendResume();
         }else ChallengeController.getInstance().sendStart();
     }
+
+    @EventHandler
+    public void onEnd(MainTimerFinishEvent e){
+        if (!ChallengeController.getInstance().getSettings().isChallenge()) return;
+        if (!ChallengeController.getInstance().isActive()) return;
+        if (ChallengeController.getInstance().getSettings().isChallengeEndsOnTimerExpire()){
+            ChallengeController.getInstance().sendFinish(new ChallengeEndData(true).setArgs(Map.of("type", "timerExpire")));
+        }
+    }
+
     @EventHandler
     public void onJoin(PlayerJoinEvent e){
         if (!ChallengeController.getInstance().getSettings().isChallenge()) return;

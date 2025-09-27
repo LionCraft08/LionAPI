@@ -66,16 +66,19 @@ public abstract class ChallengeController implements ConfigurationSerializable {
 
     public void sendPause(){
         if (!canBePaused()) return;
+        if (!isActive) return;
         isActive = false;
         if (settings.isUseTimer()) MainTimer.getTimer().pause();
         onPause();
     }
     public void sendStart(){
+        if (isActive) return;
         isActive = true;
         if (settings.isUseTimer()) MainTimer.getTimer().start();
         onStart();
     }
     public void sendResume(){
+        if (isActive) return;
         isActive = true;
         if (settings.isUseTimer()) MainTimer.getTimer().start();
         onResume();

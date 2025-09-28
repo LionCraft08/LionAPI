@@ -39,7 +39,9 @@ public class LionButtonListeners implements Listener {
                     e.e().setCurrentItem(c.getChangeIconButton());
                 }
             }
-            case "lionapi_open_timer_menu"-> MainTimer.openUI(e.getPlayer());
+            case "lionapi_open_timer_menu"-> {
+                LionChat.sendMessageOnChannel("timer", Component.text("Dieses Menu ist nur in Beta-Environments verfügbar."));
+            }
             case "lionapi_open_addon_manager" -> AddonManageMenu.open(e.getPlayer());
         }
     }

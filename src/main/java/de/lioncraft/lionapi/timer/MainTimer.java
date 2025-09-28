@@ -53,8 +53,11 @@ public abstract class MainTimer{
             if (b) {
                 timer = new Stopwatch(days, hours, minutes, seconds);
             } else {
-                timer = new Timer(days, hours, minutes, seconds);
+                if (timer.getCurrentSeconds() < 3){
+                    timer = new Timer(0, 1, 0, 0);
+                }else timer = new Timer(days, hours, minutes, seconds);
             }
+
         }else{
             if (b) {
                 timer = new Stopwatch();

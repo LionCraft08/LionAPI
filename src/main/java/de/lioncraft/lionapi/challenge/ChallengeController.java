@@ -92,7 +92,7 @@ public abstract class ChallengeController implements ConfigurationSerializable {
         settings.setChallenge(true);
         settings.setUseTimer(useTimer);
         if (useTimer){
-            if (timerCountsUpwards &&!MainTimer.isCountUpwards()) MainTimer.changeDirection();
+            if (timerCountsUpwards != MainTimer.isCountUpwards()) MainTimer.changeDirection();
         }
     }
     public ChallengeController(Map<String, Object> args){

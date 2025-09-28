@@ -107,6 +107,9 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
             Settings.getSettings(null).setCanMineBlocks(false);
             Settings.getSettings(null).setCanHitEntities(false);
             Settings.getSettings(null).setCanPickupItems(false);
+            Settings.getSettings(null).setCanChat(true);
+            Settings.getSettings(null).setCanMove(true);
+            Settings.getSettings(null).setCanFly(false);
         }
     }
 

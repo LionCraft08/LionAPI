@@ -3,6 +3,7 @@ package de.lioncraft.lionapi.guimanagement.lioninventories;
 import de.lioncraft.lionapi.guimanagement.Interaction.Button;
 import de.lioncraft.lionapi.guimanagement.Interaction.LionButtonFactory;
 import de.lioncraft.lionapi.guimanagement.Items;
+import de.lioncraft.lionapi.guimanagement.MainMenu;
 import de.lioncraft.lionapi.guimanagement.ScrollableInterface;
 import de.lioncraft.lionapi.messageHandling.lionchat.ChannelConfiguration;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
@@ -25,6 +26,7 @@ public class ChannelSelectionMenu {
             items.add(channelConfiguration.getButton());
         });
         ScrollableInterface inv = new ScrollableInterface(items, Component.text("LionChat Channels", TextColor.color(0, 255, 255)), null, true, null);
+        inv.setBackButton(MainMenu.getToMainMenuButton());
         p.openInventory(inv.getInventory());
 
     }

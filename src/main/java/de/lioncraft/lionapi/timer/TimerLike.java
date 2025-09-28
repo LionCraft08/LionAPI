@@ -10,7 +10,9 @@ import de.lioncraft.lionapi.events.timerEvents.TimerLikeResumeEvent;
 import de.lioncraft.lionapi.guimanagement.Interaction.Interactor;
 import de.lioncraft.lionapi.messageHandling.DM;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -115,7 +117,7 @@ public abstract class TimerLike {
             c = c.append(Component.text(ch, map.get(color)));
             color++;
         }
-        return c;
+        return c.style(Style.style().decorate(TextDecoration.BOLD).build());
     }
 
     private String getRawMessage(){

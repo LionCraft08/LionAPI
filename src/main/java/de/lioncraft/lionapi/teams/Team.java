@@ -240,6 +240,15 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer> 
         return Component.text(p.getName() + " wurde aus Team " + getName() + " entfernt");
     }
 
+    public List<Player> getOnlinePlayers(){
+        List<Player> list = new ArrayList<>();
+        players.forEach(offlinePlayer -> {
+            Player p = Bukkit.getPlayer(offlinePlayer.getUniqueId());
+            if (p != null) list.add(p);
+        });
+        return list;
+    }
+
     public Backpack getBackpack() {
         return backpack;
     }

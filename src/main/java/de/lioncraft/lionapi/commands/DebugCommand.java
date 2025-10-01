@@ -34,8 +34,7 @@ public class DebugCommand implements BasicCommand {
                             12
                     );
                     is.lore(List.of(
-                            MiniMessage.miniMessage().deserialize("<red>Hallo Welt"),
-                            MiniMessage.miniMessage().deserialize("<rainbow>kurzer text")
+                            MiniMessage.miniMessage().deserialize("<red>Hallo Welt")
                     ));
                     is.editMeta(itemMeta -> {
                         itemMeta.displayName(MiniMessage.miniMessage().deserialize("<blue>Name dieses Gegenstandes"));

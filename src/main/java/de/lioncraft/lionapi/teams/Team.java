@@ -253,17 +253,13 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer> 
         return backpack;
     }
     public void sendMessage(Component c){
-        for(OfflinePlayer p : players){
-            if(p.isOnline()){
-                p.getPlayer().sendMessage(c);
-            }
+        for(Player p : getOnlinePlayers()){
+            p.sendMessage(c);
         }
     }
     public void playSound(Sound sound){
-        for(OfflinePlayer p : players){
-            if(p.isOnline()){
-                p.getPlayer().playSound(sound);
-            }
+        for(Player p : getOnlinePlayers()){
+            p.playSound(sound);
         }
     }
 

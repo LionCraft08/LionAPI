@@ -3,9 +3,6 @@ package de.lioncraft.lionapi.guimanagement.lionclient;
 import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.guimanagement.guielements.GUIPlayerManager;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
-import de.lioncraft.lionapi.velocity.ProxyMessageListeners;
-import io.papermc.paper.datacomponent.DataComponentType;
-import io.papermc.paper.datacomponent.DataComponentTypes;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.bukkit.Bukkit;
@@ -14,60 +11,85 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.inventory.meta.BannerMeta;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.bukkit.potion.PotionType;
-import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Base64;
 import java.util.Objects;
 
 public class DisplayManager implements PluginMessageListener {
+    private static Runtime.Version version = Runtime.Version.parse("1.0.1");
     //command:name:type:offsx:offsy:attachment:data
     public static void sendDisplayCheck(Player p){
-        p.sendPluginMessage(LionAPI.getPlugin(), channel, "check_existing".getBytes());
+        p.sendPluginMessage(LionAPI.getPlugin(), channel, ("check_existing:"+ version.toString()).getBytes());
+    }
+
+    public static void sendDisplayData(Player p, LionDisplayData ldd){
+        p.sendPluginMessage(LionAPI.getPlugin(), channel, ("update_display:"+ldd.toString()).getBytes());
     }
 
     public static void sendDisplayReset(Player p, String id){
-        p.sendPluginMessage(LionAPI.getPlugin(), channel, ("delete_display:"+id).getBytes());
+        sendDisplayData(p, new LionDisplayData(id, "delete"));
     }
 
-    public static void sendDisplayText(Player p, String id, Integer offsetX, Integer offsetY, DisplayAttachment attachment, Component text, int maxWidth){
-        String s = "update_display:"+id+":text:"+offsetX+":"+offsetY+":"+attachment.toString()+":"+maxWidth+":"+
-                GsonComponentSerializer.gson().serialize(text);
-        p.sendPluginMessage(LionAPI.getPlugin(), channel, s.getBytes());
+    public static void sendDisplayText(Player p, String id, Integer offsetX, Integer offsetY, @Nullable DisplayAttachment attachment, Component text, Integer maxWidth){
+        LionDisplayData ld = new LionDisplayData(id, "text", offsetX, offsetY, attachment);
+        ld.setData("text", GsonComponentSerializer.gson().serialize(text));
+        ld.setData("maxWidth", String.valueOf(maxWidth));
+        sendDisplayData(p, ld);
     }
-    public static void sendDisplayText(Player p, DisplayAttachment attachment, String id, Component text){
-        sendDisplayText(p, id, null, null, attachment, text, 200);
+    public static void sendDisplayText(Player p, @Nullable DisplayAttachment attachment, String id, Component text){
+        sendDisplayText(p, id, null, null, attachment, text, null);
     }
-    public static void sendDisplaySquare(Player p, String id, Integer offsetX, Integer offsetY, DisplayAttachment attachment, int color, int width, int height){
-        String s = "update_display:"+id+":square:"+offsetX+":"+offsetY+":"+attachment.toString()+":"+color+":"+width+":"+height;
-        p.sendPluginMessage(LionAPI.getPlugin(), channel, s.getBytes());
+
+    /**
+     * @deprecated Use {@link DisplayManager#sendDisplayRectangle(Player, String, Integer, Integer, DisplayAttachment, int, int, int)} instead
+     */
+    @Deprecated
+    public static void sendDisplaySquare(Player p, String id, Integer offsetX, Integer offsetY, @Nullable DisplayAttachment attachment, int color, int width, int height){
+        sendDisplayRectangle(p, id, offsetX, offsetY, attachment, color, width, height);
     }
-    public static void sendDisplayCompass(Player p, String id, Integer offsetX, Integer offsetY, DisplayAttachment attachment, int posX, Integer posY, int posZ){
-        String s = "update_display:"+id+":compass:"+offsetX+":"+offsetY+":"+attachment.toString()+":"+posX+":"+posY+":"+posZ;
-        p.sendPluginMessage(LionAPI.getPlugin(), channel, s.getBytes());
+
+    public static void sendDisplayRectangle(Player p, String id, Integer offsetX, Integer offsetY, @Nullable DisplayAttachment attachment, int color, int width, int height){
+        LionDisplayData ld = new LionDisplayData(id, "square", offsetX, offsetY, attachment);
+        ld.setData("color", String.valueOf(color));
+        ld.setData("width", String.valueOf(width));
+        ld.setData("height", String.valueOf(height));
+        sendDisplayData(p, ld);
+    }
+    public static void sendDisplayCompass(Player p, String id, Integer offsetX, Integer offsetY, @Nullable DisplayAttachment attachment, int posX, Integer posY, int posZ){
+        LionDisplayData ld = new LionDisplayData(id, "compass", offsetX, offsetY, attachment);
+        ld.setData("x", String.valueOf(posX));
+        ld.setData("y", String.valueOf(posY));
+        ld.setData("z", String.valueOf(posZ));
+        sendDisplayData(p, ld);
     }
     public static void sendDisplayCompass(Player p, String id, int posX, Integer posY, int posZ){
-        sendDisplayCompass(p, id, null, null, DisplayAttachment.TOP_LEFT, posX, posY, posZ);
+        LionDisplayData ld = new LionDisplayData(id, "square");
+        ld.setData("x", String.valueOf(posX));
+        ld.setData("y", String.valueOf(posY));
+        ld.setData("z", String.valueOf(posZ));
+        sendDisplayData(p, ld);
     }
-    public static void sendDisplayFrame(Player p, String id, Integer offsetX, Integer offsetY, DisplayAttachment attachment, int color, int width, int height){
-        String s = "update_display:"+id+":frame:"+offsetX+":"+offsetY+":"+attachment.toString()+":"+color+":"+width+":"+height;
-        p.sendPluginMessage(LionAPI.getPlugin(), channel, s.getBytes());
+    public static void sendDisplayFrame(Player p, String id, Integer offsetX, Integer offsetY, @Nullable DisplayAttachment attachment, int color, int width, int height){
+        LionDisplayData ld = new LionDisplayData(id, "frame", offsetX, offsetY, attachment);
+        ld.setData("color", String.valueOf(color));
+        ld.setData("width", String.valueOf(width));
+        ld.setData("height", String.valueOf(height));
+        sendDisplayData(p, ld);
     }
-    public static void sendDisplayItem(Player p, String id, Integer offsetX, Integer offsetY, DisplayAttachment attachment, ItemStack is){
+    public static void sendDisplayItem(Player p, String id, Integer offsetX, Integer offsetY, @Nullable DisplayAttachment attachment, ItemStack is){
         String serializedItemStack = is.getType()+":"+
                 is.getAmount()+":"+
                 (is.getItemMeta().hasEnchantmentGlintOverride()||is.getItemMeta().hasEnchants())+":"+
                 getCustomData(is)+":"+getCustomModelString(is);
-        String s = "update_display:"+id+":item:"+offsetX+":"+offsetY+":"+attachment.toString()+":"+serializedItemStack;
-        p.sendPluginMessage(LionAPI.getPlugin(), channel, s.getBytes());
+        LionDisplayData ld = new LionDisplayData(id, "item", offsetX, offsetY, attachment);
+        ld.setData("item", serializedItemStack);
+        sendDisplayData(p, ld);
     }
     private static String getCustomModelString(ItemStack is){
         if (is.getItemMeta().hasCustomModelDataComponent()) {
@@ -100,7 +122,7 @@ public class DisplayManager implements PluginMessageListener {
         }
         return null;
     }
-    public static void sendMessage(Player p, String message){
+    private static void sendMessage(Player p, String message){
         p.sendPluginMessage(LionAPI.getPlugin(), channel, message.getBytes());
     }
     public static void sendCompassData(Player p, double xz, double y){
@@ -116,10 +138,18 @@ public class DisplayManager implements PluginMessageListener {
                 switch (cmd){
                     case "check_existing"->{
                         if(getStringAtIndex(1, data).equalsIgnoreCase("true")){
-                            LionChat.sendSystemMessage(Component.text("Dein Client wurde erfolgreich registriert."), player);
-                            GUIPlayerManager.setRenderWay(player, GUIPlayerManager.ClientRenderWay.LIONDISPLAYS_MOD);
+                            LionChat.sendSystemMessage(Component.text("Your Client is outdated! Please update the LionDisplays Mod to use it's Features"), player);
+                        }else{
+                            Runtime.Version rv = Runtime.Version.parse(getStringAtIndex(1, data));
+                            int equality = rv.compareTo(version);
+                            if (equality == 0){
+                                LionChat.sendSystemMessage(Component.text("Your Client was registered successfully"), player);
+                                GUIPlayerManager.setRenderWay(player, GUIPlayerManager.ClientRenderWay.LIONDISPLAYS_MOD);
+                            }else if(equality < 0)
+                                LionChat.sendSystemMessage(Component.text("Your Client is outdated! Please update the LionDisplays Mod to use it's Features"), player);
+                            else
+                                LionChat.sendSystemMessage(Component.text("This Server is outdated! Please use Version "+version+" of the LionDisplays Mod to use it's features on this Server"), player);
                         }
-
                     }
                     case "send_version" -> {
 

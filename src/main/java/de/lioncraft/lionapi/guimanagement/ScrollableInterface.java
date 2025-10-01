@@ -8,9 +8,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class ScrollableInterface {
     public static HashMap<Inventory, ScrollableInterface> activeInterfaces;
@@ -21,13 +19,11 @@ public class ScrollableInterface {
     private ItemStack backButton = null;
 
     public ScrollableInterface(List<ItemStack> content, @Nullable Component title, Player owner, boolean scrollPageWise, @Nullable ItemStack header) {
-        int i = 0;
         this.content = new HashMap<>();
         currentPage = 0;
-        for(ItemStack is : content){
-            i = getNextSlot(i);
-            this.content.put(i, is);
-        }
+
+        createList(content);
+
         this.scrollPageWise = scrollPageWise;
         inventory = Bukkit.createInventory(owner, 54, Objects.requireNonNullElseGet(title, () -> Component.text("List")));
         inventory.setContents(Items.blockButtons);
@@ -39,6 +35,42 @@ public class ScrollableInterface {
         }
         activeInterfaces.put(inventory, this);
         updateGUI(0);
+    }
+
+    private void createList(List<ItemStack> content){
+        this.content.clear();
+        int i = 0;
+        for(ItemStack is : content){
+            i = getNextSlot(i);
+            this.content.put(i, is);
+        }
+    }
+
+    public void addContent(int place, ItemStack item){
+        ArrayList<ItemStack> content = new ArrayList<>(getContent().values());
+        content.add(place, item);
+        createList(content);
+        updateGUI(currentPage);
+    }
+
+    public void addContent(ItemStack item){
+        ArrayList<ItemStack> content = new ArrayList<>(getContent().values());
+        content.add(item);
+        createList(content);
+        updateGUI(currentPage);
+    }
+
+    public void removeContent(int place){
+        ArrayList<ItemStack> content = new ArrayList<>(getContent().values());
+        content.remove(place);
+        createList(content);
+        updateGUI(currentPage);
+    }
+    public void removeContent(ItemStack item){
+        ArrayList<ItemStack> content = new ArrayList<>(getContent().values());
+        content.remove(item);
+        createList(content);
+        updateGUI(currentPage);
     }
 
     public ItemStack getBackButton() {

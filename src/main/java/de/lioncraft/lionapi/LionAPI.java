@@ -45,6 +45,8 @@ public final class LionAPI extends JavaPlugin {
         plugin = this;
         saveDefaultConfig();
 
+        saveResource("timer-color-presets.yml", false);
+
         ConfigurationSerialization.registerClass(TimerSnapshot.class);
         ConfigurationSerialization.registerClass(Backpack.class);
         ConfigurationSerialization.registerClass(Team.class);
@@ -78,6 +80,8 @@ public final class LionAPI extends JavaPlugin {
                 Component.text("LOG", TextColor.color(100, 100, 100)),
                 false));
 
+
+        TimerLike.loadTimerData();
         Settings.init();
         defaultMessages.setValues();
         Items.setItems();

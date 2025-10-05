@@ -49,28 +49,51 @@ public class ScrollableInterface {
     public void addContent(int place, ItemStack item){
         ArrayList<ItemStack> content = new ArrayList<>(getContent().values());
         content.add(place, item);
-        createList(content);
-        updateGUI(currentPage);
+        setContent(content);
     }
 
     public void addContent(ItemStack item){
         ArrayList<ItemStack> content = new ArrayList<>(getContent().values());
         content.add(item);
-        createList(content);
-        updateGUI(currentPage);
+        setContent(content);
     }
 
     public void removeContent(int place){
         ArrayList<ItemStack> content = new ArrayList<>(getContent().values());
         content.remove(place);
-        createList(content);
-        updateGUI(currentPage);
+        setContent(content);
     }
     public void removeContent(ItemStack item){
         ArrayList<ItemStack> content = new ArrayList<>(getContent().values());
         content.remove(item);
-        createList(content);
+        setContent(content);
+    }
+
+    public void setContent(List<ItemStack> list){
+        createList(list);
+        validateCurrentPage();
         updateGUI(currentPage);
+    }
+
+    private void validateCurrentPage(){
+        int storage = currentPage;
+        if (scrollPageWise){
+            while (!content.containsKey(getNextSlot(currentPage*54))){
+                if (currentPage==0) break;
+                currentPage-=1;
+            }
+            if (currentPage != storage){
+                updateGUI(currentPage);
+            }
+        }else{
+            while (!content.containsKey(getNextSlot(currentPage*9))){
+                if (currentPage==0) break;
+                currentPage-=1;
+            }
+            if (currentPage != storage){
+                updateGUI(currentPage);
+            }
+        }
     }
 
     public ItemStack getBackButton() {
@@ -102,6 +125,7 @@ public class ScrollableInterface {
                     inventory.setItem(slot, is);
                 }
             }
+            if (b && !content.containsKey(getNextSlot(page*54+53))) b = false;
         }else{
             for(int i = getNextSlot(page*9); i < page*9+53; i = getNextSlot(i)){
                 slot = getNextSlot(slot);
@@ -114,6 +138,7 @@ public class ScrollableInterface {
                     inventory.setItem(slot, is);
                 }
             }
+            if (b && !content.containsKey(getNextSlot(page*9+53))) b = false;
         }
         if(b){
             inventory.setItem(53, Items.scrollDownButton);

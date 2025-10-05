@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 public class DisplayManager implements PluginMessageListener {
-    private static Runtime.Version version = Runtime.Version.parse("1.0.1");
+    private static Runtime.Version version = Runtime.Version.parse("1.0.2");
     //command:name:type:offsx:offsy:attachment:data
     public static void sendDisplayCheck(Player p){
         p.sendPluginMessage(LionAPI.getPlugin(), channel, ("check_existing:"+ version.toString()).getBytes());

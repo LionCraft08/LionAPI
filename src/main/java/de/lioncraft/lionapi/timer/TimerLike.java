@@ -20,6 +20,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 
 public abstract class TimerLike {
@@ -119,7 +121,7 @@ public abstract class TimerLike {
             c = c.append(Component.text(ch, map.get(color)));
             color++;
         }
-        return c.style(Style.style().decorate(TextDecoration.BOLD).build());
+        return c.style(Style.style().decorate(TextDecoration.BOLD).build()).append(Component.text("").style(Style.style(TextColor.color(255, 255, 255))));
     }
 
     private String getRawMessage(){
@@ -156,7 +158,7 @@ public abstract class TimerLike {
 
     private boolean isStarting;
     public Component start(){
-        if (isStarting) return Component.text("Der Timer ist bereits aktiv!");
+        if (isStarting) return Component.text("The Timer is already active!");
         isStarting = true;
         TimerLikeResumeEvent e;
         if(MainTimer.getTimer() == this){
@@ -173,7 +175,7 @@ public abstract class TimerLike {
 
         hasEverBeenActive = true;
         if(tick == null){
-            tick = new TimerTick(this).runTaskTimerAsynchronously(LionAPI.getPlugin(), 0, 20);
+            tick = new TimerTick(this).runTaskTimer(LionAPI.getPlugin(), 0, 20);
             if(colorTick != null){
                 colorTick.cancel();
             }
@@ -205,12 +207,14 @@ public abstract class TimerLike {
         }
         if(tick != null){
             tick.cancel();
+            tick = null;
         }
-        if(colorTick != null){
+
+        if(colorTick != null && TimerConfig.getWhenPaused().equalsIgnoreCase("OFF")){
             colorTick.cancel();
+            colorTick = null;
         }
-        tick = null;
-        colorTick = null;
+
         for(OfflinePlayer p : viewers){
             if(p.isOnline()) p.getPlayer().sendActionBar(Component.text("Timer Paused!", TextColor.color(255, 128, 0)));
         }
@@ -224,6 +228,17 @@ public abstract class TimerLike {
         if(currentColor >= map.size()) currentColor=0;
         updateMessage(currentColor);
         Component c = getMessage();
+        if(!isActive()){
+            switch (TimerConfig.getWhenPaused().toUpperCase()){
+                case "OFF" -> {
+                    c = getColoredMessage(currentColor, "Timer paused");
+                    colorTick.cancel();
+                    colorTick = null;
+                }
+                case "MESSAGE"-> c = getColoredMessage(currentColor, "Timer paused");
+            }
+        }
+
         for(OfflinePlayer p : viewers){
             if(p.isOnline()){
                 if(!Interactor.hasActiveInteraction(p)){
@@ -236,8 +251,6 @@ public abstract class TimerLike {
         }
 
     }
-
-
 
     private static List<TextColor> map = restoreDefaultColors();
     private static List<TextColor> restoreDefaultColors(){
@@ -260,20 +273,28 @@ public abstract class TimerLike {
         return map;
     }
 
-    private static YamlConfiguration timerConfig;
+    private static YamlConfiguration timerConfig = TimerConfig.getConfigFile();
 
-    public static void loadTimerData(){
-        File f = LionAPI.getPlugin().getDataPath().resolve("timer-color-presets.yml").toFile();
-        timerConfig = YamlConfiguration.loadConfiguration(f);
-        String colorCode = timerConfig.getString("selected-preset");
+    public static void setTimerColor(String colorCode){
         if (colorCode == null || colorCode.isBlank()){
             LionAPI.getPlugin().getLogger().warning("You didn't select a valid color gradient maker, restoring default.");
             restoreDefaultColors();
         }else{
             initColorSet(timerConfig.getStringList(colorCode));
         }
-
     }
+    public static List<String> getTimerColors(){
+        List<String> list = new ArrayList<>(timerConfig.getKeys(false));
+        list.remove("settings");
+
+        //Now unnecessary
+        list.remove("speed");
+        list.remove("selected-preset");
+        list.remove("when-paused");
+
+        return list;
+    }
+
 
     private static void initColorSet(List<String> colorSet){
         List<TextColor> colors = new ArrayList<>();

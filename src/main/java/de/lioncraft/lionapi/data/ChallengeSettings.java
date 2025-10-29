@@ -21,18 +21,22 @@ public final class ChallengeSettings implements ConfigurationSerializable {
         useTimer = true;
     }
 
+    @Deprecated(since = "1.9.10", forRemoval = true)
     public boolean isChallengeEndsOnDragonDeath() {
         return challengeEndsOnDragonDeath;
     }
 
+    @Deprecated(since = "1.9.10", forRemoval = true)
     public void setChallengeEndsOnDragonDeath(boolean challengeEndsOnDragonDeath) {
         this.challengeEndsOnDragonDeath = challengeEndsOnDragonDeath;
     }
 
+    @Deprecated(since = "1.9.10", forRemoval = true)
     public boolean isChallengeEndsOnPlayerDeath() {
         return challengeEndsOnPlayerDeath;
     }
 
+    @Deprecated(since = "1.9.10", forRemoval = true)
     public void setChallengeEndsOnPlayerDeath(boolean challengeEndsOnPlayerDeath) {
         this.challengeEndsOnPlayerDeath = challengeEndsOnPlayerDeath;
     }
@@ -63,16 +67,12 @@ public final class ChallengeSettings implements ConfigurationSerializable {
 
     public @NotNull Map<String, Object> serialize(){
         Map<String, Object> map = new HashMap<>();
-        map.put("challenge-ends-on-dragon-death", challengeEndsOnDragonDeath);
-        map.put("challenge-ends-on-player-death", challengeEndsOnPlayerDeath);
         map.put("challenge-ends-on-timer-expire", challengeEndsOnTimerExpire);
         map.put("is-challenge", isChallenge);
         map.put("use-timer", useTimer);
         return map;
     }
     public ChallengeSettings(Map<String, Object> map){
-        challengeEndsOnDragonDeath= (boolean) map.get("challenge-ends-on-dragon-death");
-        challengeEndsOnPlayerDeath=(boolean) map.get("challenge-ends-on-player-death");
         challengeEndsOnTimerExpire=(boolean) map.get("challenge-ends-on-timer-expire");
         isChallenge=(boolean) map.get("is-challenge");
         useTimer = (boolean) map.get("use-timer");

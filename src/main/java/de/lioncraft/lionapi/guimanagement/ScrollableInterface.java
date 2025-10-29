@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class ScrollableInterface {
-    public static HashMap<Inventory, ScrollableInterface> activeInterfaces;
+    public static HashMap<Inventory, ScrollableInterface> activeInterfaces = new HashMap<>();
     private Inventory inventory;
     private HashMap<Integer, ItemStack> content;
     boolean scrollPageWise;

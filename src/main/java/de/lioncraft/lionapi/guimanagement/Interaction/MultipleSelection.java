@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MultipleSelection {
-    public static HashMap<ItemStack, MultipleSelection> multipleSelectionMap;
+    public static HashMap<ItemStack, MultipleSelection> multipleSelectionMap = new HashMap<>();
     private List<ItemStack> buttons;
     private ItemStack button;
     private int currentState;

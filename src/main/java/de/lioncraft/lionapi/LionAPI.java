@@ -9,6 +9,7 @@ import de.lioncraft.lionapi.commands.DebugCommand;
 import de.lioncraft.lionapi.commands.Teams;
 import de.lioncraft.lionapi.commands.timerCommand;
 import de.lioncraft.lionapi.data.ChallengeSettings;
+import de.lioncraft.lionapi.data.ConfigManager;
 import de.lioncraft.lionapi.data.Settings;
 import de.lioncraft.lionapi.events.saveDataEvent;
 import de.lioncraft.lionapi.guimanagement.*;
@@ -21,6 +22,7 @@ import de.lioncraft.lionapi.messageHandling.ColorGradient;
 import de.lioncraft.lionapi.messageHandling.defaultMessages;
 import de.lioncraft.lionapi.messageHandling.lionchat.ChannelConfiguration;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
+import de.lioncraft.lionapi.playerSettings.PlayerSettings;
 import de.lioncraft.lionapi.teams.Backpack;
 import de.lioncraft.lionapi.teams.DeserializeTeams;
 import de.lioncraft.lionapi.teams.Team;
@@ -35,6 +37,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 
@@ -43,7 +46,6 @@ public final class LionAPI extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
-        saveDefaultConfig();
 
         saveResource("timer-color-presets.yml", false);
 
@@ -56,11 +58,7 @@ public final class LionAPI extends JavaPlugin {
         ConfigurationSerialization.registerClass(ChallengeSettings.class);
         ConfigurationSerialization.registerClass(SimpleSpeedrunChallenge.class);
         ConfigurationSerialization.registerClass(SurvivalServerChallenge.class);
-
-        ScrollableInterface.activeInterfaces = new HashMap<>();
-        Button.activeButtons = new HashMap<>();
-        de.lioncraft.lionapi.guimanagement.Interaction.Setting.SettingList = new HashMap<>();
-        MultipleSelection.multipleSelectionMap = new HashMap<>();
+        ConfigurationSerialization.registerClass(PlayerSettings.class);
 
         LionChat.registerChannel("system", new ChannelConfiguration(false,
                 TextColor.color(100, 200, 200),
@@ -81,7 +79,12 @@ public final class LionAPI extends JavaPlugin {
                 false));
 
 
-        TimerLike.loadTimerData();
+        PlayerSettings.deserializeAll();
+
+        ConfigManager configManager = new ConfigManager(this);
+        configManager.loadAndCheckConfig();
+
+        TimerConfig.init();
         Settings.init();
         defaultMessages.setValues();
         Items.setItems();
@@ -93,6 +96,7 @@ public final class LionAPI extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new SimpleChallengeRelatedListeners(), this);
         Bukkit.getPluginManager().registerEvents(new LionButtonListeners(), this);
         Bukkit.getPluginManager().registerEvents(new LionGUIElementsListeners(), this);
+        Bukkit.getPluginManager().registerEvents(new SettingsListeners(), this);
 
         registerCommand("timer","Timer & Challenge Management",new timerCommand());
         registerCommand("teams", new Teams());
@@ -124,6 +128,12 @@ public final class LionAPI extends JavaPlugin {
         Bukkit.getPluginManager().callEvent(new saveDataEvent());
         new listeners().onSaveEvent(new saveDataEvent());
         plugin.getLogger().info("Successfully disabled LionAPI.");
+
+        try {
+            PlayerSettings.serializeAll();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     static Plugin plugin;
 

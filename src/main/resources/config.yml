@@ -1,3 +1,13 @@
+# =================================================================== #
+#                 LionAPI Configuration File                          #
+# =================================================================== #
+# For help: https://github.com/LionCraft08/LionAPI/                   #
+# =================================================================== #
+
+# IMPORTANT: Do not change this version number. It is used by the plugin
+# to automatically update the configuration with new settings.
+config-version: 1.2
+
 settings:
   teams:
     has-backpack: true
@@ -5,6 +15,12 @@ settings:
     display-teamname: false
     allow-teammsg: true
   challenge-server: true
+
+  timer:
+    #What to display when the timer is paused.
+    #Can be OFF (Nothing), TIMER (The current time of the timer) or MESSAGE (A Timer Paused Message)
+    when-paused: OFF
+
 
 #Manages connection to other servers.
 server-connection:

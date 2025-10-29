@@ -118,7 +118,6 @@ public class DirectConnection extends AbstractConnection{
             try {
                 while (isRunning && (receivedLine = in.readLine()) != null) {
                     // Call the callback method on the main plugin class
-                    plugin.getLogger().info("Received message");
                     onMessageReceive(receivedLine);
                 }
             } catch (IOException e) {

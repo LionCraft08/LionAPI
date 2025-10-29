@@ -52,7 +52,18 @@ public class Timer extends TimerLike{
 
         Bukkit.getPluginManager().callEvent(new timerTickEvent(this));
     }
+
+    @Override
+    public Component start(){
+        if (seconds<=0 && minutes<=0 && hours <=0 && days <= 0) return Component.text("You need to set a time to start the timer!");
+        else return super.start();
+    }
+
     private void finish(){
+        days = 0;
+        hours = 0;
+        minutes = 0;
+        seconds = 0;
         timerFinishEvent e = new timerFinishEvent(this);
         Bukkit.getPluginManager().callEvent(e);
         TimerFinishEvent event;

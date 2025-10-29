@@ -13,6 +13,8 @@ import java.util.List;
 
 public class ClickCommand implements BasicCommand {
     public boolean onCommand(@NotNull CommandSender sender,  @NotNull String[] args) {
+        if (args.length < 1) return true;
+        else
         if(!args[0].isEmpty()){
             StringBuilder result = new StringBuilder();
             boolean first = true;
@@ -40,7 +42,7 @@ public class ClickCommand implements BasicCommand {
     }
 
     @Override
-    public boolean canUse(CommandSender sender) {
-        return sender.isOp();
+    public boolean canUse(@NotNull CommandSender sender) {
+        return true;
     }
 }

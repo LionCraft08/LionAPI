@@ -1,13 +1,8 @@
 package de.lioncraft.lionapi.listeners;
 
 import de.lioncraft.lionapi.LionAPI;
-import de.lioncraft.lionapi.data.ChallengeSettings;
-import de.lioncraft.lionapi.events.challenge.challengeEndEvent;
-import de.lioncraft.lionapi.events.challenge.challengeEndType;
-import de.lioncraft.lionapi.events.timerFinishEvent;
 import de.lioncraft.lionapi.timer.MainTimer;
 import io.papermc.paper.event.player.PlayerBedFailEnterEvent;
-import io.papermc.paper.registry.data.GameEventRegistryEntry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.TranslationArgument;
@@ -19,12 +14,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockCanBuildEvent;
-import org.bukkit.event.block.TNTPrimeEvent;
 import org.bukkit.event.entity.EntityMountEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.world.GenericGameEvent;
-
-import java.util.Objects;
 
 public class timerListeners implements Listener {
 
@@ -38,13 +30,13 @@ public class timerListeners implements Listener {
     }
 
     @EventHandler
-    public void onHotbarRecieveEvent(PlayerBedFailEnterEvent e){
+    public void onHotbarReceiveEvent(PlayerBedFailEnterEvent e){
         if(e.getMessage() != null){
             if(MainTimer.getTimer().isActive()){
                 if (e.getMessage() instanceof TextComponent c){
                     if (c.content().isBlank()) return;
                 }
-                MainTimer.setPlayerSuffix(e.getPlayer(),Component.text(" (").append(e.getMessage()).append(Component.text(")")), 50);
+                MainTimer.setPlayerSuffix(e.getPlayer(), e.getMessage(), 50);
                 e.setMessage(null);
             }
         }
@@ -82,30 +74,32 @@ public class timerListeners implements Listener {
             c = Component.translatable("sleep.skipping_night");
         }else c = Component.translatable("sleep.players_sleeping").arguments(TranslationArgument.numeric(amount_of_sleeping), TranslationArgument.numeric(amount_of_players));
         for(Player player : w.getPlayers()){
-            MainTimer.setPlayerSuffix(player, Component.text(" (").append(c).append(Component.text(")")), 50);
+            MainTimer.setPlayerSuffix(player,c, 50);
         }
     }
 
     @EventHandler
     public void onLimit(BlockCanBuildEvent e){
         if (e.isBuildable()) return;
-        if (e.getBlock().getLocation().getBlockY() == e.getBlock().getLocation().getWorld().getMaxHeight()-1){
+        if (e.getBlock().getLocation().getBlockY() == e.getBlock().getLocation().getWorld().getMaxHeight()){
             setHotbarMessage(Component.translatable("build.tooHigh", TextColor.color(170, 0, 0)).arguments(Component.text(e.getBlock().getWorld().getMaxHeight())), e.getPlayer());
         }
     }
+
     @EventHandler
     public void onChestFail(GenericGameEvent e){
         if (e.getEvent() == GameEvent.JUKEBOX_PLAY){
             if (e.getLocation().getBlock() instanceof Jukebox jb){
                 for (Player p : e.getLocation().getNearbyPlayers(e.getRadius())){
-                    MainTimer.setPlayerSuffix(p, Component.text(" (").append(Component.translatable("record.nowPlaying").arguments(jb.getRecord().lore().get(0))).append(Component.text(")")), 50);
+                    MainTimer.setPlayerSuffix(p,
+                            Component.translatable("record.nowPlaying").arguments(jb.getRecord().lore().get(0)), 50);
                 }
             }
 
         }
     }
     public static void setHotbarMessage(Component message, Player p){
-        MainTimer.setPlayerSuffix(p, Component.text(" (", TextColor.color(255, 255, 255)).append(message).append(Component.text(")", TextColor.color(255, 255, 255))), 60);
+        MainTimer.setPlayerSuffix(p, message, 60);
     }
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDisk(EntityMountEvent e){

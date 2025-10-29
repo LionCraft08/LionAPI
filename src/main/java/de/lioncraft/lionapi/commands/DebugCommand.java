@@ -1,9 +1,12 @@
 package de.lioncraft.lionapi.commands;
 
 import de.lioncraft.lionapi.LionAPI;
+import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
 import de.lioncraft.lionapi.pluginPlusAPI.ParticleDelayGenerator;
+import de.lioncraft.lionapi.teams.Team;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -27,32 +30,36 @@ public class DebugCommand implements BasicCommand {
             if (args.length>=4){
                 new ParticleDelayGenerator(Integer.parseInt(args[2]), p, Double.parseDouble(args[3]), 100).runTaskTimer(LionAPI.getPlugin(), Integer.parseInt(args[0]), Integer.parseInt(args[1]));
             }else{
-                try {
-                    Path path = LionAPI.getPlugin().getDataPath().resolve("items/item.yml");
-                    ItemStack is = ItemStack.of(
-                            Material.STONE,
-                            12
-                    );
-                    is.lore(List.of(
-                            MiniMessage.miniMessage().deserialize("<red>Hallo Welt")
-                    ));
-                    is.editMeta(itemMeta -> {
-                        itemMeta.displayName(MiniMessage.miniMessage().deserialize("<blue>Name dieses Gegenstandes"));
-                        itemMeta.setHideTooltip(true);
-                        itemMeta.setEnchantmentGlintOverride(true);
-                    });
-                    if(path.toFile().createNewFile()){
-                        YamlConfiguration yml = YamlConfiguration.loadConfiguration(path.toFile());
-                        yml.set("data", is.serialize());
-                        yml.save(path.toFile());
-                    }else{
-                        YamlConfiguration yml = YamlConfiguration.loadConfiguration(path.toFile());
-                        p.give(ItemStack.deserialize(yml.getValues(false)));
-                    }
-
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                Team.getTeams().forEach(t -> {
+                    t.sendMessage(Component.text("Hallo Welt!!!!!!"));
+                    LionChat.sendSystemMessage("Hallo auch meinerseits", t);
+                });
+//                try {
+//                    Path path = LionAPI.getPlugin().getDataPath().resolve("items/item.yml");
+//                    ItemStack is = ItemStack.of(
+//                            Material.STONE,
+//                            12
+//                    );
+//                    is.lore(List.of(
+//                            MiniMessage.miniMessage().deserialize("<red>Hallo Welt")
+//                    ));
+//                    is.editMeta(itemMeta -> {
+//                        itemMeta.displayName(MiniMessage.miniMessage().deserialize("<blue>Name dieses Gegenstandes"));
+//                        itemMeta.setHideTooltip(true);
+//                        itemMeta.setEnchantmentGlintOverride(true);
+//                    });
+//                    if(path.toFile().createNewFile()){
+//                        YamlConfiguration yml = YamlConfiguration.loadConfiguration(path.toFile());
+//                        yml.set("data", is.serialize());
+//                        yml.save(path.toFile());
+//                    }else{
+//                        YamlConfiguration yml = YamlConfiguration.loadConfiguration(path.toFile());
+//                        p.give(ItemStack.deserialize(yml.getValues(false)));
+//                    }
+//
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
             }
         }
         return true;

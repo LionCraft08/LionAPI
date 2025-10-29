@@ -6,6 +6,7 @@ import de.lioncraft.lionapi.guimanagement.Interaction.Button;
 import de.lioncraft.lionapi.listeners.invClickListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -163,10 +164,10 @@ public final class Items {
         return is;
     }
     public static ItemStack get(String title, Material material, TextColor loreColor, String... lore){
-        return get(Component.text(title), material, loreColor,lore);
+        return get(MiniMessage.miniMessage().deserialize(title), material, loreColor,lore);
     }
     public static ItemStack get(String title, Material material, String... lore){
-        return get(Component.text(title), material, lore);
+        return get(MiniMessage.miniMessage().deserialize(title), material, lore);
     }
     public static ItemStack get(Component title, Material material, String... lores){
         return get(title, material, null, lores);
@@ -175,7 +176,7 @@ public final class Items {
         Component[] lore = new Component[lores.length];
         int i = 0;
         for(String s : lores){
-            lore[i] = (Component.text(s, loreColor));
+            lore[i] = MiniMessage.miniMessage().deserialize(s).color(loreColor);
             i++;
         }
         return get(title, material, lore);

@@ -6,6 +6,7 @@ import de.lioncraft.lionapi.events.timerEvents.MainTimerEvents.MainTimerFinishEv
 import de.lioncraft.lionapi.events.timerEvents.MainTimerEvents.MainTimerPauseEvent;
 import de.lioncraft.lionapi.events.timerEvents.MainTimerEvents.MainTimerResumeEvent;
 import de.lioncraft.lionapi.timer.MainTimer;
+import de.lioncraft.lionapi.timer.TimerConfig;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,7 +24,7 @@ public class SimpleChallengeRelatedListeners implements Listener {
     public void onPlayerDeath(PlayerDeathEvent e){
         if (!ChallengeController.getInstance().getSettings().isChallenge()) return;
         if (!ChallengeController.getInstance().isActive()) return;
-        if (ChallengeController.getInstance().getSettings().isChallengeEndsOnPlayerDeath()){
+        if (TimerConfig.getTimerEndsOnPlayerDeath()){
             ChallengeController.getInstance().sendFinish(new ChallengeEndData(false).setArgs(Map.of("type", "playerDeath", "player", Objects.requireNonNullElse(PlayerThatDied, e.getPlayer().getName()))));
             PlayerThatDied = null;
         }
@@ -32,7 +33,7 @@ public class SimpleChallengeRelatedListeners implements Listener {
     public void onPlayerDeath(EntityDeathEvent e){
         if (!ChallengeController.getInstance().getSettings().isChallenge()) return;
         if (!ChallengeController.getInstance().isActive()) return;
-        if (ChallengeController.getInstance().getSettings().isChallengeEndsOnDragonDeath()){
+        if (TimerConfig.getTimerEndsOnPlayerDeath()){
             if (e.getEntityType().equals(EntityType.ENDER_DRAGON)) ChallengeController.getInstance().sendFinish(new ChallengeEndData(true).setArgs(Map.of("type", "dragonDeath")));
         }
     }

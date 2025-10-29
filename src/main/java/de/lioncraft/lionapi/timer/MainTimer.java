@@ -6,7 +6,9 @@ import de.lioncraft.lionapi.guimanagement.Items;
 import de.lioncraft.lionapi.guimanagement.MainMenu;
 import de.lioncraft.lionapi.messageHandling.DM;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -53,7 +55,7 @@ public abstract class MainTimer{
             if (b) {
                 timer = new Stopwatch(days, hours, minutes, seconds);
             } else {
-                if (timer.getCurrentSeconds() < 3){
+                if (timer.getCurrentSeconds() < 10){
                     timer = new Timer(0, 1, 0, 0);
                 }else timer = new Timer(days, hours, minutes, seconds);
             }
@@ -82,16 +84,11 @@ public abstract class MainTimer{
             player.openInventory(opInv);
         }else player.sendMessage(DM.noPermission);
     }
-    public static void update(TimerLike timer){
-        if(!opInv.getViewers().isEmpty()){
-
-        }
-    }
 
     public static void reset(){
         getTimer().pause();
         if(isCountUpwards()){
-            timer = new Timer(0,0,0,0);
+            timer = new Timer(0,1,0,0);
         }else {
             timer = new Stopwatch();
         }
@@ -136,9 +133,16 @@ public abstract class MainTimer{
     private static BukkitTask globalRemover;
     public static Component getSuffix(OfflinePlayer p){
         if(suffix.get(p) == null){
-            return globalSuffix;
+            return getFullSuffix(globalSuffix);
         }
-        return suffix.get(p);
+        return getFullSuffix(suffix.get(p));
+    }
+    private static Component getFullSuffix(Component singleSuffix){
+        if (singleSuffix != null)
+            return Component.text(" | ", Style.style(TextColor.color(255, 255, 255))
+                    .decoration(TextDecoration.BOLD, false))
+                .append(singleSuffix);
+        return null;
     }
     static class psRemover extends BukkitRunnable {
         OfflinePlayer player;

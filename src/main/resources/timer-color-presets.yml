@@ -1,29 +1,74 @@
-selected-preset: default
+settings:
 
+  # The speed of the timer, represented as an integer. Must be at least 1.
+  # 1 = fastest, 20 = update once per second
+  speed: 1
+
+  # The Color of the timer. Has to be one of the Color Themes below
+  selected-preset: default
+
+  # Can be: OFF, MESSAGE (Timer paused - Message) and TIMER (the current state of the timer.)
+  when-paused: MESSAGE
+
+  # Automatically pauses the timer
+  pause-when-dragon-dies: true
+
+  # Same as above
+  pause-when-player-dies: true
+
+
+# You can create your own color Themes.
+# Each - consists of a number providing the amount of ticks (or characters) it takes to fade to this color and the actual color formatted as #RRGGBB
 default:
-  - "100:#FF8800"
-  - "10:#FF0000"
-  - "20:#FF0000"
-  - "20:#FF8800"
-  - "20:#FF8800"
-  - "10:#FF0000"
-  - "1:#FF0000"
-  - "25:#FF00FF"
-  - "12:#8800FF"
-  - "50:#8800FF"
-  - "12:#FF0000"
-  - "10:#FF8800"
+  - 100:#FF8800
+  - 10:#FF0000
+  - 20:#FF0000
+  - 20:#FF8800
+  - 20:#FF8800
+  - 10:#FF0000
+  - 1:#FF0000
+  - 25:#FF00FF
+  - 12:#8800FF
+  - 50:#8800FF
+  - 12:#FF0000
+  - 10:#FF8800
 green:
-  - "50:#00FF00"
-  - "6:#008800"
-  - "6:#00FF00"
-  - "20:#00FF00"
-  - "20:#BBFF00"
-  - "10:#BBDD00"
-  - "5:#BBFF00"
-  - "25:#BBFF00"
-  - "5:#00FF00"
-  - "20:#00FF00"
-  - "5:#008800"
-  - "5:#77FF00"
-  - "3:#00FF00"
+  - 50:#00FF00
+  - 6:#008800
+  - 6:#00FF00
+  - 20:#00FF00
+  - 20:#BBFF00
+  - 10:#BBDD00
+  - 5:#BBFF00
+  - 25:#BBFF00
+  - 5:#00FF00
+  - 20:#00FF00
+  - 5:#008800
+  - 5:#77FF00
+  - 3:#00FF00
+orange:
+  - 50:#FF9900
+  - 6:#FF6504
+  - 6:#FF9900
+  - 20:#FF9900
+  - 20:#FFD104
+  - 10:#FFD104
+  - 5:#FF9900
+  - 25:#FF9900
+  - 4:#C07300
+  - 4:#FF9900
+  - 25:#FF9900
+  - 7:#E3D42F
+  - 7:#FF9900
+turquoise:
+  - 50:#29D8DB
+  - 6:#0080FF
+  - 6:#29D8DB
+  - 20:#29D8DB
+  - 20:#3B9293
+  - 20:#29D8DB
+  - 25:#29D8DB
+  - 10:#87FCFE
+  - 10:#29D8DB
+  - 25:#2B43DF
+  - 7:#29D8DB

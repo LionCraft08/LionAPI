@@ -7,6 +7,8 @@ import de.lioncraft.lionapi.data.Settings;
 import de.lioncraft.lionapi.events.team.TeamRegisterPlayerEvent;
 import de.lioncraft.lionapi.events.team.TeamRemovePlayerEvent;
 import de.lioncraft.lionapi.messageHandling.DM;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -27,6 +29,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**Creating a subclass of this one requires the following:
  * {@link Team#setMainClass(Class)} to set the new Class
@@ -38,7 +41,7 @@ import java.util.*;
  * </ul>
  */
 @SerializableAs("LionTeam")
-public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer> {
+public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer>, ForwardingAudience {
     private static HashMap<OfflinePlayer, Team> playerTeamHashMap = new HashMap<>();
     private static List<Team> teams = new ArrayList<>();
     private static Class<? extends Team> mainClass;
@@ -252,15 +255,20 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer> 
     public Backpack getBackpack() {
         return backpack;
     }
-    public void sendMessage(Component c){
-        for(Player p : getOnlinePlayers()){
-            p.sendMessage(c);
-        }
+
+    public @NotNull Iterable<? extends Audience> audiences() {
+        return this.getOnlinePlayers().stream()
+                .map(this::getPlayerAudience).toList();
     }
-    public void playSound(Sound sound){
-        for(Player p : getOnlinePlayers()){
-            p.playSound(sound);
+
+    private Audience getPlayerAudience(OfflinePlayer player) {
+
+        if (player instanceof Audience) {
+            return (Audience) player;
         }
+
+        // Fallback or old method placeholder
+        throw new UnsupportedOperationException("Cannot get Audience for player: " + player.getName());
     }
 
     /**Checks if this Team has been unregistered

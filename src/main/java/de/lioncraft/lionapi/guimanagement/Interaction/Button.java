@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.WeakHashMap;
 
 public class Button {
-    public static HashMap<ItemStack, Button> activeButtons;
+    public static HashMap<ItemStack, Button> activeButtons = new HashMap<>();
     emptyFunction function;
     ItemStack button;
     public Button(ItemStack button, emptyFunction function){

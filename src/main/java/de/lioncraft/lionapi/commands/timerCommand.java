@@ -1,29 +1,23 @@
 package de.lioncraft.lionapi.commands;
 
-import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.challenge.ChallengeController;
-import de.lioncraft.lionapi.data.ChallengeSettings;
-import de.lioncraft.lionapi.messageHandling.DM;
 import de.lioncraft.lionapi.messageHandling.MSG;
-import de.lioncraft.lionapi.messageHandling.defaultMessages;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
 import de.lioncraft.lionapi.timer.MainTimer;
+import de.lioncraft.lionapi.timer.TimerConfig;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class timerCommand implements BasicCommand {
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull String[] args) {
+    public void onCommand(@NotNull CommandSender sender, @NotNull String[] args) {
         switch (args.length){
                 case 0:
                     if(sender instanceof Player p){
@@ -33,14 +27,14 @@ public class timerCommand implements BasicCommand {
                 case 1:
                     switch (args[0]) {
                         case "start", "resume" -> {
-                            LionChat.sendSystemMessage(MainTimer.getTimer().start(), sender);
+                            LionChat.sendMessageOnChannel("timer", MainTimer.getTimer().start(), sender);
                         }
                         case "pause" -> {
                             if (MainTimer.getTimer().isActive()) {
                                 MainTimer.getTimer().pause();
-                                LionChat.sendSystemMessage(Component.text("Successfully paused the Timer"), sender);
+                                LionChat.sendMessageOnChannel("timer", Component.text("Successfully paused the Timer"), sender);
                             } else {
-                                LionChat.sendSystemMessage(Component.text("The Timer is already paused!"), sender);
+                                LionChat.sendMessageOnChannel("timer",Component.text("The Timer is already paused!"), sender);
                             }
                         }
                         case "reset" -> {
@@ -53,19 +47,19 @@ public class timerCommand implements BasicCommand {
                                 MainTimer.getTimer().setHours(hours);
                                 MainTimer.getTimer().setMinutes(minutes);
                                 MainTimer.getTimer().setSeconds(seconds);
-                            }else {
+                            } else {
                                 MainTimer.getTimer().setDays(0);
                                 MainTimer.getTimer().setHours(0);
                                 MainTimer.getTimer().setMinutes(0);
                                 MainTimer.getTimer().setSeconds(0);
                             }
 
-                            LionChat.sendSystemMessage(Component.text("Successfully restarted the Timer"),sender);
+                            LionChat.sendMessageOnChannel("timer",Component.text("Successfully restarted the Timer"),sender);
                         }
                         case "toggledirection" -> {
                             MainTimer.changeDirection();
-                            if(MainTimer.isCountUpwards()) LionChat.sendSystemMessage(Component.text("The timer now counts upwards"),sender);
-                            else LionChat.sendSystemMessage(Component.text("The timer now counts down"),sender);
+                            if(MainTimer.isCountUpwards()) LionChat.sendMessageOnChannel("timer",Component.text("The timer now counts upwards"),sender);
+                            else LionChat.sendMessageOnChannel("timer",Component.text("The timer now counts down"),sender);
 
                         }
                         default -> LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
@@ -79,9 +73,9 @@ public class timerCommand implements BasicCommand {
                             MainTimer.getTimer().setMinutes(Integer.parseInt(args[3]));
                             MainTimer.getTimer().setSeconds(Integer.parseInt(args[4]));
                             MainTimer.getTimer().updateSecondsAtStart();
-                            LionChat.sendSystemMessage(MainTimer.getTimer().start(), sender);
+                            LionChat.sendMessageOnChannel("timer",MainTimer.getTimer().start(), sender);
                         }catch (NumberFormatException e){
-                            LionChat.sendSystemMessage(Component.text("Make sure you use numbers as parameters 2-5"),sender);
+                            LionChat.sendMessageOnChannel("timer",Component.text("Make sure you use numbers as parameters 2-5"),sender);
                         }
                     } else if (args[0].equals("set")) {
                         try {
@@ -92,9 +86,9 @@ public class timerCommand implements BasicCommand {
                             if(!MainTimer.getTimer().isActive()){
                                 MainTimer.getTimer().updateSecondsAtStart();
                             }
-                            LionChat.sendSystemMessage(Component.text("Successfully set the Timer to " + MainTimer.getTimer().getCurrentSeconds() + "s"),sender);
+                            LionChat.sendMessageOnChannel("timer",Component.text("Successfully set the Timer to " + MainTimer.getTimer().getCurrentSeconds() + "s"),sender);
                         }catch (NumberFormatException e){
-                            LionChat.sendSystemMessage(Component.text("Make sure you use numbers as parameters 2-5"),sender);
+                            LionChat.sendMessageOnChannel("timer",Component.text("Make sure you use numbers as parameters 2-5"),sender);
                         }
                     }else{
                         LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
@@ -108,16 +102,16 @@ public class timerCommand implements BasicCommand {
                                 if(b){
                                     ChallengeController.getInstance().getSettings().setChallenge(true);
                                 }
-                                ChallengeController.getInstance().getSettings().setChallengeEndsOnDragonDeath(b);
-                                LionChat.sendSystemMessage(Component.text("Challenge-Einstellung geändert: "+b), sender);
+                                TimerConfig.setTimerEndsOnDragonDeath(b);
+                                LionChat.sendMessageOnChannel("timer",Component.text("Challenge-Einstellung geändert: "+b), sender);
                             }
                             case "stopbyplayerdeath" ->{
                                 boolean b = Boolean.parseBoolean(args[2]);
                                 if(b){
                                     ChallengeController.getInstance().getSettings().setChallenge(true);
                                 }
-                                ChallengeController.getInstance().getSettings().setChallengeEndsOnPlayerDeath(b);
-                                LionChat.sendSystemMessage(Component.text("Challenge-Einstellung geändert: "+b), sender);
+                                TimerConfig.setTimerEndsOnPlayerDeath(b);
+                                LionChat.sendMessageOnChannel("timer",Component.text("Challenge-Einstellung geändert: "+b), sender);
                             }
                             default -> LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
                         }
@@ -127,12 +121,10 @@ public class timerCommand implements BasicCommand {
                     LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
             }
 
-        return true;
-
     }
 
 
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull String[] args) {
         List<String> strings = new ArrayList<>();
         switch (args.length){
             case 0, 1:
@@ -178,12 +170,12 @@ public class timerCommand implements BasicCommand {
     }
 
     @Override
-    public void execute(CommandSourceStack commandSourceStack, String[] strings) {
+    public void execute(CommandSourceStack commandSourceStack, String @NotNull [] strings) {
         onCommand(commandSourceStack.getSender(), strings );
     }
 
     @Override
-    public Collection<String> suggest(CommandSourceStack commandSourceStack, String[] args) {
+    public @NotNull Collection<String> suggest(CommandSourceStack commandSourceStack, String @NotNull [] args) {
         return onTabComplete(commandSourceStack.getSender(), args);
     }
 

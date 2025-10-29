@@ -2,13 +2,13 @@ package de.lioncraft.lionapi.listeners;
 
 import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.challenge.ChallengeController;
-import de.lioncraft.lionapi.data.ChallengeSettings;
 import de.lioncraft.lionapi.events.saveDataEvent;
 import de.lioncraft.lionapi.guimanagement.lionclient.DisplayManager;
 import de.lioncraft.lionapi.messageHandling.DM;
 import de.lioncraft.lionapi.messageHandling.defaultMessages;
 import de.lioncraft.lionapi.teams.Team;
 import de.lioncraft.lionapi.timer.MainTimer;
+import de.lioncraft.lionapi.timer.TimerConfig;
 import io.papermc.paper.util.Tick;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -29,6 +29,7 @@ public class listeners implements Listener {
         LionAPI.getPlugin().getConfig().set("persistent-data.timer", MainTimer.getTimer().getNewSnapshot());
         LionAPI.getPlugin().getConfig().set("persistent-data.challenge", ChallengeController.getInstance());
         LionAPI.getPlugin().saveConfig();
+        TimerConfig.save();
         Team.saveAll();
     }
 

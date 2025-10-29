@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 
 public class Setting {
-    public static HashMap<ItemStack, Setting> SettingList;
+    public static HashMap<ItemStack, Setting> SettingList = new HashMap<>();
     boolean isEnabled;
     ItemStack topItem, bottomItem;
     Function function;

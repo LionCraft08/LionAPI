@@ -1,6 +1,8 @@
 package de.lioncraft.lionapi.listeners;
 
+import de.lioncraft.lionapi.addons.AddonManager;
 import de.lioncraft.lionapi.events.invs.LionButtonClickEvent;
+import de.lioncraft.lionapi.guimanagement.Interaction.MultipleStringSelection;
 import de.lioncraft.lionapi.guimanagement.MainMenu;
 import de.lioncraft.lionapi.guimanagement.lioninventories.AddonManageMenu;
 import de.lioncraft.lionapi.guimanagement.lioninventories.ChannelSelectionMenu;
@@ -40,9 +42,10 @@ public class LionButtonListeners implements Listener {
                 }
             }
             case "lionapi_open_timer_menu"-> {
-                LionChat.sendMessageOnChannel("timer", Component.text("Dieses Menu ist nur in Beta-Environments verfügbar."));
+                LionChat.sendMessageOnChannel("timer", Component.text("Dieses Menu ist nur in Beta-Environments verfügbar. Allgemeine Einstellungen sind über den AddonManager zu erreichen."));
             }
             case "lionapi_open_addon_manager" -> AddonManageMenu.open(e.getPlayer());
+            case "lionapi_multiplestringselection" -> MultipleStringSelection.click(e.getData(), e.e());
         }
     }
 }

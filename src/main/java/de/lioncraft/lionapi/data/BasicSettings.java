@@ -43,6 +43,13 @@ public class BasicSettings implements ConfigurationSerializable {
         return null;
     }
 
+    public Setting getSetting(String key){
+        for (Setting s : list){
+            if (s.getKey().equals(key)) return s;
+        }
+        return null;
+    }
+
     public boolean getBoolValue(String key){
         return getValue(key, boolean.class);
     }
@@ -52,12 +59,22 @@ public class BasicSettings implements ConfigurationSerializable {
     public String getStringValue(String key){
         return getValue(key, String.class);
     }
+    public void setBoolValue(String key, boolean value){
+        getSetting(key).setValue(value);
+    }
+    public void setIntValue(String key, int value){
+        getSetting(key).setValue(value);
+    }
+    public void setStringValue(String key, String value){
+        getSetting(key).setValue(value);
+    }
     public <T> T getValue(String key, Class<T> clazz){
         for (Setting s : list){
             if (s.getKey().equals(key)) return (T) s.getValue();
         }
         return getDefaultValueUsingArray(clazz);
     }
+
     private static <T> T getDefaultValueUsingArray(Class<T> clazz) {
         if (!clazz.isPrimitive()) {
             return null;

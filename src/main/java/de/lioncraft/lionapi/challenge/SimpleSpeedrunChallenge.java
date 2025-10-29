@@ -4,8 +4,8 @@ import de.lioncraft.lionapi.guimanagement.Items;
 import de.lioncraft.lionapi.guimanagement.MainMenu;
 import de.lioncraft.lionapi.messageHandling.DM;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
+import de.lioncraft.lionapi.playerSettings.PlayerSettings;
 import de.lioncraft.lionapi.timer.MainTimer;
-import de.lioncraft.lionutils.utils.Settings;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.SoundStop;
@@ -48,13 +48,13 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
         LionChat.sendLogMessage("Die Challenge wurde pausiert.");
         getServer().playSound(Sound.sound(Key.key("block.beacon.deactivate"), Sound.Source.MASTER, 2f, 1f));
         getServer().getServerTickManager().setFrozen(true);
-        if (getPluginManager().isPluginEnabled("LionUtils")){
-            Settings.getSettings(null).setInvulnerable(true);
-            Settings.getSettings(null).setCanMineBlocks(false);
-            Settings.getSettings(null).setCanHitEntities(false);
-            Settings.getSettings(null).setCanPickupItems(false);
-            Settings.getSettings(null).setCanMove(false);
-        }
+
+        PlayerSettings.getSettings(null).setInvulnerable(true);
+        PlayerSettings.getSettings(null).setCanMineBlocks(false);
+        PlayerSettings.getSettings(null).setCanHitEntities(false);
+        PlayerSettings.getSettings(null).setCanPickupItems(false);
+        PlayerSettings.getSettings(null).setCanMove(false);
+
     }
 
     @Override
@@ -87,30 +87,26 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
     protected void onResume() {
         getServer().playSound(Sound.sound(Key.key("entity.player.levelup"), Sound.Source.MASTER, 1f, 1f));
         getServer().getServerTickManager().setFrozen(false);
-        if (getPluginManager().isPluginEnabled("LionUtils")){
-            Settings.getSettings(null).setInvulnerable(false);
-            Settings.getSettings(null).setCanMineBlocks(true);
-            Settings.getSettings(null).setCanHitEntities(true);
-            Settings.getSettings(null).setCanPickupItems(true);
-            Settings.getSettings(null).setCanMove(true);
-        }
+
+        PlayerSettings.getSettings(null).setInvulnerable(false);
+        PlayerSettings.getSettings(null).setCanMineBlocks(true);
+        PlayerSettings.getSettings(null).setCanHitEntities(true);
+        PlayerSettings.getSettings(null).setCanPickupItems(true);
+        PlayerSettings.getSettings(null).setCanMove(true);
     }
 
     @Override
     protected void onLoad() {
         Bukkit.getServerTickManager().setFrozen(true);
         Bukkit.getServer().getWorld("world").setTime(1000);
-        getSettings().setChallengeEndsOnPlayerDeath(true);
-        getSettings().setChallengeEndsOnDragonDeath(true);
-        if (getPluginManager().isPluginEnabled("LionUtils")){
-            Settings.getSettings(null).setInvulnerable(true);
-            Settings.getSettings(null).setCanMineBlocks(false);
-            Settings.getSettings(null).setCanHitEntities(false);
-            Settings.getSettings(null).setCanPickupItems(false);
-            Settings.getSettings(null).setCanChat(true);
-            Settings.getSettings(null).setCanMove(true);
-            Settings.getSettings(null).setCanFly(false);
-        }
+
+        PlayerSettings.getSettings(null).setInvulnerable(true);
+        PlayerSettings.getSettings(null).setCanMineBlocks(false);
+        PlayerSettings.getSettings(null).setCanHitEntities(false);
+        PlayerSettings.getSettings(null).setCanPickupItems(false);
+        PlayerSettings.getSettings(null).setCanChat(true);
+        PlayerSettings.getSettings(null).setCanMove(true);
+        PlayerSettings.getSettings(null).setCanFly(false);
     }
 
     @Override
@@ -127,7 +123,7 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
     }
 
     private void buildInv(){
-        Inventory inv = Bukkit.createInventory(null, 54, Component.text("Simple Challenge Settings"));
+        inv = Bukkit.createInventory(null, 54, Component.text("Simple Challenge Settings"));
         inv.setContents(Items.blockButtons);
         inv.setItem(49, Items.closeButton);
         inv.setItem(45, MainMenu.getToMainMenuButton());

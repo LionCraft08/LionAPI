@@ -16,7 +16,7 @@ public class Setting {
     public Setting(boolean isEnabled, ItemStack topItem, Function function){
         this.isEnabled = isEnabled;
         this.function = function;
-        this.topItem = topItem;
+        this.topItem = Items.asGUIButton(topItem);
         changeBottomItem();
     }
     public void ClickAction(){

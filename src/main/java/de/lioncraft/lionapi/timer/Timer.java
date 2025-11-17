@@ -1,5 +1,6 @@
 package de.lioncraft.lionapi.timer;
 
+import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.events.timerEvents.MainTimerEvents.MainTimerFinishEvent;
 import de.lioncraft.lionapi.events.timerEvents.MainTimerEvents.MainTimerTickEvent;
 import de.lioncraft.lionapi.events.timerEvents.TimerFinishEvent;
@@ -7,6 +8,7 @@ import de.lioncraft.lionapi.events.timerEvents.TimerTickEvent;
 import de.lioncraft.lionapi.events.timerFinishEvent;
 import de.lioncraft.lionapi.events.timerTickEvent;
 import de.lioncraft.lionapi.messageHandling.DM;
+import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
@@ -68,22 +70,23 @@ public class Timer extends TimerLike{
         Bukkit.getPluginManager().callEvent(e);
         TimerFinishEvent event;
         if(this == MainTimer.getTimer()){
-            event = new MainTimerFinishEvent(this, DM.info("The Timer has expired!"));
-        }else event = new TimerFinishEvent(this, DM.info("The Timer has expired!"));
+            event = new MainTimerFinishEvent(this, LionAPI.lm().msg("features.timer.expired"));
+        }else event = new TimerFinishEvent(this, LionAPI.lm().msg("features.timer.expired"));
         Bukkit.getPluginManager().callEvent(event);
 
         super.pause();
         if(event.sendFinishMessageToPlayers()){
-            for(Player p : Bukkit.getOnlinePlayers()){
+            for(OfflinePlayer p : getViewer()){
+                if (!p.isOnline()) return;
                 if(p.isOp()){
-                    p.sendMessage(event.getFinishMessage());
+                    LionChat.sendMessageOnChannel("timer", event.getFinishMessage(), p.getPlayer());
                 }else if (!event.sendFinishMessageToOperatorsOnly()){
-                    p.sendMessage(event.getFinishMessage());
+                    LionChat.sendMessageOnChannel("timer", event.getFinishMessage(), p.getPlayer());
                 }
             }
         }
         for(OfflinePlayer p : viewers){
-            if(p.isOnline()) p.getPlayer().sendActionBar(Component.text("Timer has expired", TextColor.color(255, 128, 0)));
+            if(p.isOnline()) p.getPlayer().sendActionBar(LionAPI.lm().msg("features.timer.expired"));
         }
     }
 

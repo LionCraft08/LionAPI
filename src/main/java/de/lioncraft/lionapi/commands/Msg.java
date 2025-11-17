@@ -11,6 +11,7 @@ import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.BlockCommandSender;
@@ -21,11 +22,13 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.UUID;
 
+import static de.lioncraft.lionapi.LionAPI.lm;
+
 public class Msg {
     public static void register(Commands cmd){
         cmd.register(Commands.literal("msg")
                         .executes(cc->{
-                            LionChat.sendMSG(null, Component.text("Mit diesem Command kannst du eine private Nachricht an einen Spieler senden."), cc.getSource().getExecutor());
+                            LionChat.sendMSG(null, lm().msg("features.msg.explanation"), cc.getSource().getExecutor());
                             return 0;
                         })
                         .then(Commands.argument("player", ArgumentTypes.players()).executes(cc->{
@@ -53,12 +56,13 @@ public class Msg {
                                                             .addValue("message", JSONComponentSerializer.json().serialize(Component.text(cc.getArgument("message", String.class))))
                                                             .addValue("target", Bukkit.getPlayerUniqueId(cc.getArgument("player", String.class)).toString())
                                                             .addValue("sourcePlayer", senderid));
-                                        }else LionChat.sendMSG(null, MSG.noPlayer.getText(), cc.getSource().getSender());
+                                        }else LionChat.sendMSG(null, MSG.NO_PLAYER.getText(), cc.getSource().getSender());
                                     }
                                     list.forEach(
                                         member -> {
-                                            LionChat.sendMSG(member.name(), Component.text(cc.getArgument("message", String.class)), member.getPlayer());
-                                            LionChat.sendMSG(Component.text("Du -> ").append(member.name()), Component.text(cc.getArgument("message", String.class)), cc.getSource().getExecutor());
+                                            Component target = member.name().clickEvent(ClickEvent.suggestCommand("/msg "+member.getName() + " "));
+                                            LionChat.sendMSG(target, Component.text(cc.getArgument("message", String.class)), member.getPlayer());
+                                            LionChat.sendMSG(Component.text("Du -> ").append(target), Component.text(cc.getArgument("message", String.class)), cc.getSource().getExecutor());
                                             LionChat.sendLogMessage(Component.text("[MSG] ").append(source).append(Component.text(" -> "+cc.getInput().replaceFirst("msg ", "").replaceFirst(" ", " >> "))));
                                         });
                                     return 0;

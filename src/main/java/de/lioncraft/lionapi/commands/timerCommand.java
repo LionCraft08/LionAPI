@@ -1,5 +1,6 @@
 package de.lioncraft.lionapi.commands;
 
+import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.challenge.ChallengeController;
 import de.lioncraft.lionapi.messageHandling.MSG;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
@@ -22,7 +23,7 @@ public class timerCommand implements BasicCommand {
                 case 0:
                     if(sender instanceof Player p){
                         MainTimer.openUI(p);
-                    }else LionChat.sendSystemMessage(MSG.notAPlayer, sender);;
+                    }else LionChat.sendSystemMessage(MSG.NOT_A_PLAYER, sender);
                 break;
                 case 1:
                     switch (args[0]) {
@@ -32,9 +33,9 @@ public class timerCommand implements BasicCommand {
                         case "pause" -> {
                             if (MainTimer.getTimer().isActive()) {
                                 MainTimer.getTimer().pause();
-                                LionChat.sendMessageOnChannel("timer", Component.text("Successfully paused the Timer"), sender);
+                                LionChat.sendMessageOnChannel("timer", LionAPI.lm().msg("features.timer.command_paused"), sender);
                             } else {
-                                LionChat.sendMessageOnChannel("timer",Component.text("The Timer is already paused!"), sender);
+                                LionChat.sendMessageOnChannel("timer",LionAPI.lm().msg("features.timer.error.already_paused"), sender);
                             }
                         }
                         case "reset" -> {
@@ -54,7 +55,7 @@ public class timerCommand implements BasicCommand {
                                 MainTimer.getTimer().setSeconds(0);
                             }
 
-                            LionChat.sendMessageOnChannel("timer",Component.text("Successfully restarted the Timer"),sender);
+                            LionChat.sendMessageOnChannel("timer", LionAPI.lm().msg("features.timer.restarted"), sender);
                         }
                         case "toggledirection" -> {
                             MainTimer.changeDirection();
@@ -75,7 +76,7 @@ public class timerCommand implements BasicCommand {
                             MainTimer.getTimer().updateSecondsAtStart();
                             LionChat.sendMessageOnChannel("timer",MainTimer.getTimer().start(), sender);
                         }catch (NumberFormatException e){
-                            LionChat.sendMessageOnChannel("timer",Component.text("Make sure you use numbers as parameters 2-5"),sender);
+                            LionChat.sendMessageOnChannel("timer",LionAPI.lm().msg("command.error.not_a_number", "2-5"),sender);
                         }
                     } else if (args[0].equals("set")) {
                         try {
@@ -86,9 +87,9 @@ public class timerCommand implements BasicCommand {
                             if(!MainTimer.getTimer().isActive()){
                                 MainTimer.getTimer().updateSecondsAtStart();
                             }
-                            LionChat.sendMessageOnChannel("timer",Component.text("Successfully set the Timer to " + MainTimer.getTimer().getCurrentSeconds() + "s"),sender);
+                            LionChat.sendMessageOnChannel("timer",LionAPI.lm().msg("features.timer.set_seconds", ""+MainTimer.getTimer().getCurrentSeconds()),sender);
                         }catch (NumberFormatException e){
-                            LionChat.sendMessageOnChannel("timer",Component.text("Make sure you use numbers as parameters 2-5"),sender);
+                            LionChat.sendMessageOnChannel("timer", LionAPI.lm().msg("command.error.not_a_number", "2-5"),sender);
                         }
                     }else{
                         LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);

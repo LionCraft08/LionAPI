@@ -1,0 +1,61 @@
+command.error.no_permission: "<red>You don't have the permission to do this"
+command.error.no_player: "<red>Couldn't find that player"
+command.error.no_team: "<red>You have to be in a team to do this"
+command.error.error: "<red>An error unexpected error occurred while trying to execute this command"
+command.error.not_a_player: "<red>This command can only be executed by a player"
+command.error.wrong_args: "<red>Incorrect command usage. Try /help [command]"
+command.error.wait: "<red>Please wait before doing this again"
+command.error.not_a_number: "Make sure to use a number as parameter {}"
+
+general.error.no_beta_environment: "<red>This feature is only available in <#FF7700>BETA<red> environments"
+
+features.timer.paused: "<<Timer paused>>"
+features.timer.error.already_active: "<red>The timer is already active"
+features.timer.error.already_paused: "<red>The timer is already paused"
+features.timer.resumed: "Timer resumed"
+features.timer.command_paused: "Timer paused"
+features.timer.restarted: "Timer restarted"
+features.timer.expired: "The timer expired!"
+features.timer.set_seconds: "Set the timer to {}s"
+
+features.teams.created: "Created a new team called \"{}\""
+features.teams.removed: "Deleted team \"{}\""
+features.teams.player_added: "Added {} to team {}"
+features.teams.player_removed: "Removed {} from team {}"
+features.teams.player_removed_amount: "Removed {} players from team {}"
+features.teams.player_added_amount: "Added {} players to team {}"
+features.teams.player_added_amount_single: "Added 1 player to team {}"
+features.teams.renamed: "Renamed team {} successfully to {}"
+features.teams.shuffle: "Randomly added every player to a team"
+
+features.teams.error.not_existing: "<#FF7700>This team doesn't exist"
+features.teams.error.already_existing: "<#FF7700>This team already exists"
+features.teams.error.no_team: "<#FF7700>There are no teams yet"
+features.teams.error.player_already_in_team: "<#FF7700>{} is already in team {}"
+features.teams.error.player_not_in_team: "<#FF7700>{} is not in team {}"
+features.teams.error.already_empty: "<#FF7700>Team {} is already empty"
+features.teams.error.full: "<#FF7700>Every player is already in a team"
+features.teams.error.shuffle: "<#FF7700>To shuffle players you need to create at least {} teams"
+
+features.backpack: "Backpack"
+features.backpack.disabled: "<red>Backpacks are disabled..."
+
+features.code.error.disabled: "<red>Code execution is disabled due to security risks!"
+
+features.msg.explanation: "You can use this command to send private messages to a player"
+features.chat.disabled: "<#FF4400>You are not allowed to chat."
+
+challenges.simple.end.dragon: "<#00FF19>The Ender Dragon died!"
+challenges.simple.end.timer: "<#FF6419>The timer expired!"
+challenges.simple.end.lost: "<#FF6419>Challenge lost!"
+challenges.simple.end.default: "<#FF6419>Use /reset to try again!"
+challenges.simple.end.time: "Time: "
+challenges.simple.end.player: "<#FF6419>The player <#00FFFF>{}<#FF6419> died!"
+
+
+
+
+
+
+
+

@@ -1,5 +1,6 @@
 package de.lioncraft.lionapi.listeners;
 
+import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.events.saveDataEvent;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
 import de.lioncraft.lionapi.playerSettings.PlayerSettings;
@@ -29,7 +30,7 @@ public class SettingsListeners implements Listener {
     public void onChat(AsyncChatEvent e){
         if (!PlayerSettings.getSettings(e.getPlayer()).canChat()) {
             e.setCancelled(true);
-            LionChat.sendError("You are not allowed to chat!", e.getPlayer());
+            LionChat.sendSystemMessage(LionAPI.lm().msg("features.chat.disabled"), e.getPlayer());
         }
     }
 
@@ -37,7 +38,8 @@ public class SettingsListeners implements Listener {
     public void onMove(PlayerMoveEvent e){
         if (!PlayerSettings.getSettings(e.getPlayer()).canMove()) {
             if (e.hasChangedPosition()) {
-                e.setCancelled(true);
+                e.setTo(e.getFrom().setRotation(e.getTo().getYaw(), e.getTo().getPitch()));
+                //e.setCancelled(true);
             }
         }
     }

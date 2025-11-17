@@ -3,6 +3,7 @@ package de.lioncraft.lionapi.teams;
 import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.data.Settings;
 import de.lioncraft.lionapi.messageHandling.DM;
+import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -38,7 +39,7 @@ public class Backpack implements ConfigurationSerializable{
             size = 54;
         }
         if(title == null){
-            title = this.title = Component.text("Backpack");
+            title = this.title = LionAPI.lm().msg("features.backpack");
         }
         inv = Bukkit.createInventory(null, size, title);
         if(content != null){
@@ -53,7 +54,7 @@ public class Backpack implements ConfigurationSerializable{
     }
     public void openBackpack(Player p){
         if(!Settings.isTeamsHaveBackpack()){
-            p.sendMessage(DM.error("Backpacks are disabled..."));
+            LionChat.sendSystemMessage(LionAPI.lm().msg("features.backpack.disabled"), p);
             return;
         }
         p.openInventory(inv);

@@ -2,6 +2,8 @@ package de.lioncraft.lionapi.commands;
 
 import com.mojang.brigadier.Message;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import de.lioncraft.lionapi.LionAPI;
+import de.lioncraft.lionapi.features.customcode.CodeExecutor;
 import de.lioncraft.lionapi.messageHandling.MSG;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
 import io.papermc.paper.command.brigadier.Commands;
@@ -16,13 +18,43 @@ public class CodeCommand {
                     LionChat.sendSystemMessage(MSG.WRONG_ARGS, commandContext.getSource().getSender());
                     return 0;
                 })
-                .then(Commands.argument("ExecutionType", StringArgumentType.word())
-                        .suggests((commandContext, suggestionsBuilder) -> {
-                            suggestionsBuilder.suggest("execute");
-                            suggestionsBuilder.suggest("load", MessageComponentSerializer.message().serialize(Component.text("Loads Code from txt files")));
-                            suggestionsBuilder.suggest("unload");
-                            return suggestionsBuilder.buildFuture();
-                        }))
+                .then(Commands.literal("execute")
+                        .then(Commands.argument("code", StringArgumentType.string())
+                                .executes(context -> {
+                                    if (!LionAPI.getPlugin().getConfig().getBoolean("settings.allow-code-execution")){
+                                        LionChat.sendSystemMessage(LionAPI.lm().msg("features.code.error.disabled"), context.getSource().getSender());
+                                        return 0;
+                                    }
+                                    String code = context.getArgument("code", String.class);
+                                    try {
+                                        CodeExecutor.compileAndExecute(null,
+                                                CodeExecutor.prepareCodeString(
+                                                code, CodeExecutor.CodePrepareOptions.ADD_FUNCTION
+                                        ));
+                                    } catch (Exception e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                    return 1;
+                                })))
+                        .then(Commands.literal("executeAsync")
+                                .then(Commands.argument("code", StringArgumentType.string())
+                                        .executes(context -> {
+                                            if (!LionAPI.getPlugin().getConfig().getBoolean("settings.allow-code-execution")){
+                                                LionChat.sendSystemMessage(LionAPI.lm().msg("features.code.error.disabled"), context.getSource().getSender());
+                                                return 0;
+                                            }
+                                            String code = context.getArgument("code", String.class);
+                                            try {
+                                                CodeExecutor.compileAndExecuteAsync(code);
+                                            } catch (Exception e) {
+                                                throw new RuntimeException(e);
+                                            }
+                                            return 1;
+                                        }))
+                        )
+                        .then(Commands.literal("load"))
+
+
 
                 .build());
     }

@@ -1,5 +1,6 @@
 package de.lioncraft.lionapi.messageHandling;
 
+import de.lioncraft.lionapi.LionAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -8,12 +9,12 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class DM {
     public static final Component messagePrefix = getMessagePrefix();
-    public static Component wrongArgs = messagePrefix.append(Component.text("Wrong usage of args.", TextColor.color(255, 0, 0)));
-    public static Component noPlayer = messagePrefix.append(Component.text("Could not find this Player.", TextColor.color(255, 0, 0)));
-    public static Component commandError = messagePrefix.append(Component.text("An error occurred when trying to execute this command.", TextColor.color(255, 0, 0)));
-    public static Component noPermission = messagePrefix.append(Component.text("You do not have the permission to do this.", TextColor.color(255, 0, 0)));
-    public static Component wait = messagePrefix.append(Component.text("Please wait a bit before doing that.", TextColor.color(255, 0, 0)));
-    public static Component notAPlayer = messagePrefix.append(Component.text("This Command can only be executed as a Player!", TextColor.color(255, 0, 0)));
+    public static Component wrongArgs = messagePrefix.append(LionAPI.lm().msg("command.error.wrong_args"));
+    public static Component noPlayer = messagePrefix.append(LionAPI.lm().msg("command.error.no_player"));
+    public static Component commandError = messagePrefix.append(LionAPI.lm().msg("command.error.error"));
+    public static Component noPermission = messagePrefix.append(LionAPI.lm().msg("command.error.no_permission"));
+    public static Component wait = messagePrefix.append(LionAPI.lm().msg("command.error.wait"));
+    public static Component notAPlayer = messagePrefix.append(LionAPI.lm().msg("command.error.not_a_player"));
 
     /**Creates an Error Message with the LionSystems Prefix and
      * the {@link TextColor} Orange if none is previously set.

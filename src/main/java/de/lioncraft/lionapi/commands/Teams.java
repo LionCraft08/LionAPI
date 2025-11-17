@@ -1,5 +1,6 @@
 package de.lioncraft.lionapi.commands;
 
+import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.messageHandling.DM;
 import de.lioncraft.lionapi.messageHandling.MSG;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
@@ -57,18 +58,18 @@ public class Teams implements BasicCommand {
             switch (args[0]){
                 case "register":
                     if(t!=null){
-                        LionChat.sendSystemMessage(Component.text("This Team already exists!", TextColor.color(255, 128, 0)), sender);
+                        LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.already_existing"), sender);
                     }else{
                         t = Team.registerNewTeam(args[1]);
-                        LionChat.sendSystemMessage(Component.text("Created new Team called \""+t.getName()+"\""), sender);
+                        LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.created", t.getName()), sender);
                     }
                     break;
                 case "delete":
                     if(t==null){
-                        LionChat.sendSystemMessage(Component.text("This Team does not exists!", TextColor.color(255, 128, 0)), sender);
+                        LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.not_existing"), sender);
                     }else{
                         Team.unregisterTeam(t);
-                        LionChat.sendSystemMessage(Component.text("Removed Team " + args[1]), sender);
+                        LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.removed", args[1]), sender);
                     }
                     break;
                 case "shuffle":
@@ -79,7 +80,7 @@ public class Teams implements BasicCommand {
                     break;
                 case "get":
                     if(t==null){
-                        LionChat.sendSystemMessage(Component.text("This Team does not exists!", TextColor.color(255, 128, 0)), sender);
+                        LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.not_existing"), sender);
                     }else{
                         if(args.length >= 3){
                             switch (args[2]){
@@ -87,7 +88,7 @@ public class Teams implements BasicCommand {
                                     if(args.length >= 4){
                                         Team ct = Team.getTeam(Bukkit.getOfflinePlayer(args[3]));
                                         if(ct != null){
-                                            LionChat.sendSystemMessage(Component.text("Dieser Spieler ist schon in Team " + ct.getName()), sender);
+                                            LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.player_already_in_team", args[3], ct.getName()), sender);
                                         }else{
                                             LionChat.sendSystemMessage(t.addPlayer(Bukkit.getOfflinePlayer(args[3])), sender);
                                         }
@@ -98,7 +99,7 @@ public class Teams implements BasicCommand {
                                         OfflinePlayer p = Bukkit.getOfflinePlayer(args[3]);
                                         if (t.getPlayers().contains(p)) {
                                             LionChat.sendSystemMessage(t.removePlayer(p), sender);
-                                        }else LionChat.sendSystemMessage(Component.text("The given Player is not in this Team."), sender);
+                                        }else LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.player_not_in_team", args[3], t.getName()), sender);
                                     }else LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
                                     break;
                                 case "clear":
@@ -106,24 +107,27 @@ public class Teams implements BasicCommand {
                                     break;
                                 case "fill":
                                     int amount = 0;
+                                    Component c = Component.text("Added players:");
                                     for(Player p : Bukkit.getOnlinePlayers()){
                                         if (Team.getTeam(p) == null){
                                             t.addPlayer(p);
+                                            c = c.appendNewline().append(p.displayName());
                                             amount++;
                                         }
                                     }
                                     if (amount>1){
-                                        LionChat.sendSystemMessage("Es wurden "+amount+" Spieler zu Team "+t.getName()+" hinzugefügt.", sender);
-                                    } else if (amount==1) LionChat.sendSystemMessage("Es wurde "+amount+" Spieler zu Team "+t.getName()+" hinzugefügt." , sender);
-                                    else LionChat.sendError("Alle Spieler sind bereits in Teams", sender);
+                                        c = Component.text(amount).hoverEvent(c.asHoverEvent());
+                                        LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.player_added_amount", c, Component.text(t.getName())), sender);
+                                    } else if (amount==1) LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.player_added_amount_single", Component.text(t.getName())), sender);
+                                    else LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.full"), sender);
                                     break;
                                 case "changename":
                                     if (args.length >= 4){
                                         if (Team.getTeam(args[3])==null){
                                             String s = t.getName();
                                             t.setName(args[3]);
-                                            LionChat.sendSystemMessage("Das Team "+s+" wurde umbenannt in "+t.getName(), sender);
-                                        }else LionChat.sendError("Dieses Team existiert bereits!", sender);
+                                            LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.renamed", s, t.getName()), sender);
+                                        }else LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.already_existing"), sender);
                                     }else LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
                                     break;
                                 default:
@@ -145,7 +149,7 @@ public class Teams implements BasicCommand {
                                     
                                     break;
                             }
-                        }else LionChat.sendSystemMessage(Component.text("This Team does not exists!", TextColor.color(255, 128, 0)), sender);
+                        }else LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.not_existing"), sender);
                     }
                     break;
                 default: LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
@@ -165,7 +169,7 @@ public class Teams implements BasicCommand {
                 c = c.hoverEvent(h.asHoverEvent());
                 sender.sendMessage(c);
             }
-        }else LionChat.sendError("No Teams existing", sender);
+        }else LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.no_team"), sender);
     }
 
     private void shuffleTeams(CommandSender sender){
@@ -185,9 +189,9 @@ public class Teams implements BasicCommand {
                     lowest.addPlayer(p);
                     players.remove(p);
                 }
-                LionChat.sendSystemMessage("Alle Spieler wurden zufällig verteilt", sender);
-            }else LionChat.sendError("Es werden hierfür mindestens 2 Teams benötigt", sender);
-        }else LionChat.sendError("Alle Spieler sind bereits in Teams", sender);
+                LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.shuffle"), sender);
+            }else LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.shuffle", "2"), sender);
+        }else LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.full"), sender);
     }
 
     /**\team [register|delete|get|shuffle|list] {teamname} [add|remove|clear]

@@ -1,5 +1,6 @@
 package de.lioncraft.lionapi.challenge;
 
+import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.guimanagement.Items;
 import de.lioncraft.lionapi.guimanagement.MainMenu;
 import de.lioncraft.lionapi.messageHandling.DM;
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
+import static de.lioncraft.lionapi.LionAPI.lm;
 import static org.bukkit.Bukkit.getPluginManager;
 import static org.bukkit.Bukkit.getServer;
 
@@ -61,20 +63,20 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
     protected void onFinish(ChallengeEndData data) {
         if (data.isSuccessful()){
             getServer().sendMessage(Component.text("--------------------------------", TextColor.color(0, 255, 255)));
-            getServer().sendMessage(Component.text("Der Ender Dragon ist gestorben!", TextColor.color(0, 255, 25)));
-            getServer().sendMessage(Component.text("Zeit: ", TextColor.color(20, 200, 20)).append(MainTimer.getTimer().getMessage()));
+            getServer().sendMessage(lm().msg("challenges.simple.end.dragon"));
+            getServer().sendMessage(lm().msg("challenges.simple.end.time").append(MainTimer.getTimer().getMessage()));
             getServer().sendMessage(Component.text("--------------------------------", TextColor.color(0, 255, 255)));
 
         }else{
-            String type = switch ((String) data.getArgs().get("type")){
-                case "playerDeath" -> "<#FF6419>Der Spieler <#00FFFF>"+data.getArgs().get("player")+"<#FF6419> ist gestorben.";
-                case "timerExpired" -> "Der Timer ist abgelaufen";
-                default -> "/reset to try again";
+            Component type = switch ((String) data.getArgs().get("type")){
+                case "playerDeath" -> lm().msg("challenges.simple.end.player", (String) data.getArgs().get("player"));
+                case "timerExpired" -> lm().msg("challenges.simple.end.timer");
+                default -> lm().msg("challenges.simple.end.default");
             };
             getServer().sendMessage(Component.text("--------------------------------", TextColor.color(150, 0, 200)));
-            getServer().sendMessage(Component.text("Challenge verloren!", TextColor.color(255, 100, 25)));
-            getServer().sendMessage(MiniMessage.miniMessage().deserialize(type));
-            getServer().sendMessage(Component.text("Zeit: ", TextColor.color(255, 100, 25)).append(MainTimer.getTimer().getMessage()));
+            getServer().sendMessage(lm().msg("challenges.simple.end.lost"));
+            getServer().sendMessage(type);
+            getServer().sendMessage(lm().msg("challenges.simple.end.time").append(MainTimer.getTimer().getMessage()));
             getServer().sendMessage(Component.text("--------------------------------", TextColor.color(150, 0, 200)));
             for (Player p : Bukkit.getOnlinePlayers()){
                 p.setGameMode(GameMode.SPECTATOR);

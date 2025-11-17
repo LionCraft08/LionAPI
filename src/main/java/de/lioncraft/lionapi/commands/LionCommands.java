@@ -30,7 +30,7 @@ public class LionCommands {
                         .executes(cc ->{
                             if(cc.getSource().getExecutor() instanceof Player p){
                                 p.openInventory(MainMenu.getMainMenu());
-                            }else LionChat.sendSystemMessage(MSG.notAPlayer, cc.getSource().getSender());
+                            }else LionChat.sendSystemMessage(MSG.NOT_A_PLAYER, cc.getSource().getSender());
                             return 0;
                         })
                         .then(Commands.argument("arguments", StringArgumentType.word())

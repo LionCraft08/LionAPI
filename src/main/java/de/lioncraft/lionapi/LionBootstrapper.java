@@ -1,10 +1,7 @@
 package de.lioncraft.lionapi;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import de.lioncraft.lionapi.commands.Backpack;
-import de.lioncraft.lionapi.commands.LionCommands;
-import de.lioncraft.lionapi.commands.Msg;
-import de.lioncraft.lionapi.commands.Teammsg;
+import de.lioncraft.lionapi.commands.*;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
@@ -23,6 +20,7 @@ public class LionBootstrapper implements PluginBootstrap {
             Backpack.register(e.registrar());
             Teammsg.register(e.registrar());
             Msg.register(e.registrar());
+            CodeCommand.register(e.registrar());
             e.registrar().register(Commands.literal("timer")
                     .requires(s -> s.getSender().isOp())
                     .build(),

@@ -75,7 +75,7 @@ public abstract class AbstractAddon {
                     try {
                         ((HandlerList) clazz.getDeclaredMethod("getHandlerList").invoke(null)).unregister(l);
                     } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                        Bukkit.getServer().getConsoleSender().sendMessage("Seems like there is an invalid Event Listener for \""+
+                        LionChat.sendLogMessage("Seems like there is an invalid Event Listener for \""+
                                 clazz.getName() +"\" in "+l.getClass().getName());
                     }
                 }

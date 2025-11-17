@@ -25,7 +25,7 @@ public class Backpack implements TabExecutor {
                                     Team t = Team.getTeam(p);
                                     t.getBackpack().openBackpack(p);
                                 }else LionChat.sendSystemMessage(MSG.NO_TEAM, p);
-                            }else LionChat.sendSystemMessage(MSG.notAPlayer, cc.getSource().getSender());
+                            }else LionChat.sendSystemMessage(MSG.NOT_A_PLAYER, cc.getSource().getSender());
                             return 0;
                         })
                         .then(Commands.argument("team", StringArgumentType.string())
@@ -35,7 +35,7 @@ public class Backpack implements TabExecutor {
                                             Team t = Team.getTeam(p);
                                             t.getBackpack().openBackpack(p);
                                         }else LionChat.sendSystemMessage(MSG.NO_TEAM, p);
-                                    }else LionChat.sendSystemMessage(MSG.notAPlayer, cc.getSource().getSender());
+                                    }else LionChat.sendSystemMessage(MSG.NOT_A_PLAYER, cc.getSource().getSender());
                                     return 0;
                                 } ))
                 .build(),
@@ -49,8 +49,8 @@ public class Backpack implements TabExecutor {
             if(Team.getTeam(p) != null){
                 Team t = Team.getTeam(p);
                 t.getBackpack().openBackpack(p);
-            }else sender.sendMessage(DM.messagePrefix.append(Component.text("You are not in a Team!")));
-        }else sender.sendMessage(DM.notAPlayer);
+            }else LionChat.sendSystemMessage(MSG.NO_TEAM, sender);
+        }else LionChat.sendSystemMessage(MSG.NOT_A_PLAYER, sender);
         return true;
     }
 

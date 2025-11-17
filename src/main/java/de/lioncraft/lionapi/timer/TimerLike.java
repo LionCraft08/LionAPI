@@ -158,7 +158,7 @@ public abstract class TimerLike {
 
     private boolean isStarting;
     public Component start(){
-        if (isStarting) return Component.text("The Timer is already active!");
+        if (isStarting) return LionAPI.lm().msg("features.timer.error.already_active");
         isStarting = true;
         TimerLikeResumeEvent e;
         if(MainTimer.getTimer() == this){
@@ -180,9 +180,9 @@ public abstract class TimerLike {
                 colorTick.cancel();
             }
             colorTick = new colorTick(this).runTaskTimer(LionAPI.getPlugin(), 0, 2);
-        } else return Component.text("The Timer is already active!");
+        } else return LionAPI.lm().msg("features.timer.error.already_active");
         Bukkit.getPluginManager().callEvent(new challengeResumeEvent());
-        return Component.text("Timer Resumed");
+        return LionAPI.lm().msg("features.timer.resumed");
     }
     public List<OfflinePlayer> getViewer() {
         return viewers;
@@ -216,7 +216,7 @@ public abstract class TimerLike {
         }
 
         for(OfflinePlayer p : viewers){
-            if(p.isOnline()) p.getPlayer().sendActionBar(Component.text("Timer Paused!", TextColor.color(255, 128, 0)));
+            if(p.isOnline()) p.getPlayer().sendActionBar(LionAPI.lm().getMessageAsString("features.timer.paused"));
         }
         Bukkit.getPluginManager().callEvent(new challengePauseEvent());
     }
@@ -231,11 +231,11 @@ public abstract class TimerLike {
         if(!isActive()){
             switch (TimerConfig.getWhenPaused().toUpperCase()){
                 case "OFF" -> {
-                    c = getColoredMessage(currentColor, "Timer paused");
+                    c = getColoredMessage(currentColor, LionAPI.lm().getMessageAsString("features.timer.paused"));
                     colorTick.cancel();
                     colorTick = null;
                 }
-                case "MESSAGE"-> c = getColoredMessage(currentColor, "Timer paused");
+                case "MESSAGE"-> c = getColoredMessage(currentColor, LionAPI.lm().getMessageAsString("features.timer.paused"));
             }
         }
 

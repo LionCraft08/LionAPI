@@ -196,15 +196,19 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer>,
 
     public Component clear(){
         if(players.isEmpty()){
-            return Component.text("This Team is already empty.", TextColor.color(255, 255, 0));
+            return LionAPI.lm().msg("features.teams.error.already_empty", getName());
         }else{
             int i = 0;
             List<OfflinePlayer> list = new ArrayList<>(players);
+            Component players = Component.text("Removed players: ");
             for(OfflinePlayer p : list){
                 removePlayer(p);
                 i++;
+                players = players.appendNewline().append(p.getPlayer().displayName());
             }
-            return Component.text("Removed "+i+" Players from this Team");
+            return LionAPI.lm().msg("features.teams.player_removed_amount", Component.text(i).hoverEvent(
+                    players.asHoverEvent()
+            ), Component.text(getName()));
         }
     }
 
@@ -219,28 +223,33 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer>,
         TeamRegisterPlayerEvent event = new TeamRegisterPlayerEvent(this, p);
         Bukkit.getPluginManager().callEvent(event);
         if(event.isCancelled()){
-            if(event.getCancelMessage() == null) return DM.error("Der Spieler konnte nicht registriert werden.");
+            if(event.getCancelMessage() == null) return DM.error("Player couldn't be added to this team.");
             else return DM.error(event.getCancelMessage());
         }
         if(!players.contains(p)){
             players.add(p);
             playerTeamHashMap.put(p, this);
-        }else return DM.error(p.getName() + " ist bereits in diesem Team");
-        return Component.text(p.getName() + " ist jetzt in Team " + getName());
+            return LionAPI.lm().msg("features.teams.player_added", p.getName(), getName());
+
+        }else return LionAPI.lm().msg("features.teams.error.player_already_in_team", p.getName(), getName());
+
     }
 
     public Component removePlayer(OfflinePlayer p){
         TeamRemovePlayerEvent event = new TeamRemovePlayerEvent(this, p);
         Bukkit.getPluginManager().callEvent(event);
         if(event.isCancelled()){
-            if(event.getCancelMessage() == null) return DM.error("Der Spieler konnte nicht entfernt werden.");
+            if(event.getCancelMessage() == null) return DM.error("Player couldn't be removed from this team");
             else return DM.error(event.getCancelMessage());
         }
         if(players.contains(p)){
             players.remove(p);
             playerTeamHashMap.remove(p);
-        }else return DM.error(p.getName() + " ist nicht in diesem Team");
-        return Component.text(p.getName() + " wurde aus Team " + getName() + " entfernt");
+            return LionAPI.lm().msg("features.teams.player_removed", p.getName(), getName());
+
+        } else
+            return LionAPI.lm().msg("features.teams.error.player_not_in_team", p.getName(), getName());
+
     }
 
     public List<Player> getOnlinePlayers(){

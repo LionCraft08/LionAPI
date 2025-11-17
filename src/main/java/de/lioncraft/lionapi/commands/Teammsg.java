@@ -40,7 +40,7 @@ public class Teammsg implements TabExecutor {
                                             });
 
                                         }
-                                    }else LionChat.sendSystemMessage(MSG.notAPlayer, cc.getSource().getSender());
+                                    }else LionChat.sendSystemMessage(MSG.NOT_A_PLAYER, cc.getSource().getSender());
                                     return 0;
                                 })).build() ,
                 "Send a Message to your Team",

@@ -5,7 +5,6 @@ import de.lioncraft.lionapi.addons.builtIn.TimerAddon;
 import de.lioncraft.lionapi.challenge.ChallengeController;
 import de.lioncraft.lionapi.challenge.SimpleSpeedrunChallenge;
 import de.lioncraft.lionapi.challenge.SurvivalServerChallenge;
-import de.lioncraft.lionapi.commands.DebugCommand;
 import de.lioncraft.lionapi.commands.Teams;
 import de.lioncraft.lionapi.commands.timerCommand;
 import de.lioncraft.lionapi.data.ChallengeSettings;
@@ -13,18 +12,16 @@ import de.lioncraft.lionapi.data.ConfigManager;
 import de.lioncraft.lionapi.data.Settings;
 import de.lioncraft.lionapi.events.saveDataEvent;
 import de.lioncraft.lionapi.guimanagement.*;
-import de.lioncraft.lionapi.guimanagement.Interaction.Button;
-import de.lioncraft.lionapi.guimanagement.Interaction.MultipleSelection;
 import de.lioncraft.lionapi.guimanagement.lionclient.DisplayManager;
 import de.lioncraft.lionapi.hiddenclicks.ClickCommand;
 import de.lioncraft.lionapi.listeners.*;
 import de.lioncraft.lionapi.messageHandling.ColorGradient;
 import de.lioncraft.lionapi.messageHandling.defaultMessages;
+import de.lioncraft.lionapi.messageHandling.lang.LanguageFileManager;
 import de.lioncraft.lionapi.messageHandling.lionchat.ChannelConfiguration;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
 import de.lioncraft.lionapi.playerSettings.PlayerSettings;
 import de.lioncraft.lionapi.teams.Backpack;
-import de.lioncraft.lionapi.teams.DeserializeTeams;
 import de.lioncraft.lionapi.teams.Team;
 import de.lioncraft.lionapi.timer.*;
 import de.lioncraft.lionapi.velocity.ProxyMessageListeners;
@@ -38,7 +35,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 
 public final class LionAPI extends JavaPlugin {
@@ -59,6 +55,9 @@ public final class LionAPI extends JavaPlugin {
         ConfigurationSerialization.registerClass(SimpleSpeedrunChallenge.class);
         ConfigurationSerialization.registerClass(SurvivalServerChallenge.class);
         ConfigurationSerialization.registerClass(PlayerSettings.class);
+
+        LanguageFileManager.saveLangFiles(this);
+        languageManager = LanguageFileManager.createManager(plugin, getConfig().getString("language", "en_us"));
 
         LionChat.registerChannel("system", new ChannelConfiguration(false,
                 TextColor.color(100, 200, 200),
@@ -90,6 +89,7 @@ public final class LionAPI extends JavaPlugin {
         Items.setItems();
         randomizer.InitializeAllowedLists();
 
+
         Bukkit.getPluginManager().registerEvents(new invClickListener(), this);
         Bukkit.getPluginManager().registerEvents(new listeners(), this);
         Bukkit.getPluginManager().registerEvents(new timerListeners(), this);
@@ -101,14 +101,14 @@ public final class LionAPI extends JavaPlugin {
         registerCommand("timer","Timer & Challenge Management",new timerCommand());
         registerCommand("teams", new Teams());
         registerCommand("hiddenclickapi", new ClickCommand());
-        registerCommand("debug", new DebugCommand());
+        //registerCommand("debug", new DebugCommand());
 
 
         ProxyMessageListeners.register(this);
         DisplayManager.register(this);
 
         MainTimer.getTimer();
-        new DeserializeTeams().runTaskLater(this, 10);
+        Bukkit.getScheduler().runTaskLater(this, Team::loadAll, 7);
 
         if (getConfig().getBoolean("settings.challenge-server")){
             if (getConfig().contains("persistent-data.challenge")) ChallengeController.setInstance((ChallengeController) getConfig().get("challenge"));
@@ -123,6 +123,10 @@ public final class LionAPI extends JavaPlugin {
         getLogger().info("Successfully enabled LionAPI.");
     }
 
+    public static ClassLoader getLionAPIClassLoader(){
+        return plugin.getClassLoader();
+    }
+
     @Override
     public void onDisable() {
         Bukkit.getPluginManager().callEvent(new saveDataEvent());
@@ -135,10 +139,20 @@ public final class LionAPI extends JavaPlugin {
             throw new RuntimeException(e);
         }
     }
-    static Plugin plugin;
+    static LionAPI plugin;
 
     public static Plugin getPlugin(){
         return plugin;
     }
+    private static LanguageFileManager languageManager;
+    public static String getLanguage(){
+        return plugin.getConfig().getString("language");
+    }
 
+    public static LanguageFileManager getLanguageManager() {
+        return languageManager;
+    }
+    public static LanguageFileManager lm(){
+        return getLanguageManager();
+    }
 }

@@ -11,6 +11,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.ForwardingAudience;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -60,6 +61,12 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer>,
             throw new RuntimeException(e);
         }
     }
+
+    public static TextColor getRandomTextColor(){
+        return (TextColor) NamedTextColor.NAMES.values().toArray()[new Random().nextInt(15)];
+    }
+
+
     public static void resetAll(){
         File f = new File(LionAPI.getPlugin().getDataPath().toFile(), "teams.yml");
         f.delete();
@@ -76,13 +83,26 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer>,
     public static boolean registerNewCommandPart(String args, TeamClassFunction codeToRun){
         return Teams.registerNewCommandPart(args, codeToRun);}
 
-    /**
+    /** IMPORTANT NOTE: As of version 1.10.5, the name shouldn't be used to reference teams, use {@link Team#getTeamID()} instead <br>
+     * Only use this for displaying the name of the team, as the team might be renamed.
      * @param name The Teamname
      * @return The Team or null
      */
     public static @Nullable Team getTeam(String name){
         for(Team t : teams){
             if(t.getName().equals(name)){
+                return t;
+            }
+        }
+        return null;
+    }
+    /**
+     * @param id The Teamname
+     * @return The Team or null
+     */
+    public static @Nullable Team getTeam(UUID id){
+        for(Team t : teams){
+            if(t.getTeamID().equals(id)){
                 return t;
             }
         }
@@ -128,6 +148,8 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer>,
     private List<OfflinePlayer> players = new ArrayList<>();
     private String name;
     private Backpack backpack;
+    private UUID teamID;
+    private TextColor nameColor;
 
     @NotNull
     @Override
@@ -136,7 +158,7 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer>,
     }
     public void updateTabList(Player p){
         if(Settings.isDisplayTeamname()){
-            p.playerListName(Component.text("[", TextColor.color(200, 200, 200)).append(Component.text(getName(), TextColor.color(255, 0, 255))).append(Component.text("] ", TextColor.color(200, 200, 200))).append(p.displayName()));
+            p.playerListName(Component.text("[", TextColor.color(200, 200, 200)).append(getComponentName()).append(Component.text("] ", TextColor.color(200, 200, 200))).append(p.displayName()));
         }else{
             p.playerListName(p.displayName());
         }
@@ -147,6 +169,8 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer>,
         Map<String, Object> map = getSerializationValues();
         map.put("name", name);
         map.put("bp", backpack);
+        map.put("teamid", teamID.toString());
+        map.put("color", nameColor.asHexString());
         List<String> list = new ArrayList<>();
         for(OfflinePlayer id : players){
             list.add(id.getUniqueId().toString());
@@ -157,6 +181,13 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer>,
     protected Team(Map<String, Object> map){
         name = (String) map.get("name");
         backpack = (Backpack) map.get("bp");
+        String uuid = (String) map.get("teamid");
+        if (uuid != null) teamID = UUID.fromString(uuid);
+        else teamID = UUID.randomUUID(); //Update old team data
+        String color = (String) map.get("color");
+        if (color != null) this.nameColor = TextColor.fromCSSHexString(color);
+        else nameColor = getRandomTextColor(); //Update old team data
+
         List<String> uuids = (List<String>) map.get("players");
         for(String s : uuids){
             players.add(Bukkit.getOfflinePlayer(UUID.fromString(s)));
@@ -169,6 +200,20 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer>,
     protected Team(String name){
         this.name = name;
         backpack = new Backpack(Settings.getBackpackSize(), Component.text("BP Team "+name), null);
+        teamID = UUID.randomUUID();
+        nameColor = getRandomTextColor();
+    }
+
+    public TextColor getNameColor() {
+        return nameColor;
+    }
+
+    public void setNameColor(TextColor nameColor) {
+        this.nameColor = nameColor;
+    }
+
+    public Component getComponentName(){
+        return Component.text(getName(), getNameColor());
     }
 
     public static Team valueOf(Map<String, Object> map){
@@ -196,7 +241,7 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer>,
 
     public Component clear(){
         if(players.isEmpty()){
-            return LionAPI.lm().msg("features.teams.error.already_empty", getName());
+            return LionAPI.lm().msg("features.teams.error.already_empty", getComponentName());
         }else{
             int i = 0;
             List<OfflinePlayer> list = new ArrayList<>(players);
@@ -204,11 +249,11 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer>,
             for(OfflinePlayer p : list){
                 removePlayer(p);
                 i++;
-                players = players.appendNewline().append(p.getPlayer().displayName());
+                players = players.appendNewline().append(Component.text(Objects.requireNonNullElse(p.getName(), p.getUniqueId().toString())));
             }
             return LionAPI.lm().msg("features.teams.player_removed_amount", Component.text(i).hoverEvent(
                     players.asHoverEvent()
-            ), Component.text(getName()));
+            ), getComponentName());
         }
     }
 
@@ -229,9 +274,9 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer>,
         if(!players.contains(p)){
             players.add(p);
             playerTeamHashMap.put(p, this);
-            return LionAPI.lm().msg("features.teams.player_added", p.getName(), getName());
+            return LionAPI.lm().msg("features.teams.player_added", Component.text(p.getName()), getComponentName());
 
-        }else return LionAPI.lm().msg("features.teams.error.player_already_in_team", p.getName(), getName());
+        }else return LionAPI.lm().msg("features.teams.error.player_already_in_team", Component.text(p.getName()), getComponentName());
 
     }
 
@@ -245,10 +290,10 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer>,
         if(players.contains(p)){
             players.remove(p);
             playerTeamHashMap.remove(p);
-            return LionAPI.lm().msg("features.teams.player_removed", p.getName(), getName());
+            return LionAPI.lm().msg("features.teams.player_removed", Component.text(p.getName()), getComponentName());
 
         } else
-            return LionAPI.lm().msg("features.teams.error.player_not_in_team", p.getName(), getName());
+            return LionAPI.lm().msg("features.teams.error.player_not_in_team", Component.text(p.getName()), getComponentName());
 
     }
 
@@ -287,4 +332,7 @@ public class Team implements ConfigurationSerializable, Iterable<OfflinePlayer>,
         return name != null;
     }
 
+    public UUID getTeamID() {
+        return teamID;
+    }
 }

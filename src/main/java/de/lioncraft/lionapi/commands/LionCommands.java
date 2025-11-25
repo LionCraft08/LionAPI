@@ -9,6 +9,7 @@ import de.lioncraft.lionapi.guimanagement.lionclient.DisplayManager;
 import de.lioncraft.lionapi.messageHandling.ColorGradient;
 import de.lioncraft.lionapi.messageHandling.MSG;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
+import de.lioncraft.lionapi.permissions.LionAPIPermissions;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
@@ -27,6 +28,7 @@ public class LionCommands {
     public static void register(Commands cmd){
         cmd.register(
                 Commands.literal("lionsystems")
+                        .requires(css -> css.getSender().hasPermission(LionAPIPermissions.ExecuteLS.getMcid()))
                         .executes(cc ->{
                             if(cc.getSource().getExecutor() instanceof Player p){
                                 p.openInventory(MainMenu.getMainMenu());

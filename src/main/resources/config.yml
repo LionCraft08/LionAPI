@@ -31,9 +31,7 @@ settings:
 
 
   timer:
-    #What to display when the timer is paused.
-    #Can be OFF (Nothing), TIMER (The current time of the timer) or MESSAGE (A Timer Paused Message)
-    when-paused: OFF
+    # Nothing here anymore... These Settings were moved to timer-color-presets.yml
 
 
 #Manages connection to other servers.

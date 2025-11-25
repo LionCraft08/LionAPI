@@ -5,6 +5,7 @@ import de.lioncraft.lionapi.addons.builtIn.TimerAddon;
 import de.lioncraft.lionapi.challenge.ChallengeController;
 import de.lioncraft.lionapi.challenge.SimpleSpeedrunChallenge;
 import de.lioncraft.lionapi.challenge.SurvivalServerChallenge;
+import de.lioncraft.lionapi.commands.DebugCommand;
 import de.lioncraft.lionapi.commands.Teams;
 import de.lioncraft.lionapi.commands.timerCommand;
 import de.lioncraft.lionapi.data.ChallengeSettings;
@@ -20,6 +21,7 @@ import de.lioncraft.lionapi.messageHandling.defaultMessages;
 import de.lioncraft.lionapi.messageHandling.lang.LanguageFileManager;
 import de.lioncraft.lionapi.messageHandling.lionchat.ChannelConfiguration;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
+import de.lioncraft.lionapi.permissions.LionAPIPermissions;
 import de.lioncraft.lionapi.playerSettings.PlayerSettings;
 import de.lioncraft.lionapi.teams.Backpack;
 import de.lioncraft.lionapi.teams.Team;
@@ -31,10 +33,15 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 
 public final class LionAPI extends JavaPlugin {
@@ -43,7 +50,7 @@ public final class LionAPI extends JavaPlugin {
     public void onEnable() {
         plugin = this;
 
-        saveResource("timer-color-presets.yml", false);
+        saveResourceIfNotExists("/timer-color-presets.yml", getDataPath().resolve("timer-color-presets.yml"));
 
         ConfigurationSerialization.registerClass(TimerSnapshot.class);
         ConfigurationSerialization.registerClass(Backpack.class);
@@ -83,6 +90,14 @@ public final class LionAPI extends JavaPlugin {
         ConfigManager configManager = new ConfigManager(this);
         configManager.loadAndCheckConfig();
 
+        for (LionAPIPermissions lap : LionAPIPermissions.values()){
+            Bukkit.getPluginManager().addPermission(new Permission(
+                    lap.getMcid(),
+                    lap.getDescription(),
+                    lap.getPmd()
+            ));
+        }
+
         TimerConfig.init();
         Settings.init();
         defaultMessages.setValues();
@@ -101,7 +116,7 @@ public final class LionAPI extends JavaPlugin {
         registerCommand("timer","Timer & Challenge Management",new timerCommand());
         registerCommand("teams", new Teams());
         registerCommand("hiddenclickapi", new ClickCommand());
-        //registerCommand("debug", new DebugCommand());
+        registerCommand("debug", new DebugCommand());
 
 
         ProxyMessageListeners.register(this);
@@ -154,5 +169,46 @@ public final class LionAPI extends JavaPlugin {
     }
     public static LanguageFileManager lm(){
         return getLanguageManager();
+    }
+
+    private boolean saveResourceIfNotExists(String resource, Path outputPath) {
+        if (resource == null || !resource.startsWith("/")) {
+            System.err.println("Error: Resource path must be a non-empty absolute path starting with '/' (e.g., /com/example/file.txt).");
+            return false;
+        }
+
+        File targetFile = outputPath.toFile();
+
+        if (targetFile.exists()) {
+            if (targetFile.isDirectory()) {
+                return false;
+            }
+            return false;
+        }
+        try {
+            InputStream resourceStream = LionAPI.class.getResourceAsStream(resource);
+            {
+                if (resourceStream == null) {
+                    return false;
+                }
+                Path parentDir = outputPath.getParent();
+                if (parentDir != null) {
+                    if (!Files.exists(parentDir)) {
+                        Files.createDirectories(parentDir);
+                    }
+                }
+
+                Files.copy(resourceStream, outputPath);
+                return true;
+            }
+        }catch(IOException e) {
+            System.err.println("Error saving resource '" + resource + "' to '" + outputPath + "': " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } catch (SecurityException e) {
+            System.err.println("Error creating directories for '" + outputPath + "' due to security restrictions: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 }

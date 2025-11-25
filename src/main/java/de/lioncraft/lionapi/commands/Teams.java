@@ -4,11 +4,13 @@ import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.messageHandling.DM;
 import de.lioncraft.lionapi.messageHandling.MSG;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
+import de.lioncraft.lionapi.permissions.LionAPIPermissions;
 import de.lioncraft.lionapi.teams.Team;
 import de.lioncraft.lionapi.teams.TeamClassFunction;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -61,15 +63,16 @@ public class Teams implements BasicCommand {
                         LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.already_existing"), sender);
                     }else{
                         t = Team.registerNewTeam(args[1]);
-                        LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.created", t.getName()), sender);
+                        LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.created", t.getComponentName()), sender);
                     }
                     break;
                 case "delete":
                     if(t==null){
                         LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.not_existing"), sender);
                     }else{
+                        Component c = t.getComponentName();
                         Team.unregisterTeam(t);
-                        LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.removed", args[1]), sender);
+                        LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.removed", c), sender);
                     }
                     break;
                 case "shuffle":
@@ -88,7 +91,7 @@ public class Teams implements BasicCommand {
                                     if(args.length >= 4){
                                         Team ct = Team.getTeam(Bukkit.getOfflinePlayer(args[3]));
                                         if(ct != null){
-                                            LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.player_already_in_team", args[3], ct.getName()), sender);
+                                            LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.player_already_in_team", Component.text(args[3]), ct.getComponentName()), sender);
                                         }else{
                                             LionChat.sendSystemMessage(t.addPlayer(Bukkit.getOfflinePlayer(args[3])), sender);
                                         }
@@ -99,7 +102,7 @@ public class Teams implements BasicCommand {
                                         OfflinePlayer p = Bukkit.getOfflinePlayer(args[3]);
                                         if (t.getPlayers().contains(p)) {
                                             LionChat.sendSystemMessage(t.removePlayer(p), sender);
-                                        }else LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.player_not_in_team", args[3], t.getName()), sender);
+                                        }else LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.player_not_in_team", Component.text(args[3]), t.getComponentName()), sender);
                                     }else LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
                                     break;
                                 case "clear":
@@ -117,8 +120,8 @@ public class Teams implements BasicCommand {
                                     }
                                     if (amount>1){
                                         c = Component.text(amount).hoverEvent(c.asHoverEvent());
-                                        LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.player_added_amount", c, Component.text(t.getName())), sender);
-                                    } else if (amount==1) LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.player_added_amount_single", Component.text(t.getName())), sender);
+                                        LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.player_added_amount", c, t.getComponentName()), sender);
+                                    } else if (amount==1) LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.player_added_amount_single", t.getComponentName()), sender);
                                     else LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.full"), sender);
                                     break;
                                 case "changename":
@@ -126,9 +129,20 @@ public class Teams implements BasicCommand {
                                         if (Team.getTeam(args[3])==null){
                                             String s = t.getName();
                                             t.setName(args[3]);
-                                            LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.renamed", s, t.getName()), sender);
+                                            LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.renamed", Component.text(s), t.getComponentName()), sender);
                                         }else LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.already_existing"), sender);
                                     }else LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
+                                    break;
+                                case "setcolor":
+                                    if (args.length >= 4){
+                                        NamedTextColor ntc = NamedTextColor.NAMES.value(args[3]);
+                                        if (ntc != null){
+                                            Component nameold = t.getComponentName();
+                                            t.setNameColor(ntc);
+                                            LionChat.sendSystemMessage(nameold.append(Component.text(" -> ", NamedTextColor.WHITE))
+                                                    .append(t.getComponentName()), sender);
+                                        } else LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
+                                    } else LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
                                     break;
                                 default:
                                     List<String> list = new ArrayList<>(List.of(args));
@@ -149,7 +163,7 @@ public class Teams implements BasicCommand {
                                     
                                     break;
                             }
-                        }else LionChat.sendSystemMessage(LionAPI.lm().msg("features.teams.error.not_existing"), sender);
+                        }else LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
                     }
                     break;
                 default: LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
@@ -161,7 +175,7 @@ public class Teams implements BasicCommand {
         if(!Team.getTeams().isEmpty()){
             LionChat.sendSystemMessage("Teams: " + Team.getTeams().size(), sender);
             for(Team t2 : Team.getTeams()){
-                Component c = Component.text(" > " + t2.getName());
+                Component c = Component.text(" > ").append(t2.getComponentName());
                 Component h = Component.text("");
                 for(OfflinePlayer p : t2){
                     h = h.append(Component.text(p.getName())).appendNewline();
@@ -203,10 +217,12 @@ public class Teams implements BasicCommand {
      *     partial argument to be completed
      * @return the List
      */
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull String[] args) {
         List<String> list = new ArrayList<>();
         switch (args.length){
-            case 0, 1: return List.of("register", "delete", "get", "shuffle","list");
+            case 0, 1:
+                list.addAll(List.of("register", "delete", "get", "shuffle", "list"));
+                break;
             case 2:
                 for(Team t : Team.getTeams()){
                     list.add(t.getName());
@@ -214,7 +230,7 @@ public class Teams implements BasicCommand {
                 break;
             case 3:
                 if(args[0].equals("get")){
-                    list.addAll(List.of("add", "remove", "clear", "fill", "changename"));
+                    list.addAll(List.of("add", "remove", "clear", "fill", "changename", "setcolor"));
                     for(String s : registeredArgs.keySet()){
                         list.add(s.split(" ")[0]);
                     }
@@ -245,6 +261,8 @@ public class Teams implements BasicCommand {
                     } else if (args[2].equals("changename")) {
                         list.add("<name>");
                         break;
+                    } else if (args[2].equals("setcolor")) {
+                        list.addAll(NamedTextColor.NAMES.keys());
                     }
                 }
             default:
@@ -265,20 +283,23 @@ public class Teams implements BasicCommand {
                     }
                 }
         }
+
+        if (args[args.length-1].isBlank()) return list;
+        list.removeIf(s -> !s.startsWith(args[args.length-1]));
         return list;
     }
     @Override
-    public void execute(CommandSourceStack commandSourceStack, String[] strings) {
+    public void execute(CommandSourceStack commandSourceStack, String @NotNull [] strings) {
         onCommand(commandSourceStack.getSender(), strings );
     }
 
     @Override
-    public Collection<String> suggest(CommandSourceStack commandSourceStack, String[] args) {
+    public @NotNull Collection<String> suggest(CommandSourceStack commandSourceStack, String @NotNull [] args) {
         return onTabComplete(commandSourceStack.getSender(), args);
     }
 
     @Override
     public boolean canUse(CommandSender sender) {
-        return sender.isOp();
-}
+        return sender.hasPermission(LionAPIPermissions.ExecuteTeam.getMcid());
+    }
 }

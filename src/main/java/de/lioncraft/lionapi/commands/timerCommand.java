@@ -4,6 +4,7 @@ import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.challenge.ChallengeController;
 import de.lioncraft.lionapi.messageHandling.MSG;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
+import de.lioncraft.lionapi.permissions.LionAPIPermissions;
 import de.lioncraft.lionapi.timer.MainTimer;
 import de.lioncraft.lionapi.timer.TimerConfig;
 import io.papermc.paper.command.brigadier.BasicCommand;
@@ -167,6 +168,8 @@ public class timerCommand implements BasicCommand {
                 break;
 
         }
+        if (args[args.length-1].isBlank()) return strings;
+        strings.removeIf(s -> !s.startsWith(args[args.length-1]));
         return strings;
     }
 
@@ -182,6 +185,7 @@ public class timerCommand implements BasicCommand {
 
     @Override
     public boolean canUse(CommandSender sender) {
-        return sender.isOp();
+        return sender.hasPermission(LionAPIPermissions.ExecuteTimer.getMcid());
+//        return sender.isOp();
     }
 }

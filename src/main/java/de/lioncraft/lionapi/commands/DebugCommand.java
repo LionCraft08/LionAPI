@@ -1,6 +1,8 @@
 package de.lioncraft.lionapi.commands;
 
 import de.lioncraft.lionapi.LionAPI;
+import de.lioncraft.lionapi.guimanagement.Interaction.Interactor;
+import de.lioncraft.lionapi.guimanagement.Items;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
 import de.lioncraft.lionapi.pluginPlusAPI.ParticleDelayGenerator;
 import de.lioncraft.lionapi.teams.Team;
@@ -8,6 +10,7 @@ import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,6 +18,9 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +36,20 @@ public class DebugCommand implements BasicCommand {
             if (args.length>=4){
                 new ParticleDelayGenerator(Integer.parseInt(args[2]), p, Double.parseDouble(args[3]), 100).runTaskTimer(LionAPI.getPlugin(), Integer.parseInt(args[0]), Integer.parseInt(args[1]));
             }else{
+                Bukkit.getPluginManager().registerEvents(new Listener() {
+                    @EventHandler
+                    public void onClick(PlayerInteractEvent e){
+                        System.out.println(Bukkit.getServer().getCurrentTick()+" | Interaction");
+                    }
+                }, LionAPI.getPlugin());
+                ItemStack is = Items.get("TestItem", Material.CLOCK, "HALLOOOOOOOOOOO!");
+                Interactor.registerInteractor(is, player -> {
+                    LionChat.sendSystemMessage("Test erfolgreich", player);
+                });
+                p.give(is);
+
+
+                if (true) return true;
                 Team.getTeams().forEach(t -> {
                     t.sendMessage(Component.text("Hallo Welt!!!!!!"));
                     LionChat.sendSystemMessage("Hallo auch meinerseits", t);

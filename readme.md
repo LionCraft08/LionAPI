@@ -16,6 +16,6 @@ https://github.com/LionCraft08/Downloads/tree/main/LionAPI
 # Usage
 - Commands: 
 - - /ls: Opens the configuration menu
-- - /code: Executes Java Code (Disabled due to security risks) 
+- - /code: Executes Java Code (Disabled by default due to security risks) 
 - - /teams: Manage Teams (Useful for backpack and battles like ForceItemBattle)
 - Chat: LionPlugins use LionChat, meaning every channel can be adjusted and disabled

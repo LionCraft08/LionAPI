@@ -13,7 +13,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Biome;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -284,7 +286,7 @@ public class Teams implements BasicCommand {
                 }
         }
 
-        if (args[args.length-1].isBlank()) return list;
+        if (args.length == 0 || args[args.length-1].isBlank()) return list;
         list.removeIf(s -> !s.startsWith(args[args.length-1]));
         return list;
     }

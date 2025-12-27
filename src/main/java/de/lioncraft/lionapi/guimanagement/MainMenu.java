@@ -1,5 +1,6 @@
 package de.lioncraft.lionapi.guimanagement;
 
+import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.guimanagement.Interaction.Button;
 import de.lioncraft.lionapi.guimanagement.Interaction.LionButtonFactory;
 import de.lioncraft.lionapi.guimanagement.lioninventories.AddonManageMenu;
@@ -38,6 +39,11 @@ public final class MainMenu {
                 "lionapi_open_timer_menu"));
         mainMenu.setItem(12, ChannelSelectionMenu.getButton());
         mainMenu.setItem(37, AddonManageMenu.getItem());
+        mainMenu.setItem(39, LionButtonFactory.createButton(
+                Items.get(Component.text("Challenge Controller", TextColor.color(255, 128, 0)),
+                        Material.DIAMOND_SWORD,
+                        LionAPI.lm().msg("inv.challenge-controller.open_gui")),
+                "lionapi_open_challenge-controller_menu"));
         return mainMenu;
     }
 

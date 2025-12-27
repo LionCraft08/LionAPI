@@ -1,35 +1,30 @@
 package de.lioncraft.lionapi.challenge;
 
 import de.lioncraft.lionapi.LionAPI;
+import de.lioncraft.lionapi.guimanagement.Interaction.Setting;
 import de.lioncraft.lionapi.guimanagement.Items;
 import de.lioncraft.lionapi.guimanagement.MainMenu;
-import de.lioncraft.lionapi.messageHandling.DM;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
 import de.lioncraft.lionapi.playerSettings.PlayerSettings;
 import de.lioncraft.lionapi.timer.MainTimer;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.configuration.serialization.DelegateDeserialization;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
+import java.util.Objects;
 
 import static de.lioncraft.lionapi.LionAPI.lm;
-import static org.bukkit.Bukkit.getPluginManager;
 import static org.bukkit.Bukkit.getServer;
 
 public class SimpleSpeedrunChallenge extends ChallengeController {
-    public SimpleSpeedrunChallenge(Map<String, Object> map){
-        super(map);
-    }
     public SimpleSpeedrunChallenge() {
         super(true, true);
     }
@@ -55,7 +50,8 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
         PlayerSettings.getSettings(null).setCanMineBlocks(false);
         PlayerSettings.getSettings(null).setCanHitEntities(false);
         PlayerSettings.getSettings(null).setCanPickupItems(false);
-        PlayerSettings.getSettings(null).setCanMove(false);
+        if (freezePlayersOnPause)
+            PlayerSettings.getSettings(null).setCanMove(false);
 
     }
 
@@ -78,9 +74,10 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
             getServer().sendMessage(type);
             getServer().sendMessage(lm().msg("challenges.simple.end.time").append(MainTimer.getTimer().getMessage()));
             getServer().sendMessage(Component.text("--------------------------------", TextColor.color(150, 0, 200)));
-            for (Player p : Bukkit.getOnlinePlayers()){
-                p.setGameMode(GameMode.SPECTATOR);
-            }
+            if (setPlayersToSpectator)
+                for (Player p : Bukkit.getOnlinePlayers()){
+                    p.setGameMode(GameMode.SPECTATOR);
+                }
         }
 
     }
@@ -117,6 +114,21 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
     }
 
     private Inventory inv;
+    private boolean setPlayersToSpectator = false;
+    private boolean freezePlayersOnPause = true;
+
+    public SimpleSpeedrunChallenge(Map<String, Object> map){
+        super(map);
+        setPlayersToSpectator = (boolean) Objects.requireNonNullElse(map.get("spectator"), false);
+        freezePlayersOnPause = (boolean) Objects.requireNonNullElse(map.get("freezePlayersOnPause"), true);
+    }
+    @Override
+    public @NonNull Map<String, Object> serialize() {
+        Map<String, Object> map = super.serialize();
+        map.put("spectator", setPlayersToSpectator);
+        map.put("freezePlayersOnPause", freezePlayersOnPause);
+        return map;
+    }
 
     @Override
     protected Inventory getConfigInventory(Player user) {
@@ -128,6 +140,32 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
         inv = Bukkit.createInventory(null, 54, Component.text("Simple Challenge Settings"));
         inv.setContents(Items.blockButtons);
         inv.setItem(49, Items.closeButton);
+
+
+        Setting spectator = new Setting(setPlayersToSpectator, Items.get(
+                LionAPI.lm().msg("inv.challenge-controller.spectator.title"),
+                Material.SPYGLASS,
+                LionAPI.lm().msg("inv.challenge-controller.spectator.lore")
+        ),
+                isEnabled -> {
+            setPlayersToSpectator = isEnabled;
+                });
+        inv.setItem(10, spectator.getTopItem());
+        inv.setItem(19, spectator.getBottomItem());
+
+
+        Setting freeze = new Setting(freezePlayersOnPause, Items.get(
+                LionAPI.lm().msg("inv.challenge-controller.freeze.title"),
+                Material.BLUE_ICE,
+                LionAPI.lm().msg("inv.challenge-controller.freeze.lore")
+        ),
+                isEnabled -> {
+            freezePlayersOnPause = isEnabled;
+                });
+        inv.setItem(12, freeze.getTopItem());
+        inv.setItem(21, freeze.getBottomItem());
+
+
         inv.setItem(45, MainMenu.getToMainMenuButton());
     }
 

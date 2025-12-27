@@ -13,7 +13,6 @@ import java.util.UUID;
 public class LionPlayerManager {
     private static HashMap<UUID, PlayerData> map = new HashMap<>();
 
-
     @ApiStatus.Internal
     public static void addPlayerData(PlayerData playerData){
         map.put(playerData.getUuid(), playerData);

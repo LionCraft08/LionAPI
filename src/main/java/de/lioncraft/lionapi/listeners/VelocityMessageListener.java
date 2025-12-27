@@ -21,8 +21,6 @@ public final class VelocityMessageListener {
                     case "isOP" -> {
                         pd.setOP(to.getBool("data"));
                     }
-
-
                 }
             }
             case "lionapi_shutdown" -> {

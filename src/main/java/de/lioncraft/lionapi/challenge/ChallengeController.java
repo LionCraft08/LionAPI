@@ -4,6 +4,7 @@ import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.data.ChallengeSettings;
 import de.lioncraft.lionapi.events.challenge.challengeEndEvent;
 import de.lioncraft.lionapi.events.challenge.challengeEndType;
+import de.lioncraft.lionapi.permissions.LionAPIPermissions;
 import de.lioncraft.lionapi.timer.MainTimer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -13,6 +14,8 @@ import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public abstract class ChallengeController implements ConfigurationSerializable {
@@ -55,6 +58,11 @@ public abstract class ChallengeController implements ConfigurationSerializable {
         isActive = false;
         if (settings.isUseTimer()) MainTimer.getTimer().pause();
         onFinish(data);
+    }
+
+    public Inventory getConfigurationInv(Player p){
+        if (p.hasPermission(LionAPIPermissions.ConfigureChallengeController.getMcid())) return getConfigInventory(p);
+        return null;
     }
 
     public void sendJoin(Player p){
@@ -105,7 +113,7 @@ public abstract class ChallengeController implements ConfigurationSerializable {
 
     @Override
     public @NotNull Map<String, Object> serialize() {
-        return Map.of("settings", settings);
+        return new HashMap<>(Map.of("settings", settings));
     }
 
     public boolean isActive() {

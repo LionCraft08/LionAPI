@@ -168,7 +168,7 @@ public class timerCommand implements BasicCommand {
                 break;
 
         }
-        if (args[args.length-1].isBlank()) return strings;
+        if (args.length == 0 || args[args.length-1].isBlank()) return strings;
         strings.removeIf(s -> !s.startsWith(args[args.length-1]));
         return strings;
     }

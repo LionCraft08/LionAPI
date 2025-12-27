@@ -8,13 +8,13 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.intellij.lang.annotations.Language;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**This Class provides utility to manage language files.<br><br>
  * How to set up?<br>-----------------<br>
@@ -26,6 +26,18 @@ import java.util.Objects;
  * with {@link LanguageFileManager#createManager(Plugin, String)}) and save it to a static variable so you can access it in other classes.
  */
 public class LanguageFileManager {
+    private static HashMap<String, String> colorCodeDefaultReplacements;
+
+    public static @NotNull HashMap<String, String> getColorCodeDefaultReplacements() {
+        if (colorCodeDefaultReplacements == null) {
+            colorCodeDefaultReplacements = new HashMap<>();
+            for (Map.Entry<String, Object> code : LionAPI.getPlugin().getConfig().getConfigurationSection("language-file-color-codes").getValues(false).entrySet()){
+                colorCodeDefaultReplacements.put(code.getKey(), (String) code.getValue());
+            }
+        }
+        return colorCodeDefaultReplacements;
+    }
+
     /**
      *This method saves the lang files from a plugin. <br>
      * The plugin needs a resource folder named "lang" and an<br>
@@ -94,7 +106,7 @@ public class LanguageFileManager {
             saveLangFiles(plugin);
         }
         if (f.exists()){
-            InputStream is = LionAPI.getPlugin().getResource("lang/"+selectedLanguage);
+            InputStream is = plugin.getResource("lang/"+selectedLanguage);
             if (is != null) return new LanguageFileManager(YamlConfiguration.loadConfiguration(f), YamlConfiguration.loadConfiguration(new InputStreamReader(is)));
             else return new LanguageFileManager(YamlConfiguration.loadConfiguration(f), null);
         }else {
@@ -108,6 +120,23 @@ public class LanguageFileManager {
             }
         }
 
+    }
+
+    private HashMap<String, String> colorCodeReplacements = new HashMap<>(getColorCodeDefaultReplacements());
+
+    public HashMap<String, String> getColorCodeReplacements() {
+        return colorCodeReplacements;
+    }
+
+    public void setColorCodeReplacements(HashMap<String, String> colorCodeReplacements) {
+        this.colorCodeReplacements = colorCodeReplacements;
+    }
+
+    private String replaceColorCodes(String code){
+        for (String s : getColorCodeReplacements().keySet()) {
+            code = code.replace("<"+s+">", "<"+getColorCodeReplacements().get(s)+">");
+        }
+        return code;
     }
 
     public Component msg(String id, String... placeholders){
@@ -135,11 +164,12 @@ public class LanguageFileManager {
                 break;
             }
         }
-        return MiniMessage.miniMessage().deserialize(text);
+        return MiniMessage.miniMessage().deserialize(replaceColorCodes(text));
     }
     public Component getMessage(String id, Component... placeholders){
         String text = texts.getString(id,
                 "<hover:show_text:'TEXT ID: "+id+"'><red>Error: This Message cannot be displayed</hover>");
+        text = replaceColorCodes(text);
         List<String> textparts = new ArrayList<>(List.of(text.split("\\{}")));
         Component c = Component.text("");
         for (Component p : placeholders){

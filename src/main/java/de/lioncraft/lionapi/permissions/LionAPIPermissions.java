@@ -8,7 +8,8 @@ public enum LionAPIPermissions {
     ExecuteCode("lionapi.command.code.execute", OP, "Allows you to use the /code command. Enabling the command in config.yml is still required"),
     ExecuteTimer("lionapi.command.timer.execute", OP, "Allows you to use the /timer command"),
     ExecuteLS("lionapi.command.ls.execute", TRUE, "Some useful things..."),
-    ExecuteTeam("lionapi.command.teams.execute", OP, "Allows you to use the /teams command")
+    ExecuteTeam("lionapi.command.teams.execute", OP, "Allows you to use the /teams command"),
+    ConfigureChallengeController("lionapi.inv.challenge-controller", OP, "Allows you to open and use the Challenge Controller UI"),
     ;
 
     private final String mcid;

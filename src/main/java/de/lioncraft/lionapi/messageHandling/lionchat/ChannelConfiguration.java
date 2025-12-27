@@ -32,6 +32,13 @@ public class ChannelConfiguration {
     private Material icon = Material.GOAT_HORN;
     private String key;
 
+    /**
+     * Creates a ChannelConfiguration you can use to set different settings for a channel when Creating one with {@link LionChat#registerChannel(String, ChannelConfiguration)}
+     * @param opOnly Whether only operators can see this channel
+     * @param defaultColor The color that messages should be dyed with
+     * @param prefix The (Colored) prefix of the Message Channel
+     * @param configurableByNonOPs Whether Non-Operators can disable this Channel
+     */
     public ChannelConfiguration(boolean opOnly, TextColor defaultColor, Component prefix, boolean configurableByNonOPs) {
         this.opOnly = opOnly;
         this.defaultColor = defaultColor;

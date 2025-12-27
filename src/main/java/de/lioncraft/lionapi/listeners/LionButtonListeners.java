@@ -1,11 +1,13 @@
 package de.lioncraft.lionapi.listeners;
 
 import de.lioncraft.lionapi.addons.AddonManager;
+import de.lioncraft.lionapi.challenge.ChallengeController;
 import de.lioncraft.lionapi.events.invs.LionButtonClickEvent;
 import de.lioncraft.lionapi.guimanagement.Interaction.MultipleStringSelection;
 import de.lioncraft.lionapi.guimanagement.MainMenu;
 import de.lioncraft.lionapi.guimanagement.lioninventories.AddonManageMenu;
 import de.lioncraft.lionapi.guimanagement.lioninventories.ChannelSelectionMenu;
+import de.lioncraft.lionapi.messageHandling.MSG;
 import de.lioncraft.lionapi.messageHandling.lionchat.ChannelConfiguration;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
 import de.lioncraft.lionapi.timer.MainTimer;
@@ -14,6 +16,7 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class LionButtonListeners implements Listener {
@@ -28,6 +31,11 @@ public class LionButtonListeners implements Listener {
                 }else{
                     LionChat.getChannels().get(e.getData()).openInventoryFor(e.getPlayer());
                 }
+            }
+            case "lionapi_open_challenge-controller_menu" ->{
+                Inventory inv = ChallengeController.getInstance().getConfigurationInv(e.getPlayer());
+                if (inv != null){e.getPlayer().openInventory(inv);}
+                else LionChat.sendSystemMessage(MSG.NO_PERMISSION, e.getPlayer());
             }
             case "lionapi_channel_change_icon" ->{
                 ItemStack is = e.e().getView().getCursor();

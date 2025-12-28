@@ -6,6 +6,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import de.lioncraft.lionapi.guimanagement.MainMenu;
 import de.lioncraft.lionapi.guimanagement.lionclient.DisplayAttachment;
 import de.lioncraft.lionapi.guimanagement.lionclient.DisplayManager;
+import de.lioncraft.lionapi.hiddenclicks.ClickCommand;
 import de.lioncraft.lionapi.messageHandling.ColorGradient;
 import de.lioncraft.lionapi.messageHandling.MSG;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
@@ -35,8 +36,15 @@ public class LionCommands {
                             }else LionChat.sendSystemMessage(MSG.NOT_A_PLAYER, cc.getSource().getSender());
                             return 0;
                         })
-                        .then(Commands.argument("arguments", StringArgumentType.word())
+                        .then(Commands.argument("arguments", StringArgumentType.greedyString())
                                 .executes(cc->{
+                                    String s = cc.getArgument("arguments", String.class);
+                                    if(s.startsWith("hiddenclickapi ")){
+                                        s = s.substring(15);
+                                        new ClickCommand().onCommand(cc.getSource().getSender(), s.split(" "));
+                                        return Command.SINGLE_SUCCESS;
+                                    }
+
                                     if (Objects.equals(cc.getArgument("arguments", String.class), "sendmessage")){
                                         DisplayManager.sendDisplayText((Player) cc.getSource().getSender(), DisplayAttachment.TOP_LEFT, "test",
                                                 Component.text("Hallo, es ist Sonntag, "+ Bukkit.getServer().getTPS()[0]+" TPS und gutes Wetter!")

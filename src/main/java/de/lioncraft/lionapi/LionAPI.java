@@ -63,6 +63,8 @@ public final class LionAPI extends JavaPlugin {
         ConfigurationSerialization.registerClass(SurvivalServerChallenge.class);
         ConfigurationSerialization.registerClass(PlayerSettings.class);
 
+        saveDefaultConfig();
+
         LanguageFileManager.saveLangFiles(this);
         languageManager = LanguageFileManager.createManager(plugin, getConfig().getString("language", "en_us"));
 
@@ -98,6 +100,7 @@ public final class LionAPI extends JavaPlugin {
             ));
         }
 
+        LanguageFileManager.initColorCodeReplacements();
         TimerConfig.init();
         Settings.init();
         defaultMessages.setValues();
@@ -113,9 +116,9 @@ public final class LionAPI extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new LionGUIElementsListeners(), this);
         Bukkit.getPluginManager().registerEvents(new SettingsListeners(), this);
 
-        registerCommand("timer","Timer & Challenge Management",new timerCommand());
+        registerCommand("timer","Timer & Challenge Management", new timerCommand());
         registerCommand("teams", new Teams());
-        registerCommand("hiddenclickapi", new ClickCommand());
+        //registerCommand("hiddenclickapi", new ClickCommand());
         registerCommand("debug", new DebugCommand());
 
 

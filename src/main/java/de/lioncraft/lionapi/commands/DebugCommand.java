@@ -3,6 +3,8 @@ package de.lioncraft.lionapi.commands;
 import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.guimanagement.Interaction.Interactor;
 import de.lioncraft.lionapi.guimanagement.Items;
+import de.lioncraft.lionapi.hiddenclicks.HiddenKlick;
+import de.lioncraft.lionapi.messageHandling.DM;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
 import de.lioncraft.lionapi.pluginPlusAPI.ParticleDelayGenerator;
 import de.lioncraft.lionapi.teams.Team;
@@ -33,21 +35,20 @@ import java.util.Map;
 public class DebugCommand implements BasicCommand {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull String[] args) {
         if (sender instanceof Player p){
+
             if (args.length>=4){
                 new ParticleDelayGenerator(Integer.parseInt(args[2]), p, Double.parseDouble(args[3]), 100).runTaskTimer(LionAPI.getPlugin(), Integer.parseInt(args[0]), Integer.parseInt(args[1]));
             }else{
-                Bukkit.getPluginManager().registerEvents(new Listener() {
-                    @EventHandler
-                    public void onClick(PlayerInteractEvent e){
-                        System.out.println(Bukkit.getServer().getCurrentTick()+" | Interaction");
+                if(args.length == 1){
+                    switch (args[0]){
+                        case "hiddenclickapi" -> {
+                            sender.sendMessage(DM.info("Click me ^^").clickEvent(HiddenKlick.registerHiddenKlick("liondevtest", klick -> {
+                                klick.getSender().sendMessage("Du hast was im Chat angeklickt. Good Boy!!!");
+                            })));
+                            return true;
+                        }
                     }
-                }, LionAPI.getPlugin());
-                ItemStack is = Items.get("TestItem", Material.CLOCK, "HALLOOOOOOOOOOO!");
-                Interactor.registerInteractor(is, player -> {
-                    LionChat.sendSystemMessage("Test erfolgreich", player);
-                });
-                p.give(is);
-
+                }
 
                 if (true) return true;
                 Team.getTeams().forEach(t -> {

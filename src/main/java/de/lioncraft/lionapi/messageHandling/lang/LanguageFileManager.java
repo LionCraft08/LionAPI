@@ -4,6 +4,8 @@ import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -28,12 +30,18 @@ import java.util.regex.Pattern;
 public class LanguageFileManager {
     private static HashMap<String, String> colorCodeDefaultReplacements;
 
+    public static HashMap<String, String> initColorCodeReplacements(){
+        HashMap<String, String> colorCodeDefaultReplacements = new HashMap<>();
+        for (Map.Entry<String, Object> code : LionAPI.getPlugin().getConfig().getConfigurationSection("language-file-color-codes").getValues(false).entrySet()){
+            colorCodeDefaultReplacements.put(code.getKey(), (String) code.getValue());
+        }
+        LanguageFileManager.colorCodeDefaultReplacements =  colorCodeDefaultReplacements;
+        return colorCodeDefaultReplacements;
+    }
+
     public static @NotNull HashMap<String, String> getColorCodeDefaultReplacements() {
         if (colorCodeDefaultReplacements == null) {
-            colorCodeDefaultReplacements = new HashMap<>();
-            for (Map.Entry<String, Object> code : LionAPI.getPlugin().getConfig().getConfigurationSection("language-file-color-codes").getValues(false).entrySet()){
-                colorCodeDefaultReplacements.put(code.getKey(), (String) code.getValue());
-            }
+            colorCodeDefaultReplacements = initColorCodeReplacements();
         }
         return colorCodeDefaultReplacements;
     }
@@ -156,36 +164,60 @@ public class LanguageFileManager {
     public Component getMessage(String id, String... placeholders){
         String text = texts.getString(id,
                 "<hover:show_text:'TEXT ID: "+id+"'><red>Error: This Message cannot be displayed</hover>");
-        for (String p : placeholders){
-            if (text.contains("{}")){
-                text = text.replaceFirst("[{][}]", p);
-            }else {
-                LionChat.sendLogMessage("Message \"" + id + "\" does not contain enough placeholders. Make sure to adjust this in the language files");
-                break;
-            }
+
+        TagResolver.Builder builder = TagResolver.builder();
+
+        for (int i = 0; i < placeholders.length; i++) {
+            // This maps <0>, <1>, etc. to your component arguments
+            builder.resolver(Placeholder.component(String.valueOf(i), MiniMessage.miniMessage().deserialize(placeholders[i])));
         }
-        return MiniMessage.miniMessage().deserialize(replaceColorCodes(text));
+
+        return MiniMessage.miniMessage().deserialize(replaceColorCodes(text),  builder.build());
+
+//        for (String p : placeholders){
+//            if (text.contains("{}")){
+//                text = text.replaceFirst("[{][}]", p);
+//            }else {
+//                LionChat.sendLogMessage("Message \"" + id + "\" does not contain enough placeholders. Make sure to adjust this in the language files");
+//                break;
+//            }
+//        }
+//        return MiniMessage.miniMessage().deserialize(replaceColorCodes(text));
     }
     public Component getMessage(String id, Component... placeholders){
+        MiniMessage mm = MiniMessage.miniMessage();
+
+        // Create a resolver to handle multiple placeholders
+        TagResolver.Builder builder = TagResolver.builder();
+
         String text = texts.getString(id,
                 "<hover:show_text:'TEXT ID: "+id+"'><red>Error: This Message cannot be displayed</hover>");
+
         text = replaceColorCodes(text);
-        List<String> textparts = new ArrayList<>(List.of(text.split("\\{}")));
-        Component c = Component.text("");
-        for (Component p : placeholders){
-            if (textparts.isEmpty()){
-                LionChat.sendLogMessage("Message \"" + id + "\" does not contain enough placeholders. Make sure to adjust this in the language files");
-                break;
-            }
-            c = c.append(MiniMessage.miniMessage().deserialize(textparts.get(0)))
-                    .append(p);
-            textparts.remove(0);
+
+        for (int i = 0; i < placeholders.length; i++) {
+            // This maps <0>, <1>, etc. to your component arguments
+            builder.resolver(Placeholder.component(String.valueOf(i), placeholders[i]));
         }
-        if (!textparts.isEmpty()){
-            for (String s : textparts) {
-                c = c.append(MiniMessage.miniMessage().deserialize(s));
-            }
-        }
-        return c;
+
+        return mm.deserialize(replaceColorCodes(text),  builder.build());
+
+//        List<String> textparts = new ArrayList<>(List.of(text.split("\\{}")));
+//        Component c = Component.text("");
+//        for (Component p : placeholders){
+//            if (textparts.isEmpty()){
+//                LionChat.sendLogMessage("Message \"" + id + "\" does not contain enough placeholders. Make sure to adjust this in the language files");
+//                break;
+//            }
+//            c = c.append(MiniMessage.miniMessage().deserialize(textparts.get(0)))
+//                    .append(p);
+//            textparts.remove(0);
+//        }
+//        if (!textparts.isEmpty()){
+//            for (String s : textparts) {
+//                c = c.append(MiniMessage.miniMessage().deserialize(s));
+//            }
+//        }
+//        return c;
     }
 }

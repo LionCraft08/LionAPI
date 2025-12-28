@@ -33,7 +33,7 @@ public class ClickCommand implements BasicCommand {
     }
     @Override
     public void execute(CommandSourceStack commandSourceStack, String[] strings) {
-        onCommand(commandSourceStack.getSender(), strings );
+        onCommand(commandSourceStack.getSender(), strings);
     }
 
     @Override

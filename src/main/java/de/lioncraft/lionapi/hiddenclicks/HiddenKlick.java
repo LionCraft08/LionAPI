@@ -21,7 +21,7 @@ public class HiddenKlick {
     public static @NotNull ClickEvent registerHiddenKlick(String args, KlickFunction onKlick){
         if (registeredKlicks == null) registeredKlicks = new HashMap<>();
         registeredKlicks.put(args, onKlick);
-        return ClickEvent.runCommand("/hiddenclickapi " + args);
+        return ClickEvent.runCommand("/lionsystems hiddenclickapi " + args);
     }
 
     HiddenKlick(String[] args, CommandSender sender) {

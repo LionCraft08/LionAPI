@@ -1,5 +1,6 @@
 package de.lioncraft.lionapi.guimanagement.Interaction;
 
+import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.guimanagement.Items;
 import de.lioncraft.lionapi.guimanagement.functions.Function;
 import org.bukkit.Material;
@@ -26,10 +27,10 @@ public class Setting {
     }
     private void changeBottomItem(){
         if(isEnabled){
-            bottomItem = Items.get(topItem.displayName(), Material.LIME_DYE, "Currently enabled", "Click to disable");
+            bottomItem = Items.get(topItem.displayName(), Material.LIME_DYE, LionAPI.lm().getMessageAsList("inv.general.settings.enabled"));
 
         }else{
-            bottomItem = Items.get(topItem.displayName(), Material.GRAY_DYE, "Currently disabled", "Click to enable");
+            bottomItem = Items.get(topItem.displayName(), Material.GRAY_DYE, LionAPI.lm().getMessageAsList("inv.general.settings.disabled"));
         }
         bottomItem.getItemMeta().setUnbreakable(true);
         SettingList.put(bottomItem, this);

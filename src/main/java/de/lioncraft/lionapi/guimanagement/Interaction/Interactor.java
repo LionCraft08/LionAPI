@@ -11,6 +11,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
@@ -29,14 +30,8 @@ public class Interactor {
         if(map.containsKey(p)) return map.get(p) != null;
         return false;
     }
-    public static void registerInteractor(ItemStack is, SimpleFunction onFinish){
-        if(onFinish == null){
-            Bukkit.getConsoleSender().sendMessage(Component.text("Error 4"));
-        }
+    public static void registerInteractor(@NotNull ItemStack is, @NotNull SimpleFunction onFinish){
         map2.put(is, onFinish);
-        if(map2.get(is) == null){
-            Bukkit.getConsoleSender().sendMessage(Component.text("Error 2"));
-        }
         invClickListener.addInteractionItem(is);
     }
     private final OfflinePlayer p;

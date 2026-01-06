@@ -138,17 +138,17 @@ public class DisplayManager implements PluginMessageListener {
                 switch (cmd){
                     case "check_existing"->{
                         if(getStringAtIndex(1, data).equalsIgnoreCase("true")){
-                            LionChat.sendSystemMessage(Component.text("Your Client is outdated! Please update the LionDisplays Mod to use it's Features"), player);
+                            LionChat.sendSystemMessage(LionAPI.lm().msg("features.liondisplays_mod.outdated_client"), player);
                         }else{
                             Runtime.Version rv = Runtime.Version.parse(getStringAtIndex(1, data));
                             int equality = rv.compareTo(version);
                             if (equality == 0){
-                                LionChat.sendSystemMessage(Component.text("Your Client was registered successfully"), player);
+                                LionChat.sendSystemMessage(LionAPI.lm().msg("features.liondisplays_mod.connected_successfully"), player);
                                 GUIPlayerManager.setRenderWay(player, GUIPlayerManager.ClientRenderWay.LIONDISPLAYS_MOD);
                             }else if(equality < 0)
-                                LionChat.sendSystemMessage(Component.text("Your Client is outdated! Please update the LionDisplays Mod to use it's Features"), player);
+                                LionChat.sendSystemMessage(LionAPI.lm().msg("features.liondisplays_mod.outdated_client"), player);
                             else
-                                LionChat.sendSystemMessage(Component.text("This Server is outdated! Please use Version "+version+" of the LionDisplays Mod to use it's features on this Server"), player);
+                                LionChat.sendSystemMessage(LionAPI.lm().msg("features.liondisplays_mod.outdated_server"), player);
                         }
                     }
                     case "send_version" -> {

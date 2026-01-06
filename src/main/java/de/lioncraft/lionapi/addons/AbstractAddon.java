@@ -7,6 +7,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -53,6 +54,16 @@ public abstract class AbstractAddon {
         return true;
     }
 
+    public void setEnabled(boolean enabled){
+        if (enabled != this.enabled){
+            if (enabled){
+                load();
+            }else {
+                unload();
+            }
+        }
+    }
+
     public boolean unload(){
         if (!enabled) return false;
         try {
@@ -69,17 +80,7 @@ public abstract class AbstractAddon {
      */
     public void unloadEvents(){
         for (Listener l : listeners){
-            for(Method method : l.getClass().getMethods()){
-                if (method.isAnnotationPresent(EventHandler.class)){
-                    Class<Event> clazz = (Class<Event>) method.getParameters()[0].getType();
-                    try {
-                        ((HandlerList) clazz.getDeclaredMethod("getHandlerList").invoke(null)).unregister(l);
-                    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                        LionChat.sendLogMessage("Seems like there is an invalid Event Listener for \""+
-                                clazz.getName() +"\" in "+l.getClass().getName());
-                    }
-                }
-            }
+            HandlerList.unregisterAll(l);
         }
     }
 
@@ -129,6 +130,14 @@ public abstract class AbstractAddon {
     @ForOverride
     public @Nullable ItemStack getSettingsIcon(){
         return null;
+    }
+
+    /** Open the Config menu for this Player.
+     * @param p The player to open the config ui for
+     */
+    @ForOverride
+    public void openConfigMenu(Player p){
+
     }
 
     public boolean isEnabled() {

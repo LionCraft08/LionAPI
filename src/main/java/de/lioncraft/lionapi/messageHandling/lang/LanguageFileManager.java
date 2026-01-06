@@ -9,11 +9,13 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -93,7 +95,9 @@ public class LanguageFileManager {
                     Files.createDirectory(outputDirPath);
                 }
                 Files.copy(resourceStream, targetFilePath);
-            }catch (FileAlreadyExistsException ignored){}
+            }catch (FileAlreadyExistsException e){
+                updateConfig(plugin, resourcePath);
+            }
         } catch (IOException e) {
             plugin.getLogger().warning("  ERROR saving resource '" + resourcePath + "': " + e.getMessage());
         }
@@ -105,6 +109,45 @@ public class LanguageFileManager {
     public LanguageFileManager(YamlConfiguration config, @Nullable Configuration defaultConfig){
         texts = config;
         if (defaultConfig != null) texts.setDefaults(defaultConfig);
+    }
+
+    private static void updateConfig(Plugin plugin, String resourcePath) {
+        // 1. Define the external file in the plugin's data folder
+        if (!resourcePath.endsWith(".yml")) resourcePath = resourcePath+".yml";
+        File externalFile = new File(plugin.getDataFolder(), resourcePath);
+
+        // 1. Create empty configurations first
+        YamlConfiguration externalConfig = new YamlConfiguration();
+        YamlConfiguration internalConfig = new YamlConfiguration();
+
+        // 2. Change the separator BEFORE loading data
+        // This tells Bukkit: "Dot does not mean a new section"
+        externalConfig.options().pathSeparator(';');
+        internalConfig.options().pathSeparator(';');
+
+        try {
+            // 3. Load the external file if it exists
+            if (externalFile.exists()) {
+                externalConfig.load(externalFile);
+            }
+
+            // 4. Load the internal resource
+            try (Reader defConfigStream = new InputStreamReader(plugin.getResource(resourcePath), StandardCharsets.UTF_8)) {
+                internalConfig.load(defConfigStream);
+
+                // 5. Merge missing keys
+                for (String path : internalConfig.getKeys(true)) {
+                    if (!externalConfig.contains(path)) {
+                        externalConfig.set(path, internalConfig.get(path));
+                    }
+                }
+
+                // 6. Save back to disk
+                externalConfig.save(externalFile);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static LanguageFileManager createManager(Plugin plugin, String selectedLanguage){
@@ -157,6 +200,11 @@ public class LanguageFileManager {
         return getMessage(id, placeholders);
     }
 
+    /**
+     * Returns the raw String, as configured in the lang file.
+     * @param id the id of the Text
+     * @return the raw string without any replacements
+     */
     public String getMessageAsString(String id){
         return texts.getString(id, "Error: This Message cannot be displayed");
     }
@@ -164,16 +212,7 @@ public class LanguageFileManager {
     public Component getMessage(String id, String... placeholders){
         String text = texts.getString(id,
                 "<hover:show_text:'TEXT ID: "+id+"'><red>Error: This Message cannot be displayed</hover>");
-
-        TagResolver.Builder builder = TagResolver.builder();
-
-        for (int i = 0; i < placeholders.length; i++) {
-            // This maps <0>, <1>, etc. to your component arguments
-            builder.resolver(Placeholder.component(String.valueOf(i), MiniMessage.miniMessage().deserialize(placeholders[i])));
-        }
-
-        return MiniMessage.miniMessage().deserialize(replaceColorCodes(text),  builder.build());
-
+        return buildTextComponent(text, placeholders);
 //        for (String p : placeholders){
 //            if (text.contains("{}")){
 //                text = text.replaceFirst("[{][}]", p);
@@ -184,23 +223,78 @@ public class LanguageFileManager {
 //        }
 //        return MiniMessage.miniMessage().deserialize(replaceColorCodes(text));
     }
-    public Component getMessage(String id, Component... placeholders){
+    private Component buildTextComponent(String raw, String... placeholders){
+        TagResolver.Builder builder = TagResolver.builder();
+
+        for (int i = 0; i < placeholders.length; i++) {
+            // This maps <0>, <1>, etc. to your component arguments
+            builder.resolver(Placeholder.component(String.valueOf(i), MiniMessage.miniMessage().deserialize(placeholders[i])));
+        }
+
+        return MiniMessage.miniMessage().deserialize(replaceColorCodes(raw),  builder.build());
+    }
+
+    /**
+     * Separates a Message into components to be used as lore for ItemStacks.
+     * Splits messages at the \n character
+     * @param id the id of the Message
+     * @param placeholders the placeholders that are replaced with <0>, <1>, etc.
+     * @return A list of Components
+     */
+    public List<Component> getMessageAsList(String id, String... placeholders){
+        String msg = getMessageAsString(id);
+        List<Component> components = new ArrayList<>();
+        for (String part : msg.split("\n")){
+            components.add(buildTextComponent(part, placeholders));
+        }
+        return components;
+    }
+    /**
+     * Separates a Message into components to be used as lore for ItemStacks.
+     * Splits messages at the \n character
+     * @param id the id of the Message
+     * @return A list of Components
+     */
+    public List<Component> getMessageAsList(String id){
+        return getMessageAsList(id, new String[0]);
+    }
+
+    /**
+     * Separates a Message into components to be used as lore for ItemStacks.
+     * Splits messages at the \n character
+     * @param id the id of the Message
+     * @param placeholders the placeholders that are replaced with <0>, <1>, etc.
+     * @return A list of Components
+     */
+    public List<Component> getMessageAsList(String id, Component... placeholders){
+        String msg = getMessageAsString(id);
+        List<Component> components = new ArrayList<>();
+        for (String part : msg.split("\n")){
+            components.add(buildTextComponent(part, placeholders));
+        }
+        return components;
+    }
+
+    private Component buildTextComponent(String raw, Component... placeholders){
         MiniMessage mm = MiniMessage.miniMessage();
 
         // Create a resolver to handle multiple placeholders
         TagResolver.Builder builder = TagResolver.builder();
-
-        String text = texts.getString(id,
-                "<hover:show_text:'TEXT ID: "+id+"'><red>Error: This Message cannot be displayed</hover>");
-
-        text = replaceColorCodes(text);
 
         for (int i = 0; i < placeholders.length; i++) {
             // This maps <0>, <1>, etc. to your component arguments
             builder.resolver(Placeholder.component(String.valueOf(i), placeholders[i]));
         }
 
-        return mm.deserialize(replaceColorCodes(text),  builder.build());
+        return mm.deserialize(replaceColorCodes(raw),  builder.build());
+    }
+
+    public Component getMessage(String id, Component... placeholders){
+        return buildTextComponent(
+                texts.getString(id,
+                "<hover:show_text:'TEXT ID: "+id+"'><red>Error: This Message cannot be displayed</hover>"),
+                placeholders
+        );
 
 //        List<String> textparts = new ArrayList<>(List.of(text.split("\\{}")));
 //        Component c = Component.text("");

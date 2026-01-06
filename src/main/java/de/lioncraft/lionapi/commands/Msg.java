@@ -1,6 +1,7 @@
 package de.lioncraft.lionapi.commands;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
+import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.data.Settings;
 import de.lioncraft.lionapi.messageHandling.MSG;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
@@ -32,19 +33,28 @@ public class Msg {
                             return 0;
                         })
                         .then(Commands.argument("player", ArgumentTypes.players()).executes(cc->{
-                                    LionChat.sendMSG(null, Component.text("Du musst eine Nachricht eingeben."), cc.getSource().getExecutor());
+                                    LionChat.sendMSG(null, MSG.WRONG_ARGS.getText(), cc.getSource().getExecutor());
                                     return 0;
                                 })
                         .then(Commands.argument("message", StringArgumentType.greedyString())
                                 .executes(cc->{
+                                    if (!LionAPI.getPlugin().getConfig().getBoolean("settings.msg.allow-msg")) {
+                                        LionChat.sendMSG(null,LionAPI.lm().msg("features.msg.disabled"), cc.getSource().getExecutor());
+                                        return 1;
+                                    }
                                     Component source;
+                                    CommandSender sender;
                                     String senderid;
                                     if (cc.getSource().getExecutor() != null){
-                                        source = cc.getSource().getExecutor().name();
+                                        source = cc.getSource().getExecutor().name().clickEvent(ClickEvent.suggestCommand("/msg " + cc.getSource().getExecutor().getName()));
                                         senderid = cc.getSource().getExecutor().getUniqueId().toString();
+                                        sender = cc.getSource().getExecutor();
                                     }else{
-                                        source = cc.getSource().getSender().name();
-                                        senderid = "UUID";
+                                        source = cc.getSource().getSender().name().clickEvent(ClickEvent.suggestCommand("/msg " + cc.getSource().getSender().getName()));
+                                        sender = cc.getSource().getSender();
+                                        if (cc.getSource().getSender() instanceof Player p){
+                                            senderid = p.getUniqueId().toString();
+                                        }else senderid = "UUID";
                                     }
 
                                     List<Player> list = cc.getArgument("player", PlayerSelectorArgumentResolver.class).resolve(cc.getSource());
@@ -61,9 +71,10 @@ public class Msg {
                                     list.forEach(
                                         member -> {
                                             Component target = member.name().clickEvent(ClickEvent.suggestCommand("/msg "+member.getName() + " "));
-                                            LionChat.sendMSG(target, Component.text(cc.getArgument("message", String.class)), member.getPlayer());
-                                            LionChat.sendMSG(Component.text("Du -> ").append(target), Component.text(cc.getArgument("message", String.class)), cc.getSource().getExecutor());
-                                            LionChat.sendLogMessage(Component.text("[MSG] ").append(source).append(Component.text(" -> "+cc.getInput().replaceFirst("msg ", "").replaceFirst(" ", " >> "))));
+                                            LionChat.sendMSG(source, Component.text(cc.getArgument("message", String.class)), member);
+                                            LionChat.sendMSG(LionAPI.lm().msg("features.msg.you").append(Component.text(" -> ")).append(target), Component.text(cc.getArgument("message", String.class)), sender);
+                                            if(LionAPI.getPlugin().getConfig().getBoolean("settings.msg.log-msg"))
+                                                LionChat.sendLogMessage(Component.text("[MSG] ").append(source).append(Component.text(" -> "+cc.getInput().replaceFirst("msg ", "").replaceFirst(" ", " >> "))));
                                         });
                                     return 0;
                                 }))).build() ,

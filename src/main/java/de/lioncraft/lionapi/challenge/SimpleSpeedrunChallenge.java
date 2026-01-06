@@ -32,7 +32,7 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
     @Override
     protected void onStart() {
         onResume();
-        LionChat.sendLogMessage("Challenge wurde gestartet!");
+        LionChat.sendLogMessage("Challenge resumed");
     }
 
     @Override
@@ -42,7 +42,7 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
 
     @Override
     protected void onPause() {
-        LionChat.sendLogMessage("Die Challenge wurde pausiert.");
+        LionChat.sendLogMessage("Challenge paused");
         getServer().playSound(Sound.sound(Key.key("block.beacon.deactivate"), Sound.Source.MASTER, 2f, 1f));
         getServer().getServerTickManager().setFrozen(true);
 
@@ -145,7 +145,7 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
         Setting spectator = new Setting(setPlayersToSpectator, Items.get(
                 LionAPI.lm().msg("inv.challenge-controller.spectator.title"),
                 Material.SPYGLASS,
-                LionAPI.lm().msg("inv.challenge-controller.spectator.lore")
+                LionAPI.lm().getMessageAsList("inv.challenge-controller.spectator.lore").toArray(Component[]::new)
         ),
                 isEnabled -> {
             setPlayersToSpectator = isEnabled;
@@ -157,7 +157,7 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
         Setting freeze = new Setting(freezePlayersOnPause, Items.get(
                 LionAPI.lm().msg("inv.challenge-controller.freeze.title"),
                 Material.BLUE_ICE,
-                LionAPI.lm().msg("inv.challenge-controller.freeze.lore")
+                LionAPI.lm().getMessageAsList("inv.challenge-controller.freeze.lore").toArray(Component[]::new)
         ),
                 isEnabled -> {
             freezePlayersOnPause = isEnabled;

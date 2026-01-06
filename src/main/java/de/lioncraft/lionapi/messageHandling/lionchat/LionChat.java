@@ -5,8 +5,11 @@ import de.lioncraft.lionapi.messageHandling.MSG;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.Audiences;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -58,6 +61,7 @@ public final class LionChat {
         sendCustomMSG("msg", source, Message, target);
     }
     public static void sendTeamMSG(@Nullable Component source, Component message, Audience target){
+        if (source != null) source = source.clickEvent(ClickEvent.suggestCommand("/tmsg"));
         sendCustomMSG("teammsg", source, message, target);
     }
     private static void sendCustomMSG(String channel, @Nullable Component source, Component Message, Audience target){
@@ -69,9 +73,9 @@ public final class LionChat {
         }
         target.sendMessage(
                 c.getPrefix().appendSpace()
-                        .append(source)
+                        .append(source.colorIfAbsent(TextColor.color(200, 200, 200)))
                         .append(Component.text(">>", c.getDefaultColor())).appendSpace()
-                        .append(Message.colorIfAbsent(c.getDefaultColor()))
+                        .append(Message.colorIfAbsent(c.getDefaultColor()).decorate(TextDecoration.ITALIC))
 
         );
     }

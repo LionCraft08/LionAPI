@@ -50,7 +50,7 @@ public class LionButtonListeners implements Listener {
                 }
             }
             case "lionapi_open_timer_menu"-> {
-                LionChat.sendMessageOnChannel("timer", Component.text("Dieses Menu ist nur in Beta-Environments verfügbar. Allgemeine Einstellungen sind über den AddonManager zu erreichen."));
+                LionChat.sendMessageOnChannel("timer", MSG.BETA, e.getPlayer());
             }
             case "lionapi_open_addon_manager" -> AddonManageMenu.open(e.getPlayer());
             case "lionapi_multiplestringselection" -> MultipleStringSelection.click(e.getData(), e.e());

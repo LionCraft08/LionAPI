@@ -1,6 +1,7 @@
 package de.lioncraft.lionapi.commands;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
+import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.data.Settings;
 import de.lioncraft.lionapi.messageHandling.DM;
 import de.lioncraft.lionapi.messageHandling.MSG;
@@ -24,11 +25,20 @@ public class Teammsg implements TabExecutor {
         cmd.register(Commands.literal("teammessage")
                         .requires(commandSourceStack -> Settings.isAllowTeammsg() && (commandSourceStack.getSender() instanceof Player))
                         .executes(cc->{
-                            LionChat.sendTeamMSG(null, Component.text("Mit diesem Command kannst du eine Nachricht an dein Team senden."), cc.getSource().getExecutor());
+                            if (!LionAPI.getPlugin().getConfig().getBoolean("settings.msg.allow-team-msg")) {
+                                LionChat.sendTeamMSG(null,LionAPI.lm().msg("features.msg.disabled_team"), cc.getSource().getExecutor());
+                            } else {
+                                LionChat.sendTeamMSG(null, LionAPI.lm().msg("features.msg.explanation_team"), cc.getSource().getExecutor());
+                            }
+
                             return 0;
                         })
                         .then(Commands.argument("message", StringArgumentType.greedyString())
                                 .executes(cc->{
+                                    if (!LionAPI.getPlugin().getConfig().getBoolean("settings.msg.allow-team-msg")) {
+                                        LionChat.sendTeamMSG(null,LionAPI.lm().msg("features.msg.disabled_team"), cc.getSource().getExecutor());
+                                        return 1;
+                                    }
                                     if (cc.getSource().getExecutor() instanceof Player p){
                                         Team t = Team.getTeam(p);
                                         if (t == null) LionChat.sendSystemMessage(MSG.NO_TEAM, p);

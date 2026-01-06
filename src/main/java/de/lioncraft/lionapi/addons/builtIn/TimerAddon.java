@@ -6,6 +6,7 @@ import de.lioncraft.lionapi.guimanagement.Items;
 import de.lioncraft.lionapi.guimanagement.lioninventories.TimerManagementUI;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class TimerAddon extends AbstractAddon {
@@ -24,12 +25,14 @@ public class TimerAddon extends AbstractAddon {
 
     }
 
-    private Button b = new Button(Items.get(getName(), Material.CLOCK, "Open Settings for "+getId()), event -> {
-        TimerManagementUI.open(event.getWhoClicked());
-        return false;
-    });
+    private ItemStack is = Items.get(getName(), Material.CLOCK, "Open Settings for "+getId());
     @Override
     public ItemStack getSettingsIcon(){
-        return b.getButton();
+        return is;
+    }
+
+    @Override
+    public void openConfigMenu(Player p){
+        TimerManagementUI.open(p);
     }
 }

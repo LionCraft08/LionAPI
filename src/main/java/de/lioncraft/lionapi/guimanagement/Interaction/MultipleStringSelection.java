@@ -63,6 +63,7 @@ public class MultipleStringSelection {
         is.lore(lores);
         return LionButtonFactory.createButton(is, "lionapi_multiplestringselection."+uuid);
     }
+
     private void onClick(InventoryClickEvent e){
         currentItem++;
         if (currentItem >= lore.size()) currentItem = 0;

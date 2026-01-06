@@ -1,5 +1,6 @@
 package de.lioncraft.lionapi.guimanagement.lioninventories;
 
+import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.addons.AbstractAddon;
 import de.lioncraft.lionapi.addons.AddonManager;
 import de.lioncraft.lionapi.guimanagement.Interaction.Button;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class AddonManageMenu {
+    private AddonManageMenu(){}
     private static ScrollableInterface inv;
     public static void open(HumanEntity player){
         if (inv == null){
@@ -35,6 +37,9 @@ public final class AddonManageMenu {
                     Button b = null;
                 };
                 ref.b = new Button(is, event -> {
+                    if (event.isLeftClick()) {addon.openConfigMenu((Player) event.getWhoClicked());}
+                    if(!event.isRightClick()) return false;
+
                     boolean successful;
                     if (addon.isEnabled()) successful = addon.unload();
                     else successful = addon.load();
@@ -45,14 +50,14 @@ public final class AddonManageMenu {
                         event.getWhoClicked().playSound(Sounds.Click.getSound());
                     }else{
                         event.getWhoClicked().playSound(Sounds.Error.getSound());
-                        LionChat.sendError("Ein Fehler ist aufgetreten.", event.getWhoClicked());
+                        LionChat.sendSystemMessage(LionAPI.lm().msg("inv.addons.error_while_enabling"), event.getWhoClicked());
                     }
                     return false;
                 }
                 );
-                list.add(is);
+                list.add(ref.b.getButton());
             });
-            inv = new ScrollableInterface(list, Component.text("Addon Manager"), null, true, null);
+            inv = new ScrollableInterface(list, LionAPI.lm().msg("inv.addons.manager.title"), null, true, null);
             inv.setBackButton(MainMenu.getToMainMenuButton());
         }
         if (player.isOp()){
@@ -62,21 +67,23 @@ public final class AddonManageMenu {
     public static ItemStack getItem(AbstractAddon addon){
         ItemStack is = addon.getSettingsIcon();
         if (is==null) return null;
-        is.editMeta(itemMeta -> {
-            List<Component> lore = itemMeta.lore();
-            if (lore == null) lore = new ArrayList<>();
-            if (addon.isEnabled()){
-                lore.add(Component.text("Leftclick to open config, Rightclick to disable", NamedTextColor.DARK_GRAY));
-            }else{
-                lore.add(Component.text("Leftclick to open config, Rightclick to enable", NamedTextColor.DARK_GRAY));
-            }
-        });
+
+        is = is.clone();
+        List<Component> lore = is.lore();
+        if (lore == null) lore = new ArrayList<>();
+        if (addon.isEnabled()){
+            lore.addAll(LionAPI.lm().getMessageAsList("inv.addons.description_enabled"));
+        }else{
+            lore.addAll(LionAPI.lm().getMessageAsList("inv.addons.description_disabled"));
+        }
+        is.lore(lore);
+
         return is;
     }
 
     public static ItemStack getItem(){
-        return LionButtonFactory.createButton(Items.get(Component.text("Manage Addons", NamedTextColor.DARK_AQUA),
-                Material.AMETHYST_SHARD, "Click to open the addon Manager"),
+        return LionButtonFactory.createButton(Items.get(LionAPI.lm().msg("inv.addons.manager.title"),
+                Material.AMETHYST_SHARD, LionAPI.lm().getMessageAsList("inv.addons.manager.lore")),
                 "lionapi_open_addon_manager");
     }
 }

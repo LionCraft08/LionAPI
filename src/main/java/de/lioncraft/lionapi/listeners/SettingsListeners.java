@@ -1,6 +1,7 @@
 package de.lioncraft.lionapi.listeners;
 
 import de.lioncraft.lionapi.LionAPI;
+import de.lioncraft.lionapi.addons.AddonManager;
 import de.lioncraft.lionapi.events.saveDataEvent;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
 import de.lioncraft.lionapi.playerSettings.PlayerSettings;
@@ -82,6 +83,7 @@ public class SettingsListeners implements Listener {
     }
     @EventHandler
     public void onSave(saveDataEvent e){
+        AddonManager.save();
         try {
             PlayerSettings.serializeAll();
         } catch (IOException ex) {

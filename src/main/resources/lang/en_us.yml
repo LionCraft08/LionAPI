@@ -17,6 +17,9 @@ features.timer.command_paused: "<info>Timer paused"
 features.timer.restarted: "<info>Timer restarted"
 features.timer.expired: "<info>The timer expired!"
 features.timer.set_seconds: "<info>Set the timer to <0>s"
+features.timer.direction_upwards: "<info>Direction: Upwards (+)"
+features.timer.direction_downwards: "<info>Direction: Downwards (-)"
+
 
 features.teams.created: "<info>Created a new team called \"<0>\""
 features.teams.removed: "<#DD5500>Deleted team \"<0>\""
@@ -43,7 +46,16 @@ features.backpack.disabled: "<error>Backpacks are disabled..."
 features.code.error.disabled: "<error>Code execution is disabled due to security risks!"
 
 features.msg.explanation: "<info>You can use this command to send private messages to a player"
+features.msg.explanation_team: "<info>You can use this command to send messages to your team"
+features.msg.disabled: "<error>Private Messages are disabled on this Server"
+features.msg.disabled_team: "<error>Private Team Messages are disabled on this Server"
+features.msg.you: "You"
 features.chat.disabled: "<error>You are not allowed to chat."
+
+features.liondisplays_mod.outdated_client: "<error>Your Client is outdated! Please update the LionDisplays Mod to use it's Features"
+features.liondisplays_mod.outdated_server: "<error>This Server is outdated! Please use Version <important><0><error> to use it on this Server"
+features.liondisplays_mod.connected_successfully: "<info>Your Client successfully connected to LionAPI"
+
 
 challenges.simple.end.dragon: "<#00FF19>The Ender Dragon died!"
 challenges.simple.end.timer: "<#FF6419>The timer expired!"
@@ -52,11 +64,20 @@ challenges.simple.end.default: "<#FF6419>Use /reset to try again!"
 challenges.simple.end.time: "Time: "
 challenges.simple.end.player: "<#FF6419>The player <#00FFFF><0><#FF6419> died!"
 
+inv.general.settings.enabled: "<info>Currently <#00FF00>enabled. \n<info>Click to disable"
+inv.general.settings.disabled: "<info>Currently <#FF4400>disabled. \n<info>Click to enable"
+
 inv.challenge-controller.spectator.title: "<#00AAFF>Spectator after Death"
 inv.challenge-controller.spectator.lore: "<white>Sets players to spectator after death.\nRequires Timer Ends on Player Death to be enabled"
 inv.challenge-controller.freeze.title: "<#00AAFF>Freeze Players on pause"
 inv.challenge-controller.freeze.lore: "<white>Freezes Players when the timer is paused.\nDefault: true"
 inv.challenge-controller.open_gui: "Opens the Challenge Controller Settings"
+
+inv.addons.description_enabled: "<white>Leftclick to configure \n<white>Rightclick to <#FF6600>disable"
+inv.addons.description_disabled: "<white>Leftclick to configure \n<white>Rightclick to <#00FF00>enable"
+inv.addons.manager.title: "<important>Manage Addons"
+inv.addons.manager.lore: "<important>Click to manage addons"
+inv.addons.error_while_enabling: "<error>An error occurred while trying to enable this Addon"
 
 
 

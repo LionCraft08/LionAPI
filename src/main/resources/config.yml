@@ -6,10 +6,10 @@
 
 # IMPORTANT: Do not change this version number. It is used by the plugin
 # to automatically update the configuration with new settings.
-config-version: 1.4
+config-version: 1.6
 
 # Change the language of the texts in-game.
-# You can customize the messages and even create your own language in the "lang" folder
+# You can customize the messages and even create your own language in the "lang" folder.
 # If you translated the messages to a language that isn't provided by us, feel free to submit it to us so we
 # can add it to the project. Of course only, if you want :)
 language: en_us
@@ -21,13 +21,28 @@ language-file-color-codes:
   important: "#00FFFF"
   default: "#FFFFFF"
 
+liondisplays:
+  #When enabled, Players with the LionDisplays Mod can use the features on this Server.
+  #Some Plugins provide additional functionality with the Mod,
+  #but if there are no
+  allow_connections: true
+  send_connection_successful_message: true
+
 settings:
   teams:
     has-backpack: true
     backpack-size: 54
     display-teamname: false
-    allow-teammsg: true
+
   challenge-server: true
+
+  msg:
+    # Logs msgs so those who can receive log messages (mainly operators)
+    log-msg: false
+    # Whether to allow players to use the /msg command
+    allow-msg: true
+    # Whether to allow players to use the /teammsg command
+    allow-team-msg: true
 
   # This allows operators to execute code from in-game or the console.
   # THIS IS AN INCREDIBLY HIGH RISK AND SHOULD ONLY BE USED BY PEOPLE YOU TRUST 100%!!!

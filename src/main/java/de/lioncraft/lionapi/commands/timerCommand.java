@@ -60,8 +60,8 @@ public class timerCommand implements BasicCommand {
                         }
                         case "toggledirection" -> {
                             MainTimer.changeDirection();
-                            if(MainTimer.isCountUpwards()) LionChat.sendMessageOnChannel("timer",Component.text("The timer now counts upwards"),sender);
-                            else LionChat.sendMessageOnChannel("timer",Component.text("The timer now counts down"),sender);
+                            if(MainTimer.isCountUpwards()) LionChat.sendMessageOnChannel("timer",LionAPI.lm().msg("features.timer.direction_upwards"),sender);
+                            else LionChat.sendMessageOnChannel("timer",LionAPI.lm().msg("features.timer.direction_downwards"),sender);
 
                         }
                         default -> LionChat.sendSystemMessage(MSG.WRONG_ARGS, sender);
@@ -136,7 +136,6 @@ public class timerCommand implements BasicCommand {
                 strings.add("reset");
                 strings.add("toggledirection");
                 strings.add("resume");
-                strings.add("settings");
                 break;
             case 2:
                 if(args[0].equals("set")||args[0].equals("start")){

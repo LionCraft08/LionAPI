@@ -182,17 +182,21 @@ public final class Items {
         return get(title, material, lore);
     }
     public static ItemStack get(Component title, Material material, Component... lores){
+        return get(title, material, new ArrayList<>(Arrays.asList(lores)));
+    }
+
+    public static ItemStack get(Component title, Material material, List<Component> lore){
         ItemStack tempItem = new ItemStack(material);
         ItemMeta ButtonMeta = tempItem.getItemMeta();
         if(ButtonMeta == null){
             System.out.println("Error: "+material);
         }
         ButtonMeta.displayName(title);
-        List<Component> lore = new ArrayList<>(Arrays.asList(lores));
         ButtonMeta.lore(lore);
         tempItem.setItemMeta(ButtonMeta);
         return tempItem;
     }
+
     public static ItemStack getBackButton(String InvTitle){
         return getBackButton(Component.text(InvTitle, TextColor.color(0, 255, 255)));
     }

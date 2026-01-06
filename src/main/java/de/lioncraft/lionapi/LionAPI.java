@@ -65,6 +65,12 @@ public final class LionAPI extends JavaPlugin {
 
         saveDefaultConfig();
 
+        try {
+            getConfig().getString("language");
+        }catch (Exception e){
+            getConfig().set("persistent-data.challenge", null);
+        }
+
         LanguageFileManager.saveLangFiles(this);
         languageManager = LanguageFileManager.createManager(plugin, getConfig().getString("language", "en_us"));
 
@@ -76,8 +82,8 @@ public final class LionAPI extends JavaPlugin {
                 TextColor.color(100, 100, 100),
                 Component.text("DEBUG", NamedTextColor.DARK_BLUE),
                 false));
-        LionChat.registerChannel("msg", new ChannelConfiguration(false, TextColor.color(150, 150, 255),
-                Component.text("MSG", TextColor.color(60, 60, 255)),
+        LionChat.registerChannel("msg", new ChannelConfiguration(false, TextColor.color(170, 170, 255),
+                Component.text("MSG", TextColor.color(100, 100, 255)),
                 true));
         LionChat.registerChannel("teammsg", new ChannelConfiguration(false, TextColor.color(180, 255, 180),
                 Component.text("TeamMSG", TextColor.color(60, 255, 60)),
@@ -134,6 +140,7 @@ public final class LionAPI extends JavaPlugin {
             ChallengeController.setInstance(new SurvivalServerChallenge());
         }
 
+        AddonManager.load();
         AddonManager.registerAddon(new TimerAddon());
 
         ConnectionManager.initialize(getConfig());
@@ -149,13 +156,13 @@ public final class LionAPI extends JavaPlugin {
     public void onDisable() {
         Bukkit.getPluginManager().callEvent(new saveDataEvent());
         new listeners().onSaveEvent(new saveDataEvent());
-        plugin.getLogger().info("Successfully disabled LionAPI.");
-
+        AddonManager.save();
         try {
             PlayerSettings.serializeAll();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        plugin.getLogger().info("Successfully disabled LionAPI.");
     }
     static LionAPI plugin;
 
@@ -174,7 +181,7 @@ public final class LionAPI extends JavaPlugin {
         return getLanguageManager();
     }
 
-    private boolean saveResourceIfNotExists(String resource, Path outputPath) {
+    public static boolean saveResourceIfNotExists(String resource, Path outputPath) {
         if (resource == null || !resource.startsWith("/")) {
             System.err.println("Error: Resource path must be a non-empty absolute path starting with '/' (e.g., /com/example/file.txt).");
             return false;

@@ -2,7 +2,8 @@
 is my core project and is required by most of my plugins.<br>
 It provides a basic challenge and team API that can be used in plugins that require
 - a timer (and additional functions like ending the challenge when a player or the dragon dies)
-- teams / backpacks 
+- teams / backpacks
+- Addon API to allow simple features of plugins to be configured / en-/disabled in-game
 - additional worlds and tools like cloning and resetting worlds
 - multi server setups (server communication)
 - velocity connections 

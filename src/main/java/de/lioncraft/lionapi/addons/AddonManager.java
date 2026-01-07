@@ -57,8 +57,8 @@ public class AddonManager {
         }
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(addonsData);
-        for (String addon : enabledAddons.keySet()){
-            config.set(addon.toLowerCase(), enabledAddons.get(addon));
+        for (AbstractAddon addon : addons){
+            config.set(addon.getId().toLowerCase(), addon.isEnabled());
         }
         try {
             config.save(addonsData);

@@ -52,6 +52,7 @@ public abstract class MainTimer{
             int minutes = timer.getMinutes();
             int seconds = timer.getSeconds();
             timer.pause();
+            timer.forceDelete();
             if (b) {
                 timer = new Stopwatch(days, hours, minutes, seconds);
             } else {
@@ -61,6 +62,7 @@ public abstract class MainTimer{
             }
 
         }else{
+            timer.forceDelete();
             if (b) {
                 timer = new Stopwatch();
             } else {

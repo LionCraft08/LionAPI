@@ -143,7 +143,9 @@ public class DisplayManager implements PluginMessageListener {
                             Runtime.Version rv = Runtime.Version.parse(getStringAtIndex(1, data));
                             int equality = rv.compareTo(version);
                             if (equality == 0){
-                                LionChat.sendSystemMessage(LionAPI.lm().msg("features.liondisplays_mod.connected_successfully"), player);
+                                if (LionAPI.getPlugin().getConfig().getBoolean("liondisplays.send_connection_successful_message")){
+                                    LionChat.sendSystemMessage(LionAPI.lm().msg("features.liondisplays_mod.connected_successfully"), player);
+                                }
                                 GUIPlayerManager.setRenderWay(player, GUIPlayerManager.ClientRenderWay.LIONDISPLAYS_MOD);
                             }else if(equality < 0)
                                 LionChat.sendSystemMessage(LionAPI.lm().msg("features.liondisplays_mod.outdated_client"), player);

@@ -214,11 +214,18 @@ public abstract class TimerLike {
             colorTick.cancel();
             colorTick = null;
         }
-
-        for(OfflinePlayer p : viewers){
-            if(p.isOnline()) p.getPlayer().sendActionBar(LionAPI.lm().getMessageAsString("features.timer.paused"));
-        }
         Bukkit.getPluginManager().callEvent(new challengePauseEvent());
+    }
+
+    /**
+     * Deletes this timer without pausing.<br>
+     * Note that this Timer Object will still exist when referenced and could technically be started again without errors.
+     * This is not recommended and might cause side effects.
+     */
+    public void forceDelete(){
+        if (tick != null) tick.cancel();
+        if(colorTick != null)colorTick.cancel();
+        viewers.clear();
     }
     /**
      * r+, b-. g+, r-, b+, g-
@@ -236,6 +243,8 @@ public abstract class TimerLike {
                     colorTick = null;
                 }
                 case "MESSAGE"-> c = getColoredMessage(currentColor, LionAPI.lm().getMessageAsString("features.timer.paused"));
+                case "BOTH" -> c = getColoredMessage(currentColor, LionAPI.lm().getMessageAsString("features.timer.paused_timer").
+                        replace("<0>", getRawMessage()));
             }
         }
 

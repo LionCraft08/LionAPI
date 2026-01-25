@@ -24,14 +24,14 @@ import java.util.Objects;
 import static de.lioncraft.lionapi.LionAPI.lm;
 import static org.bukkit.Bukkit.getServer;
 
-public class SimpleSpeedrunChallenge extends ChallengeController {
+public class SimpleSpeedrunChallenge extends AdvancedController {
     public SimpleSpeedrunChallenge() {
         super(true, true);
     }
 
     @Override
     protected void onStart() {
-        onResume();
+        super.onStart();
         LionChat.sendLogMessage("Challenge resumed");
     }
 
@@ -42,27 +42,27 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
 
     @Override
     protected void onPause() {
+        super.onPause();
         LionChat.sendLogMessage("Challenge paused");
         getServer().playSound(Sound.sound(Key.key("block.beacon.deactivate"), Sound.Source.MASTER, 2f, 1f));
-        getServer().getServerTickManager().setFrozen(true);
-
-        PlayerSettings.getSettings(null).setInvulnerable(true);
-        PlayerSettings.getSettings(null).setCanMineBlocks(false);
-        PlayerSettings.getSettings(null).setCanHitEntities(false);
-        PlayerSettings.getSettings(null).setCanPickupItems(false);
-        if (freezePlayersOnPause)
-            PlayerSettings.getSettings(null).setCanMove(false);
+//        getServer().getServerTickManager().setFrozen(true);
+//
+//        PlayerSettings.getSettings(null).setInvulnerable(true);
+//        PlayerSettings.getSettings(null).setCanMineBlocks(false);
+//        PlayerSettings.getSettings(null).setCanHitEntities(false);
+//        PlayerSettings.getSettings(null).setCanPickupItems(false);
 
     }
 
     @Override
     protected void onFinish(ChallengeEndData data) {
+        super.onFinish(data);
         if (data.isSuccessful()){
             getServer().sendMessage(Component.text("--------------------------------", TextColor.color(0, 255, 255)));
             getServer().sendMessage(lm().msg("challenges.simple.end.dragon"));
             getServer().sendMessage(lm().msg("challenges.simple.end.time").append(MainTimer.getTimer().getMessage()));
             getServer().sendMessage(Component.text("--------------------------------", TextColor.color(0, 255, 255)));
-
+            getServer().playSound(Sound.sound(Key.key("ui.toast.challenge_complete"), Sound.Source.MASTER, 2f, 1f));
         }else{
             Component type = switch ((String) data.getArgs().get("type")){
                 case "playerDeath" -> lm().msg("challenges.simple.end.player", (String) data.getArgs().get("player"));
@@ -74,39 +74,37 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
             getServer().sendMessage(type);
             getServer().sendMessage(lm().msg("challenges.simple.end.time").append(MainTimer.getTimer().getMessage()));
             getServer().sendMessage(Component.text("--------------------------------", TextColor.color(150, 0, 200)));
-            if (setPlayersToSpectator)
-                for (Player p : Bukkit.getOnlinePlayers()){
-                    p.setGameMode(GameMode.SPECTATOR);
-                }
+            getServer().playSound(Sound.sound(Key.key("block.beacon.deactivate"), Sound.Source.MASTER, 2f, 1f));
         }
 
     }
 
     @Override
     protected void onResume() {
+        super.onResume();
         getServer().playSound(Sound.sound(Key.key("entity.player.levelup"), Sound.Source.MASTER, 1f, 1f));
-        getServer().getServerTickManager().setFrozen(false);
-
-        PlayerSettings.getSettings(null).setInvulnerable(false);
-        PlayerSettings.getSettings(null).setCanMineBlocks(true);
-        PlayerSettings.getSettings(null).setCanHitEntities(true);
-        PlayerSettings.getSettings(null).setCanPickupItems(true);
-        PlayerSettings.getSettings(null).setCanMove(true);
+//        getServer().getServerTickManager().setFrozen(false);
+//
+//        PlayerSettings.getSettings(null).setInvulnerable(false);
+//        PlayerSettings.getSettings(null).setCanMineBlocks(true);
+//        PlayerSettings.getSettings(null).setCanHitEntities(true);
+//        PlayerSettings.getSettings(null).setCanPickupItems(true);
+//        PlayerSettings.getSettings(null).setCanMove(true);
     }
 
-    @Override
-    protected void onLoad() {
-        Bukkit.getServerTickManager().setFrozen(true);
-        Bukkit.getServer().getWorld("world").setTime(1000);
-
-        PlayerSettings.getSettings(null).setInvulnerable(true);
-        PlayerSettings.getSettings(null).setCanMineBlocks(false);
-        PlayerSettings.getSettings(null).setCanHitEntities(false);
-        PlayerSettings.getSettings(null).setCanPickupItems(false);
-        PlayerSettings.getSettings(null).setCanChat(true);
-        PlayerSettings.getSettings(null).setCanMove(true);
-        PlayerSettings.getSettings(null).setCanFly(false);
-    }
+//    @Override
+//    protected void onLoad() {
+//        Bukkit.getServerTickManager().setFrozen(true);
+//        Bukkit.getServer().getWorld("world").setTime(1000);
+//
+//        PlayerSettings.getSettings(null).setInvulnerable(true);
+//        PlayerSettings.getSettings(null).setCanMineBlocks(false);
+//        PlayerSettings.getSettings(null).setCanHitEntities(false);
+//        PlayerSettings.getSettings(null).setCanPickupItems(false);
+//        PlayerSettings.getSettings(null).setCanChat(true);
+//        PlayerSettings.getSettings(null).setCanMove(true);
+//        PlayerSettings.getSettings(null).setCanFly(false);
+//    }
 
     @Override
     protected void onJoin(Player p) {
@@ -114,24 +112,18 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
     }
 
     private Inventory inv;
-    private boolean setPlayersToSpectator = false;
-    private boolean freezePlayersOnPause = true;
 
     public SimpleSpeedrunChallenge(Map<String, Object> map){
         super(map);
-        setPlayersToSpectator = (boolean) Objects.requireNonNullElse(map.get("spectator"), false);
-        freezePlayersOnPause = (boolean) Objects.requireNonNullElse(map.get("freezePlayersOnPause"), true);
     }
     @Override
     public @NonNull Map<String, Object> serialize() {
-        Map<String, Object> map = super.serialize();
-        map.put("spectator", setPlayersToSpectator);
-        map.put("freezePlayersOnPause", freezePlayersOnPause);
-        return map;
+        return super.serialize();
     }
 
+
     @Override
-    protected Inventory getConfigInventory(Player user) {
+    protected Inventory getConfigInventory() {
         if (inv == null) buildInv();
         return inv;
     }
@@ -140,31 +132,6 @@ public class SimpleSpeedrunChallenge extends ChallengeController {
         inv = Bukkit.createInventory(null, 54, Component.text("Simple Challenge Settings"));
         inv.setContents(Items.blockButtons);
         inv.setItem(49, Items.closeButton);
-
-
-        Setting spectator = new Setting(setPlayersToSpectator, Items.get(
-                LionAPI.lm().msg("inv.challenge-controller.spectator.title"),
-                Material.SPYGLASS,
-                LionAPI.lm().getMessageAsList("inv.challenge-controller.spectator.lore").toArray(Component[]::new)
-        ),
-                isEnabled -> {
-            setPlayersToSpectator = isEnabled;
-                });
-        inv.setItem(10, spectator.getTopItem());
-        inv.setItem(19, spectator.getBottomItem());
-
-
-        Setting freeze = new Setting(freezePlayersOnPause, Items.get(
-                LionAPI.lm().msg("inv.challenge-controller.freeze.title"),
-                Material.BLUE_ICE,
-                LionAPI.lm().getMessageAsList("inv.challenge-controller.freeze.lore").toArray(Component[]::new)
-        ),
-                isEnabled -> {
-            freezePlayersOnPause = isEnabled;
-                });
-        inv.setItem(12, freeze.getTopItem());
-        inv.setItem(21, freeze.getBottomItem());
-
 
         inv.setItem(45, MainMenu.getToMainMenuButton());
     }

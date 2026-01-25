@@ -28,7 +28,8 @@ public final class TimerManagementUI {
                             Material.GOAT_HORN, "<white>When paused, display: "),
                     new ArrayList<>(List.of("[OFF] Display nothing",
                             "[TIMER] the current state of the timer",
-                            "[MESSAGE] a Timer Paused message")),
+                            "[MESSAGE] a Timer Paused message",
+                            "[BOTH] The Timer and a paused Message")),
                     (currentState, currentString, event) -> {
                         String s = currentString.substring(currentString.indexOf("[") + 1, currentString.indexOf("]"));
                         TimerConfig.getSettings().setStringValue("when-paused", s);
@@ -37,6 +38,7 @@ public final class TimerManagementUI {
             mss.setCurrentString(switch (TimerConfig.getWhenPaused().toUpperCase()){
                 case "TIMER" -> 1;
                 case "MESSAGE" -> 2;
+                case "BOTH" -> 3;
                 default -> 0;
             });
             MultipleStringSelection timerColor = new MultipleStringSelection(
@@ -58,7 +60,7 @@ public final class TimerManagementUI {
             inv.setItem(23, playerDeath.getBottomItem());
             Setting dragonDeath = new Setting(TimerConfig.getTimerEndsOnDragonDeath(),
                     Items.get(Component.text("Timer ends on dragon death"), Material.DRAGON_HEAD, "<white>Whether the timer should be paused",
-                            "<white>when the ender dragon dies."),
+                            "<white>when the Ender dragon dies."),
                     TimerConfig::setTimerEndsOnDragonDeath);
             inv.setItem(16, dragonDeath.getTopItem());
             inv.setItem(25, dragonDeath.getBottomItem());

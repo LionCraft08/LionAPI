@@ -12,6 +12,7 @@ import de.lioncraft.lionapi.timer.TimerConfig;
 import io.papermc.paper.util.Tick;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandSendEvent;
@@ -22,12 +23,20 @@ import org.bukkit.event.server.ServerEvent;
 import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 
+import java.io.IOException;
+
 public class listeners implements Listener {
     public static long delay;
     @EventHandler
     public void onSaveEvent(saveDataEvent e){
         LionAPI.getPlugin().getConfig().set("persistent-data.timer", MainTimer.getTimer().getNewSnapshot());
-        LionAPI.getPlugin().getConfig().set("persistent-data.challenge", ChallengeController.getInstance());
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(ChallengeController.getConfigFile());
+        config.set("controller", ChallengeController.getInstance());
+        try {
+            config.save(ChallengeController.getConfigFile());
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
         LionAPI.getPlugin().saveConfig();
         TimerConfig.save();
         Team.saveAll();

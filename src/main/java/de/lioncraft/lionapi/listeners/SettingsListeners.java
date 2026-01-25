@@ -15,10 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -75,6 +72,8 @@ public class SettingsListeners implements Listener {
     public void onInvClose(InventoryCloseEvent e){
         playerAddToSettingsInv.remove(e.getInventory());
     }
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent e){PlayerSettings.getSettings(e.getPlayer()).update();}
     @EventHandler
     public void onGameMode(PlayerGameModeChangeEvent e){
         if (e.getNewGameMode().equals(GameMode.ADVENTURE)||e.getNewGameMode().equals(GameMode.SURVIVAL)) {

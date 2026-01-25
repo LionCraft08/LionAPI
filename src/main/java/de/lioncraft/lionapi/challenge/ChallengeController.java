@@ -13,12 +13,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class ChallengeController implements ConfigurationSerializable {
+    public static File getConfigFile() {return getConfigPath().toFile();}
+    public static Path getConfigPath() {return LionAPI.getPlugin().getDataPath().resolve("challenge-controller.yml");}
     private static Class<? extends ChallengeController> clazz;
 
     public static void setClazz(Class<? extends ChallengeController> clazz) {
@@ -98,6 +102,7 @@ public abstract class ChallengeController implements ConfigurationSerializable {
     public ChallengeController(boolean useTimer, boolean timerCountsUpwards){
         settings = new ChallengeSettings();
         settings.setChallenge(true);
+        settings.setChallengeEndsOnTimerExpire(true);
         settings.setUseTimer(useTimer);
         if (useTimer){
             if (timerCountsUpwards != MainTimer.isCountUpwards()) MainTimer.changeDirection();

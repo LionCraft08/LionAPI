@@ -37,10 +37,13 @@ public final class Items {
     public static ItemStack scrollDownButton;
 
     public static void setItems(){
-        closeButton = Items.get(Component.text("CLOSE", TextColor.color(255, 0, 0)), Material.BARRIER, TextColor.color(255, 0, 0),"Click to close the GUI");
+        closeButton = Items.get(LionAPI.lm().msg("inv.general.items.close.title"), Material.BARRIER, LionAPI.lm().getMessageAsList("inv.general.items.close.lore"));
         blockButton = Items.get(Component.text(""), Material.BLACK_STAINED_GLASS_PANE, "");
-        backButton =  Items.get(Component.text("Back", TextColor.color(255, 255, 0)), Material.ARROW, TextColor.color(255, 255, 0), "Click to get back");
-        forwardButton =  Items.get(Component.text("Next", TextColor.color(255, 255, 0)), Material.SPECTRAL_ARROW, TextColor.color(255, 255, 0), "Click to get to ", "the next page.");
+        blockButton.editMeta(itemMeta -> {
+            itemMeta.setHideTooltip(true);
+        });
+        backButton =  Items.get(LionAPI.lm().msg("inv.general.items.back.title"), Material.ARROW, LionAPI.lm().getMessageAsList("inv.general.items.back.lore"));
+        forwardButton =  Items.get(LionAPI.lm().msg("inv.general.items.forward.title"), Material.SPECTRAL_ARROW, LionAPI.lm().getMessageAsList("inv.general.items.forward.lore"));
 
         blockButtons = new ItemStack[54];
         Arrays.fill(blockButtons, blockButton);

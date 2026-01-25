@@ -1,8 +1,10 @@
 package de.lioncraft.lionapi;
 
+import de.lioncraft.lionapi.actions.ActionSet;
 import de.lioncraft.lionapi.addons.AddonManager;
 import de.lioncraft.lionapi.addons.builtIn.TimerAddon;
 import de.lioncraft.lionapi.challenge.ChallengeController;
+import de.lioncraft.lionapi.challenge.ChallengeEndData;
 import de.lioncraft.lionapi.challenge.SimpleSpeedrunChallenge;
 import de.lioncraft.lionapi.challenge.SurvivalServerChallenge;
 import de.lioncraft.lionapi.commands.DebugCommand;
@@ -32,6 +34,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
@@ -62,6 +65,7 @@ public final class LionAPI extends JavaPlugin {
         ConfigurationSerialization.registerClass(SimpleSpeedrunChallenge.class);
         ConfigurationSerialization.registerClass(SurvivalServerChallenge.class);
         ConfigurationSerialization.registerClass(PlayerSettings.class);
+        ConfigurationSerialization.registerClass(ActionSet.class);
 
         saveDefaultConfig();
 
@@ -121,6 +125,7 @@ public final class LionAPI extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new LionButtonListeners(), this);
         Bukkit.getPluginManager().registerEvents(new LionGUIElementsListeners(), this);
         Bukkit.getPluginManager().registerEvents(new SettingsListeners(), this);
+        Bukkit.getPluginManager().registerEvents(new LionActionsGUIListeners(), this);
 
         registerCommand("timer","Timer & Challenge Management", new timerCommand());
         registerCommand("teams", new Teams());
@@ -135,7 +140,24 @@ public final class LionAPI extends JavaPlugin {
         Bukkit.getScheduler().runTaskLater(this, Team::loadAll, 7);
 
         if (getConfig().getBoolean("settings.challenge-server")){
-            if (getConfig().contains("persistent-data.challenge")) ChallengeController.setInstance((ChallengeController) getConfig().get("challenge"));
+            if (getConfig().contains("persistent-data.challenge")) {
+                ChallengeController c = (ChallengeController) getConfig().get("persistent-data.challenge");
+                if(saveResourceIfNotExists(
+                        "/challenge-controller.yml",
+                        ChallengeController.getConfigPath()
+                )){
+                    YamlConfiguration yml = YamlConfiguration.loadConfiguration(ChallengeController.getConfigFile());
+                    yml.set("controller", c);
+                    try {
+                        yml.save(ChallengeController.getConfigFile());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                getConfig().set("persistent-data.challenge", null);
+                saveConfig();
+            }
         }else{
             ChallengeController.setInstance(new SurvivalServerChallenge());
         }

@@ -33,7 +33,7 @@ public class SimpleChallengeRelatedListeners implements Listener {
     public void onPlayerDeath(EntityDeathEvent e){
         if (!ChallengeController.getInstance().getSettings().isChallenge()) return;
         if (!ChallengeController.getInstance().isActive()) return;
-        if (TimerConfig.getTimerEndsOnPlayerDeath()){
+        if (TimerConfig.getTimerEndsOnDragonDeath()){
             if (e.getEntityType().equals(EntityType.ENDER_DRAGON)) ChallengeController.getInstance().sendFinish(new ChallengeEndData(true).setArgs(Map.of("type", "dragonDeath")));
         }
     }
@@ -60,7 +60,7 @@ public class SimpleChallengeRelatedListeners implements Listener {
         if (!ChallengeController.getInstance().getSettings().isChallenge()) return;
         if (!ChallengeController.getInstance().isActive()) return;
         if (ChallengeController.getInstance().getSettings().isChallengeEndsOnTimerExpire()){
-            ChallengeController.getInstance().sendFinish(new ChallengeEndData(true).setArgs(Map.of("type", "timerExpire")));
+            ChallengeController.getInstance().sendFinish(new ChallengeEndData(false).setArgs(Map.of("type", "timerExpired")));
         }
     }
 

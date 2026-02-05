@@ -64,7 +64,7 @@ public class Msg {
                                                     new TransferrableObject("lionapi_msg")
                                                             .addValue("source", JSONComponentSerializer.json().serialize(source))
                                                             .addValue("message", JSONComponentSerializer.json().serialize(Component.text(cc.getArgument("message", String.class))))
-                                                            .addValue("target", Bukkit.getPlayerUniqueId(cc.getArgument("player", String.class)).toString())
+                                                            .addValue("target", cc.getInput().split(" ")[1])
                                                             .addValue("sourcePlayer", senderid));
                                         }else LionChat.sendMSG(null, MSG.NO_PLAYER.getText(), cc.getSource().getSender());
                                     }

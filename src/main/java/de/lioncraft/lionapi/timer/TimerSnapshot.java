@@ -89,7 +89,6 @@ public class TimerSnapshot implements ConfigurationSerializable {
     public boolean isUpwards() {
         return upwards;
     }
-    @Deprecated (forRemoval = true)
     public TimerLike createNewTimer(){
         TimerLike t;
         if(upwards){
@@ -121,6 +120,7 @@ public class TimerSnapshot implements ConfigurationSerializable {
         return message.toString();
     }
 
+    @Deprecated (forRemoval = true)
     public TimerLike createTimer(){
         if(upwards){
             return new Stopwatch(days, hours, minutes, seconds, secondsatstart);

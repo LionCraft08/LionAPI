@@ -118,7 +118,12 @@ public class DirectConnection extends AbstractConnection{
             try {
                 while (isRunning && (receivedLine = in.readLine()) != null) {
                     // Call the callback method on the main plugin class
-                    onMessageReceive(receivedLine);
+                    try {
+                        onMessageReceive(receivedLine);
+                    }catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                 }
             } catch (IOException e) {
                 if (isRunning && !Bukkit.getServer().isStopping()) { // Only log if not a planned shutdown

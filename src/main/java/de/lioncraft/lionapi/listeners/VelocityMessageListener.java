@@ -1,9 +1,7 @@
 package de.lioncraft.lionapi.listeners;
 
 import de.lioncraft.lionapi.LionAPI;
-import de.lioncraft.lionapi.velocity.data.LionPlayerManager;
-import de.lioncraft.lionapi.velocity.data.PlayerData;
-import de.lioncraft.lionapi.velocity.data.TransferrableObject;
+import de.lioncraft.lionapi.velocity.data.*;
 import org.bukkit.Bukkit;
 
 import java.util.UUID;
@@ -12,14 +10,17 @@ public final class VelocityMessageListener {
     public static void onReceive(TransferrableObject to){
         switch (to.getObjectType()){
             case "lionapi_playerdata" -> {
-                LionPlayerManager.addPlayerData(PlayerData.fromString(to.getString("data")));
+                PlayerConfiguration pc = PlayerConfiguration.fromJson(to.getString("data"));
+                PlayerConfigCache.addPlayerConfig(pc.uuid, pc);
             }
             case "lionapi_playerdata_update" -> {
-                PlayerData pd = LionPlayerManager.getPlayerData(UUID.fromString(to.getString("player")));
-                if (pd == null) return;
+                PlayerConfiguration pc = PlayerConfigCache.getPlayerConfig(UUID.fromString(to.getString("player")));
+                if (pc == null) return;
                 switch (to.getString("key")){
-                    case "isOP" -> {
-                        pd.setOP(to.getBool("data"));
+                    case "isOperator" -> {
+                        boolean b = to.getBool("data");
+                        pc.isOperator = b;
+                        Bukkit.getOfflinePlayer(pc.uuid).setOp(b);
                     }
                 }
             }

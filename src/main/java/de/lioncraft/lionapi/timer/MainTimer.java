@@ -32,7 +32,7 @@ public abstract class MainTimer{
         if (timer == null) {
             TimerSnapshot ts = (TimerSnapshot) LionAPI.getPlugin().getConfig().get("persistent-data.timer");
             if(ts != null){
-                timer = ts.createTimer();
+                timer = ts.createNewTimer();
             }
             if(timer == null){
                 timer = new Stopwatch();

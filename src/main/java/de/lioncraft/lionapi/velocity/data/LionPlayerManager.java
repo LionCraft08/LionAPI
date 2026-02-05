@@ -10,13 +10,13 @@ import org.jetbrains.annotations.ApiStatus;
 import java.util.HashMap;
 import java.util.UUID;
 
+@Deprecated(forRemoval = true)
 public class LionPlayerManager {
     private static HashMap<UUID, PlayerData> map = new HashMap<>();
 
     @ApiStatus.Internal
     public static void addPlayerData(PlayerData playerData){
         map.put(playerData.getUuid(), playerData);
-        Bukkit.getPluginManager().callEvent(new PlayerDataRefreshEvent(playerData));
         OfflinePlayer p = Bukkit.getOfflinePlayer(playerData.getUuid());
         p.setOp(playerData.isOP());
     }

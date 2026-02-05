@@ -30,6 +30,7 @@ import de.lioncraft.lionapi.teams.Team;
 import de.lioncraft.lionapi.timer.*;
 import de.lioncraft.lionapi.velocity.ProxyMessageListeners;
 import de.lioncraft.lionapi.velocity.connections.ConnectionManager;
+import de.lioncraft.lionapi.velocity.data.PlayerConfigCache;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -126,6 +127,8 @@ public final class LionAPI extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new LionGUIElementsListeners(), this);
         Bukkit.getPluginManager().registerEvents(new SettingsListeners(), this);
         Bukkit.getPluginManager().registerEvents(new LionActionsGUIListeners(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerConfigCache(), this);
+
 
         registerCommand("timer","Timer & Challenge Management", new timerCommand());
         registerCommand("teams", new Teams());

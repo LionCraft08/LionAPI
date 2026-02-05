@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import java.util.HashMap;
 import java.util.UUID;
 
+@Deprecated(forRemoval = true)
 public class PlayerData {
     private static final Gson gson = new Gson();
     private UUID uuid;
@@ -46,6 +47,7 @@ public class PlayerData {
         }
     }
 
+    @Deprecated(forRemoval = true)
     public static PlayerData fromString(String jsonString){
         return gson.fromJson(jsonString, PlayerData.class);
     }

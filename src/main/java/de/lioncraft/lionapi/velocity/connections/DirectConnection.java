@@ -95,6 +95,7 @@ public class DirectConnection extends AbstractConnection{
 
             } catch (IOException e) {
                 plugin.getLogger().log(Level.SEVERE, "Client failed to connect to server.");
+                isRunning = false;
             }
         });
     }
@@ -123,13 +124,13 @@ public class DirectConnection extends AbstractConnection{
                     }catch (Exception e) {
                         e.printStackTrace();
                     }
-
                 }
             } catch (IOException e) {
                 if (isRunning && !Bukkit.getServer().isStopping()) { // Only log if not a planned shutdown
                     plugin.getLogger().log(Level.WARNING, "Connection lost with peer.", e);
                 }
             } finally {
+                plugin.getLogger().log(Level.WARNING, "Disconnected from Server "+getName());
                 shutdown();
             }
         });

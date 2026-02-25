@@ -9,7 +9,6 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.Inventory;
@@ -226,6 +225,20 @@ public final class Items {
         ItemMeta im = is.getItemMeta();
         im.getPersistentDataContainer().set(invClickListener.getDisabledClick(), PersistentDataType.STRING, UUID.randomUUID().toString());
         is.setItemMeta(im);
+        return is;
+    }
+
+    public static ItemStack[] createBlockButtonArray(Material material, int size){
+        ItemStack[] blockButtons = new ItemStack[size];
+        Arrays.fill(blockButtons, createBlockButton(material));
+        return blockButtons;
+    }
+    public static ItemStack createBlockButton(Material material){
+        ItemStack is = new ItemStack(material);
+        is.editMeta(itemMeta -> {
+            itemMeta.setUnbreakable(true);
+            itemMeta.setHideTooltip(true);
+        });
         return is;
     }
 }

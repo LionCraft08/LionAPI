@@ -2,12 +2,8 @@ package de.lioncraft.lionapi.challenge;
 
 import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.data.ChallengeSettings;
-import de.lioncraft.lionapi.events.challenge.challengeEndEvent;
-import de.lioncraft.lionapi.events.challenge.challengeEndType;
 import de.lioncraft.lionapi.permissions.LionAPIPermissions;
 import de.lioncraft.lionapi.timer.MainTimer;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -16,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,10 +65,18 @@ public abstract class ChallengeController implements ConfigurationSerializable {
     }
 
     public void sendJoin(Player p){
-        if (!isActive &&(settings.isUseTimer())&&!MainTimer.getTimer().isHasEverBeenActive()){
-            onLoad();
-        }
         onJoin(p);
+    }
+
+    public void sendLoad(){
+        if (!isActive
+                &&(settings.isUseTimer())
+                &&!MainTimer.getTimer().isHasEverBeenActive()
+                &&!settings.isHasBeenLoaded()
+        ){
+            onLoad();
+            settings.setHasBeenLoaded(true);
+        }
     }
 
     public void sendPause(){
@@ -104,12 +107,12 @@ public abstract class ChallengeController implements ConfigurationSerializable {
         settings.setChallenge(true);
         settings.setChallengeEndsOnTimerExpire(true);
         settings.setUseTimer(useTimer);
-        if (useTimer){
-            if (timerCountsUpwards != MainTimer.isCountUpwards()) MainTimer.changeDirection();
-        }
+        settings.setTimerCountsUpwards(timerCountsUpwards);
+        settings.applyTimerSettings();
     }
     public ChallengeController(Map<String, Object> args){
         settings = (ChallengeSettings) args.get("settings");
+        settings.applyTimerSettings();
     }
 
     public ChallengeSettings getSettings() {

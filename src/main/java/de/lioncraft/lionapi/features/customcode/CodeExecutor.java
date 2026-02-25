@@ -2,12 +2,8 @@ package de.lioncraft.lionapi.features.customcode;
 
 import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
-import io.papermc.paper.plugin.loader.PluginLoader;
-import io.papermc.paper.plugin.provider.classloader.ConfiguredPluginClassLoader;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.PluginClassLoader;
 
 import javax.tools.*;
 import java.io.ByteArrayOutputStream;
@@ -146,6 +142,8 @@ public class CodeExecutor {
         }
 
         options.add(cp.toString());
+
+        Thread.currentThread().setContextClassLoader(LionAPI.getLionAPIClassLoader());
 
         JavaCompiler.CompilationTask task = compiler.getTask(
                 null,       // Output writer

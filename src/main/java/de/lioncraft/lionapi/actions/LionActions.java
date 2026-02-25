@@ -4,10 +4,7 @@ import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.guimanagement.Items;
 import de.lioncraft.lionapi.playerSettings.PlayerSettings;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.GameRule;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -19,9 +16,7 @@ public enum LionActions {
                     Material.BLUE_ICE,
                     LionAPI.lm().getMessageAsList("inv.actions.freeze-world.lore")
             ),
-            b -> {
-                Bukkit.getServerTickManager().setFrozen(b);
-            }
+            b -> Bukkit.getServerTickManager().setFrozen(b)
     ),
     FREEZE_PLAYERS(
             Items.get(
@@ -29,9 +24,7 @@ public enum LionActions {
                     Material.CHAINMAIL_BOOTS,
                     LionAPI.lm().getMessageAsList("inv.actions.freeze-players.lore")
             ),
-            b -> {
-                PlayerSettings.getSettings(null).setCanMove(!b);
-            }
+            b -> PlayerSettings.getSettings(null).setCanMove(!b)
     ),
     INVULNERABLE_PLAYERS(
             Items.get(
@@ -39,9 +32,8 @@ public enum LionActions {
                     Material.SHIELD,
                     LionAPI.lm().getMessageAsList("inv.actions.invulnerable-players.lore")
             ),
-            b -> {
-                PlayerSettings.getSettings(null).setInvulnerable(b);
-            }
+            b -> PlayerSettings.getSettings(null).setInvulnerable(b)
+
     ),
     BLOCK_WORLD_INTERACTIONS(
             Items.get(
@@ -61,11 +53,11 @@ public enum LionActions {
                     Material.END_CRYSTAL,
                     LionAPI.lm().getMessageAsList("inv.actions.allow-pvp.lore")
             ),
-            b -> {
+            b ->
                 Bukkit.getWorlds().forEach(world -> {
-                    world.setGameRule(GameRule.PVP, b);
-                });
-            }
+                    world.setGameRule(GameRules.PVP, b);
+                })
+
     ),
     RESET_PLAYER_HEALTH(
             Items.get(
@@ -91,11 +83,33 @@ public enum LionActions {
             b -> {
                 PlayerSettings.getSettings(null).setCanFly(b);
             }
+    ),
+    RESET_WORLD_TIME(
+            Items.get(
+                    LionAPI.lm().msg("inv.actions.reset-world-time.title"),
+                    Material.CLOCK,
+                    LionAPI.lm().getMessageAsList("inv.actions.reset-world-time.lore")
+            ),
+            b -> {
+                for (World w : Bukkit.getWorlds()) {
+                    w.setTime(1000);
+                }
+            }
+    ),
+    SPAWN_STRUCTURE(
+            Items.get(
+                    LionAPI.lm().msg("inv.actions.spawn-structure.title"),
+                    Material.SPRUCE_LOG,
+                    LionAPI.lm().getMessageAsList("inv.actions.spawn-structure.lore")
+            ),
+            b -> {
+                ActionPlaceholder.getPlaceholder("spawn_structure").accept(b);
+            }
     )
     ;
 
-    private ItemStack configPreset;
-    private BooleanConsumer onValueChange;
+    private final ItemStack configPreset;
+    private final BooleanConsumer onValueChange;
     LionActions(ItemStack configPreset, BooleanConsumer onValueChange){
         this.configPreset = configPreset;
         this.onValueChange = onValueChange;

@@ -19,10 +19,12 @@ import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Objects;
 
 public class DisplayManager implements PluginMessageListener {
-    private static Runtime.Version version = Runtime.Version.parse("1.0.2");
+    private static List<Runtime.Version> version = List.of(Runtime.Version.parse("1.0.2"),
+            Runtime.Version.parse("1.0.3"));
     //command:name:type:offsx:offsy:attachment:data
     public static void sendDisplayCheck(Player p){
         p.sendPluginMessage(LionAPI.getPlugin(), channel, ("check_existing:"+ version.toString()).getBytes());
@@ -62,10 +64,14 @@ public class DisplayManager implements PluginMessageListener {
         sendDisplayData(p, ld);
     }
     public static void sendDisplayCompass(Player p, String id, Integer offsetX, Integer offsetY, @Nullable DisplayAttachment attachment, int posX, Integer posY, int posZ){
+        sendDisplayCompass(p, id, offsetX, offsetY, attachment, posX, posY, posZ, null);
+    }
+    public static void sendDisplayCompass(Player p, String id, Integer offsetX, Integer offsetY, @Nullable DisplayAttachment attachment, int posX, Integer posY, int posZ, String dimension){
         LionDisplayData ld = new LionDisplayData(id, "compass", offsetX, offsetY, attachment);
         ld.setData("x", String.valueOf(posX));
         ld.setData("y", String.valueOf(posY));
         ld.setData("z", String.valueOf(posZ));
+        ld.setData("dimension", dimension);
         sendDisplayData(p, ld);
     }
     public static void sendDisplayCompass(Player p, String id, int posX, Integer posY, int posZ){
@@ -141,16 +147,16 @@ public class DisplayManager implements PluginMessageListener {
                             LionChat.sendSystemMessage(LionAPI.lm().msg("features.liondisplays_mod.outdated_client"), player);
                         }else{
                             Runtime.Version rv = Runtime.Version.parse(getStringAtIndex(1, data));
-                            int equality = rv.compareTo(version);
+                            int equality = compareVersion(rv);
                             if (equality == 0){
                                 if (LionAPI.getPlugin().getConfig().getBoolean("liondisplays.send_connection_successful_message")){
                                     LionChat.sendSystemMessage(LionAPI.lm().msg("features.liondisplays_mod.connected_successfully"), player);
                                 }
                                 GUIPlayerManager.setRenderWay(player, GUIPlayerManager.ClientRenderWay.LIONDISPLAYS_MOD);
                             }else if(equality < 0)
-                                LionChat.sendSystemMessage(LionAPI.lm().msg("features.liondisplays_mod.outdated_client"), player);
+                                LionChat.sendSystemMessage(LionAPI.lm().msg("features.liondisplays_mod.outdated_client", version.getLast().toString()), player);
                             else
-                                LionChat.sendSystemMessage(LionAPI.lm().msg("features.liondisplays_mod.outdated_server"), player);
+                                LionChat.sendSystemMessage(LionAPI.lm().msg("features.liondisplays_mod.outdated_server", version.getLast().toString()), player);
                         }
                     }
                     case "send_version" -> {
@@ -160,6 +166,10 @@ public class DisplayManager implements PluginMessageListener {
             }
 
         }
+    }
+    private int compareVersion(Runtime.Version v1){
+        if(version.contains(v1)){return 0;}
+        else return version.get(0).compareTo(v1);
     }
     private String getStringAtIndex(int index, String message){
         if (!message.contains(":")) return message;

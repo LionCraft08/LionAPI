@@ -4,7 +4,6 @@ import de.lioncraft.lionapi.actions.ActionSet;
 import de.lioncraft.lionapi.addons.AddonManager;
 import de.lioncraft.lionapi.addons.builtIn.TimerAddon;
 import de.lioncraft.lionapi.challenge.ChallengeController;
-import de.lioncraft.lionapi.challenge.ChallengeEndData;
 import de.lioncraft.lionapi.challenge.SimpleSpeedrunChallenge;
 import de.lioncraft.lionapi.challenge.SurvivalServerChallenge;
 import de.lioncraft.lionapi.commands.DebugCommand;
@@ -14,9 +13,9 @@ import de.lioncraft.lionapi.data.ChallengeSettings;
 import de.lioncraft.lionapi.data.ConfigManager;
 import de.lioncraft.lionapi.data.Settings;
 import de.lioncraft.lionapi.events.saveDataEvent;
-import de.lioncraft.lionapi.guimanagement.*;
+import de.lioncraft.lionapi.guimanagement.Items;
 import de.lioncraft.lionapi.guimanagement.lionclient.DisplayManager;
-import de.lioncraft.lionapi.hiddenclicks.ClickCommand;
+import de.lioncraft.lionapi.guimanagement.lioninventories.updated.LionClickableListeners;
 import de.lioncraft.lionapi.listeners.*;
 import de.lioncraft.lionapi.messageHandling.ColorGradient;
 import de.lioncraft.lionapi.messageHandling.defaultMessages;
@@ -27,7 +26,9 @@ import de.lioncraft.lionapi.permissions.LionAPIPermissions;
 import de.lioncraft.lionapi.playerSettings.PlayerSettings;
 import de.lioncraft.lionapi.teams.Backpack;
 import de.lioncraft.lionapi.teams.Team;
-import de.lioncraft.lionapi.timer.*;
+import de.lioncraft.lionapi.timer.MainTimer;
+import de.lioncraft.lionapi.timer.TimerConfig;
+import de.lioncraft.lionapi.timer.TimerSnapshot;
 import de.lioncraft.lionapi.velocity.ProxyMessageListeners;
 import de.lioncraft.lionapi.velocity.connections.ConnectionManager;
 import de.lioncraft.lionapi.velocity.data.PlayerConfigCache;
@@ -128,6 +129,7 @@ public final class LionAPI extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new SettingsListeners(), this);
         Bukkit.getPluginManager().registerEvents(new LionActionsGUIListeners(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerConfigCache(), this);
+        Bukkit.getPluginManager().registerEvents(new LionClickableListeners(), this);
 
 
         registerCommand("timer","Timer & Challenge Management", new timerCommand());
@@ -160,6 +162,13 @@ public final class LionAPI extends JavaPlugin {
 
                 getConfig().set("persistent-data.challenge", null);
                 saveConfig();
+                ChallengeController.setInstance(c);
+            }else{
+                YamlConfiguration yml = YamlConfiguration.loadConfiguration(ChallengeController.getConfigFile());
+                ChallengeController c = (ChallengeController) yml.get("controller");
+                if(c != null){
+                    ChallengeController.setInstance(c);
+                }
             }
         }else{
             ChallengeController.setInstance(new SurvivalServerChallenge());
@@ -169,6 +178,10 @@ public final class LionAPI extends JavaPlugin {
         AddonManager.registerAddon(new TimerAddon());
 
         ConnectionManager.initialize(getConfig());
+
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            ChallengeController.getInstance().sendLoad();
+        }, 10);
 
         getLogger().info("Successfully enabled LionAPI.");
     }

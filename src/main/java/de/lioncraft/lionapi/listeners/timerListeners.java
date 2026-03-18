@@ -7,7 +7,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.TranslationArgument;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.*;
+import org.bukkit.GameEvent;
+import org.bukkit.GameRules;
+import org.bukkit.World;
 import org.bukkit.block.Jukebox;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,7 +17,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockCanBuildEvent;
 import org.bukkit.event.entity.EntityMountEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.GenericGameEvent;
 
 public class timerListeners implements Listener {
@@ -31,6 +35,7 @@ public class timerListeners implements Listener {
 
     @EventHandler
     public void onHotbarReceiveEvent(PlayerBedFailEnterEvent e){
+        if(MainTimer.isUseProtocolBridge()) return;
         if(e.getMessage() != null){
             if(MainTimer.getTimer().isActive()){
                 if (e.getMessage() instanceof TextComponent c){
@@ -43,6 +48,7 @@ public class timerListeners implements Listener {
     }
     @EventHandler
     public void onLeaveWhileSleeping(PlayerQuitEvent e){
+        if(MainTimer.isUseProtocolBridge()) return;
         World w = e.getPlayer().getWorld();
         LionAPI.getPlugin().getServer().getScheduler().scheduleSyncDelayedTask(LionAPI.getPlugin(), () -> {
            calculatePlayers(null, w);
@@ -51,12 +57,14 @@ public class timerListeners implements Listener {
 
     @EventHandler
     public void onBedEnter(PlayerBedEnterEvent e){
+        if(MainTimer.isUseProtocolBridge()) return;
+
         if (!e.getBedEnterResult().equals(PlayerBedEnterEvent.BedEnterResult.OK)) return;
         calculatePlayers(e.getPlayer(), e.getPlayer().getWorld());
     }
 
     private static void calculatePlayers(Player p, World w){
-        int percentage = w.getGameRuleValue(GameRule.PLAYERS_SLEEPING_PERCENTAGE);
+        int percentage = w.getGameRuleValue(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
         int amount_of_players = 0;
         int amount_of_sleeping = 0;
         for(Player player : w.getPlayers()){
@@ -80,6 +88,8 @@ public class timerListeners implements Listener {
 
     @EventHandler
     public void onLimit(BlockCanBuildEvent e){
+        if(MainTimer.isUseProtocolBridge()) return;
+
         if (e.isBuildable()) return;
         if (e.getBlock().getLocation().getBlockY() == e.getBlock().getLocation().getWorld().getMaxHeight()){
             setHotbarMessage(Component.translatable("build.tooHigh", TextColor.color(170, 0, 0)).arguments(Component.text(e.getBlock().getWorld().getMaxHeight())), e.getPlayer());
@@ -88,6 +98,7 @@ public class timerListeners implements Listener {
 
     @EventHandler
     public void onChestFail(GenericGameEvent e){
+        if(MainTimer.isUseProtocolBridge()) return;
         if (e.getEvent() == GameEvent.JUKEBOX_PLAY){
             if (e.getLocation().getBlock() instanceof Jukebox jb){
                 for (Player p : e.getLocation().getNearbyPlayers(e.getRadius())){
@@ -103,6 +114,8 @@ public class timerListeners implements Listener {
     }
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDisk(EntityMountEvent e){
+        if(MainTimer.isUseProtocolBridge()) return;
+
         if (!e.isCancelled()){
             if (e.getEntity() instanceof Player p){
                 setHotbarMessage(Component.translatable("mount.onboard").arguments(Component.keybind("key.sneak")), p);

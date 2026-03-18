@@ -27,14 +27,6 @@ commands:
   debug:
     usage: Internal
     permission: OP
-permissions:
-  lionapi.timer.main.configure:
-    default: op
-    description: Sets if a Player can configure the Main Timer.
-    children:
-      - lionapi.timer.main.see
-  lionapi.timer.main.see:
-    default: true
-    description: Sets if a Player can see the Main Timer.
 softdepend:
   - LionUtils
+  - ProtocolLib

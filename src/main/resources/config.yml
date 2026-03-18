@@ -15,6 +15,7 @@ config-version: 1.6
 language: en_us
 
 # In the Language files, when you add for example <error>, this will automatically be replaced by the color below.
+# You can add your own color tags if you want to.
 language-file-color-codes:
   error: "#FF7700"
   info: "#AAAAAA"
@@ -22,10 +23,14 @@ language-file-color-codes:
   default: "#FFFFFF"
 
 liondisplays:
-  #When enabled, Players with the LionDisplays Mod can use the features on this Server.
-  #Some Plugins provide additional functionality with the Mod,
-  #but if there are no
+  # When enabled, Players with the LionDisplays Mod can use the features on this Server.
+  # Some Plugins provide additional functionality with the Mod,
+  # but if there are none, you can safely disable this feature as it only annoys players.
   allow_connections: true
+
+  # Whether players should receive another message that LionDisplays is connected.
+  # This does not affect the Message that is displayed only client-side, to get rid of that Message,
+  # Players need to disable it in the config of LionDisplays.
   send_connection_successful_message: true
 
 settings:
@@ -37,7 +42,7 @@ settings:
   challenge-server: true
 
   msg:
-    # Logs msgs so those who can receive log messages (mainly operators)
+    # Logs msgs to those who can receive log messages (mainly operators)
     log-msg: false
     # Whether to allow players to use the /msg command
     allow-msg: true
@@ -46,11 +51,10 @@ settings:
 
   # This allows operators to execute code from in-game or the console.
   # THIS IS AN INCREDIBLY HIGH RISK AND SHOULD ONLY BE USED BY PEOPLE YOU TRUST 100%!!!
-  # This can not only delete your whole minecraft server, but inject every kind of malware into your jre.
+  # This can not only delete your whole Minecraft server, but inject every kind of malware into your jre.
   # Also, the command requires you to have the server running in a jdk environment, rather than only a jre.
   allow-code-execution: false # REALLY THINK ABOUT IT
   # I'm being serious...
-
 
   timer:
     # Nothing here anymore... These Settings were moved to timer-color-presets.yml
@@ -64,7 +68,7 @@ server-connection:
     #Type, the way to connect to a server. Can be:
     # blocked: Blocks every connection to other servers.
     # auto: Detects/Configures connections automatically, if possible
-    # player: Connects via minecraft's built-in Plugin Messaging feature, requires no additional port management
+    # player: Connects via Minecraft's built-in Plugin Messaging feature, requires no additional port management
     #         but won't work when no player is connected (client->velocity->backend connection required)
     # direct: Uses the own data transfer method of LionSystems. Requires a lot of setup (see below)
     #       but works without any dependency of player connections
@@ -86,7 +90,8 @@ server-connection:
 
 
 
-#The Items below won't occur in the Random Item giver Methods
+# The Items below won't occur in the Random Item giver Methods
+# Only still here to keep legacy stuff compatible, will be removed in LionAPI 2.x
 disabled-items:
   - BEDROCK
   - BUDDING_AMETHYST
@@ -271,5 +276,7 @@ disabled-entities:
 disabled-biomes:
   - THE_VOID
   - CUSTOM
+
+# Stuff I didn't want to create its own files for. You mostly shouldn't touch these entries.
 persistent-data:
   timer:

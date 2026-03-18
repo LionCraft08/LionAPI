@@ -2,10 +2,8 @@ package de.lioncraft.lionapi.commands;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import de.lioncraft.lionapi.LionAPI;
-import de.lioncraft.lionapi.data.Settings;
 import de.lioncraft.lionapi.messageHandling.MSG;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
-import de.lioncraft.lionapi.teams.Team;
 import de.lioncraft.lionapi.velocity.connections.ConnectionManager;
 import de.lioncraft.lionapi.velocity.data.TransferrableObject;
 import io.papermc.paper.command.brigadier.Commands;
@@ -14,14 +12,10 @@ import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSele
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
-import org.bukkit.Bukkit;
-import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.UUID;
 
 import static de.lioncraft.lionapi.LionAPI.lm;
 
@@ -50,7 +44,7 @@ public class Msg {
                                         senderid = cc.getSource().getExecutor().getUniqueId().toString();
                                         sender = cc.getSource().getExecutor();
                                     }else{
-                                        source = cc.getSource().getSender().name().clickEvent(ClickEvent.suggestCommand("/msg " + cc.getSource().getSender().getName()));
+                                        source = cc.getSource().getSender().name().clickEvent(ClickEvent.suggestCommand("/msg " + cc.getSource().getSender().getName() + " "));
                                         sender = cc.getSource().getSender();
                                         if (cc.getSource().getSender() instanceof Player p){
                                             senderid = p.getUniqueId().toString();
@@ -75,7 +69,8 @@ public class Msg {
                                             LionChat.sendMSG(LionAPI.lm().msg("features.msg.you").append(Component.text(" -> ")).append(target), Component.text(cc.getArgument("message", String.class)), sender);
                                             if(LionAPI.getPlugin().getConfig().getBoolean("settings.msg.log-msg"))
                                                 LionChat.sendLogMessage(Component.text("[MSG] ").append(source).append(Component.text(" -> "+cc.getInput().replaceFirst("msg ", "").replaceFirst(" ", " >> "))));
-                                        });
+                                        }
+                                        );
                                     return 0;
                                 }))).build() ,
                 "Send a Message to a Player",

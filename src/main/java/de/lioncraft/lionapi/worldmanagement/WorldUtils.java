@@ -2,22 +2,19 @@ package de.lioncraft.lionapi.worldmanagement;
 
 import de.lioncraft.lionapi.LionAPI;
 import de.lioncraft.lionapi.messageHandling.lionchat.LionChat;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.GameRule;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
-import org.bukkit.scheduler.BukkitScheduler;
+import io.papermc.paper.registry.RegistryAccess;
+import io.papermc.paper.registry.RegistryKey;
+import org.bukkit.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public final class WorldUtils {
     private WorldUtils(){}
@@ -43,16 +40,22 @@ public final class WorldUtils {
             }
             Bukkit.getScheduler().runTask(LionAPI.getPlugin(), () -> {
                 World newworld = Bukkit.createWorld(new WorldCreator(s).copy(w));
-                for (String gamerule : w.getGameRules()) {
-                    GameRule g = GameRule.getByName(gamerule);
-                    newworld.setGameRule(g, w.getGameRuleValue(g));
-
-                }
+                RegistryAccess.registryAccess().getRegistry(RegistryKey.GAME_RULE).forEach(gameRule -> {
+                    setGameRuleSafely(newworld, w, gameRule);
+                });
                 world.complete(newworld);
             });
 
         });
         return world;
+    }
+
+    // Helper method to safely set game rules with correct generic type handling
+    private static <T> void setGameRuleSafely(World newWorld, World oldWorld, GameRule<T> gameRule) {
+        T value = oldWorld.getGameRuleValue(gameRule);
+        if (value != null) {
+            newWorld.setGameRule(gameRule, value);
+        }
     }
 
     public static String getNewName(String previous){
@@ -77,22 +80,23 @@ public final class WorldUtils {
         return "world"+new Random().nextInt(99999);
     }
     private static void copyFolder(Path src, Path dest) throws IOException {
-        Files.walk(src)
-                .forEach(source -> {
-                    if (source.endsWith("uid.dat")|| source.endsWith("session.lock")) return;
-                    try {
-                        Path destination = dest.resolve(src.relativize(source));
-                        if (Files.isDirectory(source)) {
-                            if (!Files.exists(destination)) {
-                                Files.createDirectories(destination);
-                            }
-                        } else {
-                            Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+        try (Stream<Path> files = Files.walk(src)) {
+            files.forEach(source -> {
+                if (source.endsWith("uid.dat")|| source.endsWith("session.lock")) return;
+                try {
+                    Path destination = dest.resolve(src.relativize(source));
+                    if (Files.isDirectory(source)) {
+                        if (!Files.exists(destination)) {
+                            Files.createDirectories(destination);
                         }
-                    } catch (IOException e) {
-                        LionChat.sendLogMessage("Couldn't copy "+src+" to "+dest+": "+e.getMessage());
+                    } else {
+                        Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
                     }
-                });
+                } catch (IOException e) {
+                    LionChat.sendLogMessage("Couldn't copy "+src+" to "+dest+": "+e.getMessage());
+                }
+            });
+        }
     }
 
     private static final Pattern RESERVED_NAMES = Pattern.compile(

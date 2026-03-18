@@ -6,7 +6,7 @@
 
   <groupId>de.lioncraft</groupId>
   <artifactId>lionAPI</artifactId>
-  <version>1.11.3</version>
+  <version>1.11.4</version>
   <packaging>jar</packaging>
 
   <name>lionAPI</name>
@@ -65,6 +65,12 @@
           <groupId>io.papermc.paper</groupId>
           <artifactId>paper-api</artifactId>
           <version>1.21.11-R0.1-SNAPSHOT</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>net.dmulloy2</groupId>
+          <artifactId>ProtocolLib</artifactId>
+          <version>5.4.0</version>
           <scope>provided</scope>
       </dependency>
   </dependencies>

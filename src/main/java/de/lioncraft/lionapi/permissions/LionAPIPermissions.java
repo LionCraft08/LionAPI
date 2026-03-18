@@ -10,6 +10,9 @@ public enum LionAPIPermissions {
     ExecuteLS("lionapi.command.ls.execute", TRUE, "Some useful things..."),
     ExecuteTeam("lionapi.command.teams.execute", OP, "Allows you to use the /teams command"),
     ConfigureChallengeController("lionapi.inv.challenge-controller", OP, "Allows you to open and use the Challenge Controller UI"),
+    ConfigureTimerInv("lionapi.timer.main.configure", FALSE, "Allows you to open and use a Live Timer UI. Currently not fully implemented, so this Permission is not granted by default."),
+    OpenOtherBackpacks("lionapi.backpack.open.others", OP, "Allows players to open the Backpacks of other Teams"),
+    OpenOwnBackpack("lionapi.backpack.open.self", TRUE, "Allows players to open the Backpack of their own Team. Might still be blocked by config.yml"),
     ;
 
     private final String mcid;

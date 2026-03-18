@@ -1,16 +1,10 @@
 package de.lioncraft.lionapi;
 
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import de.lioncraft.lionapi.commands.*;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
-import io.papermc.paper.registry.event.RegistryEvents;
-import org.bukkit.command.CommandSender;
-
-import java.util.List;
 
 public class LionBootstrapper implements PluginBootstrap {
     @Override

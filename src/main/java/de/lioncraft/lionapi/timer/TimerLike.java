@@ -8,8 +8,8 @@ import de.lioncraft.lionapi.events.timerEvents.MainTimerEvents.MainTimerResumeEv
 import de.lioncraft.lionapi.events.timerEvents.TimerLikePauseEvent;
 import de.lioncraft.lionapi.events.timerEvents.TimerLikeResumeEvent;
 import de.lioncraft.lionapi.guimanagement.Interaction.Interactor;
-import de.lioncraft.lionapi.messageHandling.DM;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -19,12 +19,16 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 public abstract class TimerLike {
+    private static final HoverEvent<Component> uniqueIdentifier = HoverEvent.showText(Component.text("Timer"));
+    public static HoverEvent<Component> getUniqueIdentifier() {
+        return uniqueIdentifier;
+    }
     protected int days, hours, minutes, seconds, secondsAtStart;
     protected boolean hasEverBeenActive = false;
     protected BukkitTask tick, colorTick;
@@ -253,8 +257,8 @@ public abstract class TimerLike {
                 if(!Interactor.hasActiveInteraction(p)){
                     Component suffix = MainTimer.getSuffix(p);
                     if(suffix != null){
-                        p.getPlayer().sendActionBar(c.append(suffix));
-                    }else p.getPlayer().sendActionBar(c);
+                        p.getPlayer().sendActionBar(c.append(suffix).hoverEvent(uniqueIdentifier));
+                    }else p.getPlayer().sendActionBar(c.hoverEvent(uniqueIdentifier));
                 }
             }
         }

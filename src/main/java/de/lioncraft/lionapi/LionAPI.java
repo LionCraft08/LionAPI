@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.logging.Level;
 
 
 public final class LionAPI extends JavaPlugin {
@@ -54,7 +55,6 @@ public final class LionAPI extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
-
         saveResourceIfNotExists("/timer-color-presets.yml", getDataPath().resolve("timer-color-presets.yml"));
 
         ConfigurationSerialization.registerClass(TimerSnapshot.class);
@@ -142,7 +142,7 @@ public final class LionAPI extends JavaPlugin {
         DisplayManager.register(this);
 
         MainTimer.getTimer();
-        Bukkit.getScheduler().runTaskLater(this, Team::loadAll, 7);
+        Bukkit.getScheduler().runTaskLater(this, Team::loadAll, 1);
 
         if (getConfig().getBoolean("settings.challenge-server")){
             if (getConfig().contains("persistent-data.challenge")) {
@@ -164,10 +164,15 @@ public final class LionAPI extends JavaPlugin {
                 saveConfig();
                 ChallengeController.setInstance(c);
             }else{
-                YamlConfiguration yml = YamlConfiguration.loadConfiguration(ChallengeController.getConfigFile());
-                ChallengeController c = (ChallengeController) yml.get("controller");
-                if(c != null){
-                    ChallengeController.setInstance(c);
+                try {
+                    YamlConfiguration yml = YamlConfiguration.loadConfiguration(ChallengeController.getConfigFile());
+                    ChallengeController c = (ChallengeController) yml.get("controller");
+                    if(c != null){
+                        ChallengeController.setInstance(c);
+                    }
+                }catch (Exception e){
+                    getLogger().warning("Could not load challenge data, did you remove a Plugin hooking into LionAPI?");
+                    getLogger().warning(e.getMessage());
                 }
             }
         }else{
@@ -177,11 +182,20 @@ public final class LionAPI extends JavaPlugin {
         AddonManager.load();
         AddonManager.registerAddon(new TimerAddon());
 
+        if(Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")){
+            try {
+                MainTimer.setUseProtocolBridge(true);
+                getLogger().info("Successfully hooked into ProtocolLib");
+            }catch (Exception e){
+                getLogger().log(Level.WARNING, "Could not hook into ProtocolLib: "+e.getMessage());
+            }
+        }
+
         ConnectionManager.initialize(getConfig());
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
             ChallengeController.getInstance().sendLoad();
-        }, 10);
+        }, 3);
 
         getLogger().info("Successfully enabled LionAPI.");
     }

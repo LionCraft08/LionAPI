@@ -5,18 +5,9 @@ api-version: '1.21'
 bootstrapper: de.lioncraft.lionapi.LionBootstrapper
 has-open-classloader: true
 load: STARTUP
-permissions:
-  lionapi.timer.main.configure:
-    default: op
-    description: Sets if a Player can configure the Main Timer.
-    children:
-      - lionapi.timer.main.see
-  lionapi.timer.main.see:
-    default: true
-    description: Sets if a Player can see the Main Timer.
 dependencies:
   server:
-    LionUtils:
+    ProtocolLib:
       required: false
       join-classpath: true
-      load: AFTER
+      load: BEFORE

@@ -22,6 +22,9 @@ public abstract class ChallengeController implements ConfigurationSerializable {
 
     public static void setClazz(Class<? extends ChallengeController> clazz) {
         ChallengeController.clazz = clazz;
+        if(instance != null && instance.getClass().equals(clazz)){
+            createInstanceFromClass();
+        }
     }
 
     private static ChallengeController instance;
@@ -32,16 +35,20 @@ public abstract class ChallengeController implements ConfigurationSerializable {
 
     public static ChallengeController getInstance() {
         if (instance == null) if (clazz != null){
-            try {
-                instance = clazz.getConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                     NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
+            createInstanceFromClass();
         }else{
             instance = new SimpleSpeedrunChallenge();
         }
         return instance;
+    }
+
+    private static void createInstanceFromClass(){
+        try {
+            instance = clazz.getConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected abstract void onStart();
